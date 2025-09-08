@@ -1,7 +1,6 @@
 class AppImages {
   //================ Icons ==================>
-  static const splashLogo = "assets/icons/splashLogo.png";
-  static const logoText = "assets/icons/logo text.png";
+  static const logo = "assets/icons/logo.png";
   static const arrowRight = "assets/icons/arrow right.png";
   static const arrowRightBig = "assets/icons/arrow right big.png";
   static const arrowRightNormal = "assets/icons/Arrow right light.png";
@@ -16,16 +15,17 @@ class AppImages {
   static const accountInfo = "assets/icons/account info.png";
   static const activityLog = "assets/icons/activity log.png";
   static const activityLogFilled = "assets/icons/activity log filled.png";
-  static const coupon = "assets/icons/coupon.png";
-  static const couponFilled = "assets/icons/coupon filled.png";
+  static const gallery = "assets/icons/gallery.png";
+  static const galleryFilled = "assets/icons/gallery filled.png";
   static const home = "assets/icons/home.png";
   static const homeFilled = "assets/icons/home filled.png";
   static const profile = "assets/icons/profile.png";
   static const profileFilled = "assets/icons/profile filled.png";
-  static const store = "assets/icons/store.png";
-  static const storeFilled = "assets/icons/store filled.png";
+  static const tags = "assets/icons/tag.png";
+  static const tagsFilled = "assets/icons/tags filled.png";
   static const favorite = "assets/icons/favorite.png";
   static const favoriteFilled = "assets/icons/favorite filled.png";
+  static const favoriteUnlocked = "assets/icons/favourite unlock.png";
   static const language = "assets/icons/language.png";
   static const languageTwo = "assets/icons/language 2.png";
   static const changePass = "assets/icons/change password.png";
@@ -42,17 +42,18 @@ class AppImages {
   static const view = "assets/icons/view.png";
   static const call = "assets/icons/call.png";
   static const email = "assets/icons/email.png";
-  static const facebook = "assets/icons/facebook.png";
-  static const google = "assets/icons/google.png";
   static const back = "assets/icons/back.png";
   static const giftBox = "assets/icons/gift box.png";
+  static const crown = "assets/icons/crown.png";
 
 
   //================ Images ==================>
 
-  static const offerImage = "assets/images/nike.png";
-  static const bannerImage = "assets/images/amazon offer.png";
+  static const onboardingImageOne = "assets/images/onboarding 1.png";
+  static const onboardingImageTwo = "assets/images/onboarding 2.png";
+  static const onboardingBackImage = "assets/images/onboarding back.png";
   static const verifySuccess = "assets/images/verify success.png";
+  static const offerImage = "assets/images/nike.png";
 
 
   static const profileImage = 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=987&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D';

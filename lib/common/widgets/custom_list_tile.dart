@@ -35,9 +35,9 @@ class CustomListTile extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        color: containerColor,
+        //color: containerColor,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: borderColor ?? AppColors.silver),
+        //border: Border.all(color: borderColor ?? AppColors.silver),
       ),
       child: ListTile(
         leading: Image.asset(
