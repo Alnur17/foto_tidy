@@ -1,23 +1,17 @@
 import 'package:get/get.dart';
 
 class TagsController extends GetxController {
-  //TODO: Implement TagsController
+  var tags = <String>[].obs; // list of tags
 
-  final count = 0.obs;
-  @override
-  void onInit() {
-    super.onInit();
+  void addTag(String tagName) {
+    if (tagName.trim().isNotEmpty) {
+      tags.add(tagName.trim());
+    }
   }
 
-  @override
-  void onReady() {
-    super.onReady();
+  void removeTag(int index) {
+    if (index >= 0 && index < tags.length) {
+      tags.removeAt(index);
+    }
   }
-
-  @override
-  void onClose() {
-    super.onClose();
-  }
-
-  void increment() => count.value++;
 }

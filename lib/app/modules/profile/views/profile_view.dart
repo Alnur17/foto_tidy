@@ -23,7 +23,8 @@ import 'favourite_view.dart';
 
 class ProfileView extends GetView<ProfileController> {
   final bool showBackButton;
-  ProfileView( {super.key, this.showBackButton = false});
+
+  ProfileView({super.key, this.showBackButton = false});
 
   final ProfileController profileController = Get.put(ProfileController());
 
@@ -38,14 +39,14 @@ class ProfileView extends GetView<ProfileController> {
         automaticallyImplyLeading: showBackButton,
         leading: showBackButton
             ? GestureDetector(
-          onTap: () {
-            Get.back();
-          },
-          child: Image.asset(
-            AppImages.back,
-            scale: 4,
-          ),
-        )
+                onTap: () {
+                  Get.back();
+                },
+                child: Image.asset(
+                  AppImages.back,
+                  scale: 4,
+                ),
+              )
             : null,
         centerTitle: true,
       ),
@@ -69,24 +70,27 @@ class ProfileView extends GetView<ProfileController> {
                           borderRadius: BorderRadius.circular(50),
                           child: imagePath.startsWith("http")
                               ? CachedNetworkImage(
-                            imageUrl: imagePath,
-                            height: Get.height.h,
-                            width: Get.width.w,
-                            fit: BoxFit.cover,
-                            placeholder: (context, url) => const Center(
-                              child: CircularProgressIndicator(color: AppColors.bottomBarText,),
-                            ),
-                            errorWidget: (context, url, error) => const Icon(
-                              Icons.error,
-                              color: Colors.red,
-                            ),
-                          )
+                                  imageUrl: imagePath,
+                                  height: Get.height.h,
+                                  width: Get.width.w,
+                                  fit: BoxFit.cover,
+                                  placeholder: (context, url) => const Center(
+                                    child: CircularProgressIndicator(
+                                      color: AppColors.bottomBarText,
+                                    ),
+                                  ),
+                                  errorWidget: (context, url, error) =>
+                                      const Icon(
+                                    Icons.error,
+                                    color: Colors.red,
+                                  ),
+                                )
                               : Image.file(
-                            File(imagePath),
-                            height: Get.height.h,
-                            width: Get.width.w,
-                            fit: BoxFit.cover,
-                          ),
+                                  File(imagePath),
+                                  height: Get.height.h,
+                                  width: Get.width.w,
+                                  fit: BoxFit.cover,
+                                ),
                         ),
                       );
                     }),
@@ -100,9 +104,7 @@ class ProfileView extends GetView<ProfileController> {
                     Text(
                       'alex.Richards@**90.com',
                       style: h5.copyWith(
-                          fontWeight: FontWeight.w500,
-                          color: AppColors.grey
-                      ),
+                          fontWeight: FontWeight.w500, color: AppColors.grey),
                     ),
                   ],
                 ),
@@ -137,7 +139,9 @@ class ProfileView extends GetView<ProfileController> {
                   ),
                   CustomListTile(
                     onTap: () {
-                      Get.to(() => FavouriteView(isPro: false,));
+                      Get.to(() => FavouriteView(
+                            isPro: false,
+                          ));
                     },
                     leadingImage: AppImages.favoriteFilled,
                     title: 'Favourite',
@@ -154,7 +158,6 @@ class ProfileView extends GetView<ProfileController> {
                 'View your privacy',
                 style: h5.copyWith(color: AppColors.grey),
               ),
-              //sh12,
               Column(
                 children: [
                   CustomListTile(
@@ -175,7 +178,7 @@ class ProfileView extends GetView<ProfileController> {
                   ),
                   CustomListTile(
                     onTap: () {
-                     Get.to(() => PrivacyAndPolicyView());
+                      Get.to(() => PrivacyAndPolicyView());
                     },
                     leadingImage: AppImages.privacy,
                     title: 'Privacy and Policies',
@@ -211,42 +214,35 @@ class ProfileView extends GetView<ProfileController> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              // Top Icon/Image
               Image.asset(
-                AppImages.logoutBig, // <- make sure you have this image
+                AppImages.logoutBig,
                 height: 60,
                 width: 60,
               ),
               sh16,
-
-              // Title & Description
               Text(
                 "Are you sure you want to log out of your account?",
                 textAlign: TextAlign.center,
                 style: h3.copyWith(fontWeight: FontWeight.w500),
               ),
               sh20,
-
-              // Confirm Logout Button
               CustomButton(
                 text: "Confirm Log Out",
                 borderRadius: 12,
                 backgroundColor: AppColors.red,
                 textColor: AppColors.white,
                 onPressed: () {
-                  Get.offAll(() => LoginView()); // clear navigation stack
+                  Get.offAll(() => LoginView());
                 },
               ),
               sh12,
-
-              // Cancel Button
               CustomButton(
                 text: "Cancel",
                 borderRadius: 12,
                 backgroundColor: AppColors.silver,
                 textColor: AppColors.black,
                 onPressed: () {
-                  Get.back(); // close dialog
+                  Get.back();
                 },
               ),
             ],
@@ -255,5 +251,4 @@ class ProfileView extends GetView<ProfileController> {
       ),
     );
   }
-
 }

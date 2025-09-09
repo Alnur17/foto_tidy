@@ -8,6 +8,8 @@ import '../modules/auth/onboarding/bindings/onboarding_binding.dart';
 import '../modules/auth/onboarding/views/onboarding_view.dart';
 import '../modules/auth/sign_up/bindings/sign_up_binding.dart';
 import '../modules/auth/sign_up/views/sign_up_view.dart';
+import '../modules/auth/splash/bindings/splash_binding.dart';
+import '../modules/auth/splash/views/splash_view.dart';
 import '../modules/dashboard/bindings/dashboard_binding.dart';
 import '../modules/dashboard/views/dashboard_view.dart';
 import '../modules/gallery/bindings/gallery_binding.dart';
@@ -24,7 +26,7 @@ part 'app_routes.dart';
 class AppPages {
   AppPages._();
 
-  static const INITIAL = Routes.ONBOARDING;
+  static const INITIAL = Routes.SPLASH;
 
   static final routes = [
     GetPage(
@@ -71,6 +73,11 @@ class AppPages {
       name: _Paths.DASHBOARD,
       page: () => const DashboardView(),
       binding: DashboardBinding(),
+    ),
+    GetPage(
+      name: _Paths.SPLASH,
+      page: () => const SplashView(),
+      binding: SplashBinding(),
     ),
   ];
 }

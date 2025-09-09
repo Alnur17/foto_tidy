@@ -1,6 +1,10 @@
 class AppImages {
   //================ Icons ==================>
+  static const logoMain = "assets/icons/main logo.png";
   static const logo = "assets/icons/logo.png";
+  static const add = "assets/icons/add.png";
+  static const editCircle = "assets/icons/edit circle.png";
+  static const deleteCircle = "assets/icons/delete circle.png";
   static const arrowRight = "assets/icons/arrow right.png";
   static const arrowRightBig = "assets/icons/arrow right big.png";
   static const arrowRightNormal = "assets/icons/Arrow right light.png";
