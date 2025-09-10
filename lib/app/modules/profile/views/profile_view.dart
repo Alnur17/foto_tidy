@@ -14,8 +14,7 @@ import '../../../../../common/app_images/app_images.dart';
 import '../../../../../common/app_text_style/styles.dart';
 import '../../../../../common/size_box/custom_sizebox.dart';
 import '../../../../../common/widgets/custom_list_tile.dart';
-import '../../../../common/widgets/custom_button.dart';
-import '../../auth/login/views/login_view.dart';
+import '../../../../common/widgets/popup_helper.dart';
 import '../controllers/profile_controller.dart';
 import 'change_password_view.dart';
 import 'edit_profile_view.dart';
@@ -133,7 +132,7 @@ class ProfileView extends GetView<ProfileController> {
                     onTap: () {
                       Get.to(() => SubscriptionView());
                     },
-                    leadingImage: AppImages.languageTwo,
+                    leadingImage: AppImages.subscription,
                     title: 'Subscription',
                     trailingImage: AppImages.arrowRight,
                   ),
@@ -145,6 +144,23 @@ class ProfileView extends GetView<ProfileController> {
                     },
                     leadingImage: AppImages.favoriteFilled,
                     title: 'Favourite',
+                    trailingImage: AppImages.arrowRight,
+                  ),
+                  CustomListTile(
+                    onTap: () {
+                      PopupHelper.showCustomPopup(
+                          title: 'Keep Your Gallery Private ',
+                          description:
+                              'Gallery lock is a pro feature. Protect your private memories with a PIN.',
+                          iconPath: AppImages.crownCircle,
+                          onPrimaryPressed: () {
+                            Get.to(() => SubscriptionView());
+                          },
+                          primaryButtonText: 'Upgrade to Pro',
+                          secondaryButtonText: 'Maybe Later');
+                    },
+                    leadingImage: AppImages.lock,
+                    title: 'Gallery Lock',
                     trailingImage: AppImages.arrowRight,
                   ),
                 ],
@@ -189,62 +205,13 @@ class ProfileView extends GetView<ProfileController> {
               sh16,
               CustomListTile(
                 onTap: () {
-                  _showLogoutDialog(context);
+                  PopupHelper.showLogoutDialog(context);
                 },
                 leadingImage: AppImages.logout,
                 title: 'Log Out',
                 trailingImage: AppImages.arrowRight,
               ),
               sh116,
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  void _showLogoutDialog(BuildContext context) {
-    Get.dialog(
-      Dialog(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
-        ),
-        child: Padding(
-          padding: EdgeInsets.all(20.w),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Image.asset(
-                AppImages.logoutBig,
-                height: 60,
-                width: 60,
-              ),
-              sh16,
-              Text(
-                "Are you sure you want to log out of your account?",
-                textAlign: TextAlign.center,
-                style: h3.copyWith(fontWeight: FontWeight.w500),
-              ),
-              sh20,
-              CustomButton(
-                text: "Confirm Log Out",
-                borderRadius: 12,
-                backgroundColor: AppColors.red,
-                textColor: AppColors.white,
-                onPressed: () {
-                  Get.offAll(() => LoginView());
-                },
-              ),
-              sh12,
-              CustomButton(
-                text: "Cancel",
-                borderRadius: 12,
-                backgroundColor: AppColors.silver,
-                textColor: AppColors.black,
-                onPressed: () {
-                  Get.back();
-                },
-              ),
             ],
           ),
         ),

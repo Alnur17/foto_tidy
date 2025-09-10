@@ -3,6 +3,8 @@ class AppImages {
   static const logoMain = "assets/icons/main logo.png";
   static const logo = "assets/icons/logo.png";
   static const add = "assets/icons/add.png";
+  static const lock = "assets/icons/lock pro.png";
+  static const subscription = "assets/icons/subscription.png";
   static const editCircle = "assets/icons/edit circle.png";
   static const deleteCircle = "assets/icons/delete circle.png";
   static const arrowRight = "assets/icons/arrow right.png";
@@ -33,6 +35,7 @@ class AppImages {
   static const language = "assets/icons/language.png";
   static const languageTwo = "assets/icons/language 2.png";
   static const changePass = "assets/icons/change password.png";
+  static const changePassPro = "assets/icons/change password pro.png";
   static const changePassBig = "assets/icons/change password big.png";
   static const logoutBig = "assets/icons/log out big.png";
   static const notification = "assets/icons/Notification.png";
@@ -48,7 +51,9 @@ class AppImages {
   static const email = "assets/icons/email.png";
   static const back = "assets/icons/back.png";
   static const giftBox = "assets/icons/gift box.png";
+  static const filter = "assets/icons/filter.png";
   static const crown = "assets/icons/crown.png";
+  static const crownCircle = "assets/icons/crown circle.png";
 
 
   //================ Images ==================>

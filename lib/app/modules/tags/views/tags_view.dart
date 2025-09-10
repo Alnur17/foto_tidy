@@ -62,10 +62,12 @@ class _TagsViewState extends State<TagsView> {
                 trailing: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Image.asset(AppImages.editCircle, scale: 4),
+                    GestureDetector(
+                        onTap: () => _showEditTagDialog(context, tag, index),
+                        child: Image.asset(AppImages.editCircle, scale: 4)),
                     sw16,
                     GestureDetector(
-                      onTap: () => _showDeleteTagDialog(context,tag),
+                      onTap: () => _showDeleteTagDialog(context, tag),
                       child: Image.asset(AppImages.deleteCircle, scale: 4),
                     ),
                   ],
@@ -82,18 +84,32 @@ class _TagsViewState extends State<TagsView> {
     final TextEditingController tagController = TextEditingController();
 
     showDialog(
+      barrierDismissible: false,
       context: context,
       builder: (context) {
         return AlertDialog(
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
           ),
-          title: Text('Add Tag', style: appBarStyle),
+          title: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text('Add Tag', style: appBarStyle),
+              CloseButton(
+                onPressed: (){
+                  Get.back();
+                },
+              )
+            ],
+          ),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text('Tag Name',style: h4,),
+              Text(
+                'Tag Name',
+                style: h4,
+              ),
               sh8,
               CustomTextField(
                 controller: tagController,
@@ -106,8 +122,10 @@ class _TagsViewState extends State<TagsView> {
             CustomButton(
               text: "Add",
               onPressed: () {
-                tagsController.addTag(tagController.text);
-                Get.back(); // close dialog
+                final added = tagsController.addTag(tagController.text);
+                if (added) {
+                  Get.back(); // close only if tag added
+                }
               },
               borderRadius: 12,
               gradientColors: AppColors.buttonColor,
@@ -118,7 +136,7 @@ class _TagsViewState extends State<TagsView> {
     );
   }
 
-  void _showDeleteTagDialog(BuildContext context,String tag) {
+  void _showDeleteTagDialog(BuildContext context, String tag) {
     Get.dialog(
       Dialog(
         shape: RoundedRectangleBorder(
@@ -130,12 +148,15 @@ class _TagsViewState extends State<TagsView> {
             mainAxisSize: MainAxisSize.min,
             children: [
               Image.asset(
-                AppImages.logoutBig,
+                AppImages.deleteCircle,
                 height: 60.h,
                 width: 60.w,
               ),
               sh16,
-              Text('Delete Tag?',style: h3,),
+              Text(
+                'Delete Tag?',
+                style: h3,
+              ),
               Text(
                 "Are you sure you want to delete this item? This action cannot be undone.",
                 textAlign: TextAlign.center,
@@ -166,6 +187,47 @@ class _TagsViewState extends State<TagsView> {
           ),
         ),
       ),
+    );
+  }
+
+  void _showEditTagDialog(BuildContext context, String oldTag, int index) {
+    final TextEditingController tagController =
+        TextEditingController(text: oldTag);
+
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+          title: Text('Edit Tag', style: appBarStyle),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text('Tag Name', style: h4),
+              sh8,
+              CustomTextField(
+                controller: tagController,
+                hintText: "Enter Tag Name",
+                borderRadius: 8,
+              ),
+            ],
+          ),
+          actions: [
+            CustomButton(
+              text: "Update",
+              onPressed: () {
+                tagsController.updateTag(index, tagController.text);
+                Get.back(); // close dialog
+              },
+              borderRadius: 12,
+              gradientColors: AppColors.buttonColor,
+            ),
+          ],
+        );
+      },
     );
   }
 
