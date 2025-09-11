@@ -47,6 +47,7 @@ dependencies:
   persistent_bottom_nav_bar: ^6.2.1
   image_picker: ^1.1.2
   smooth_page_indicator: ^1.2.1
+  camerawesome: ^2.5.0
 
 dev_dependencies:
   flutter_test:

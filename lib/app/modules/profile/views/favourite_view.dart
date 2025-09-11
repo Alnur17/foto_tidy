@@ -21,7 +21,7 @@ class FavouriteView extends GetView {
       appBar: AppBar(
         backgroundColor: AppColors.mainColor,
         title: Text(
-          'Favourite',
+          'Favorite',
           style: appBarStyle,
         ),
         leading: GestureDetector(

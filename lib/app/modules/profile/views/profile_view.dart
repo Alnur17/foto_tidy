@@ -34,7 +34,7 @@ class ProfileView extends GetView<ProfileController> {
       appBar: AppBar(
         backgroundColor: AppColors.background,
         scrolledUnderElevation: 0,
-        title: const Text('Profile'),
+        title: Text('Profile',style: appBarStyle,),
         automaticallyImplyLeading: showBackButton,
         leading: showBackButton
             ? GestureDetector(
@@ -139,11 +139,11 @@ class ProfileView extends GetView<ProfileController> {
                   CustomListTile(
                     onTap: () {
                       Get.to(() => FavouriteView(
-                            isPro: false,
+                            isPro: true,
                           ));
                     },
                     leadingImage: AppImages.favoriteFilled,
-                    title: 'Favourite',
+                    title: 'Favorite',
                     trailingImage: AppImages.arrowRight,
                   ),
                   CustomListTile(

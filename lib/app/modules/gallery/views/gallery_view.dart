@@ -214,6 +214,7 @@ class _GalleryViewState extends State<GalleryView> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
+            sh116,
             Image.asset(
               AppImages.changePassPro,
               scale: 4,
@@ -275,7 +276,7 @@ class _GalleryViewState extends State<GalleryView> {
   /// Unlocked gallery grid view
   Widget _buildGalleryGrid() {
     return GridView.builder(
-      padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 8.h),
+      padding: EdgeInsets.only(left: 20.w, right: 20.w, bottom: 116.h),
       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 2,
         crossAxisSpacing: 10.w,
@@ -284,7 +285,11 @@ class _GalleryViewState extends State<GalleryView> {
       ),
       itemCount: galleryController.galleryImages.length,
       itemBuilder: (context, index) {
-        return GalleryItem(imageUrl: galleryController.galleryImages[index]);
+        return GalleryItem(
+          imageUrl: galleryController.galleryImages[index],
+          isFavorite: false,
+          onFavoriteToggle: () {},
+        );
       },
     );
   }

@@ -52,6 +52,7 @@ class AppImages {
   static const back = "assets/icons/back.png";
   static const giftBox = "assets/icons/gift box.png";
   static const filter = "assets/icons/filter.png";
+  static const rightChecked = "assets/icons/right checked.png";
   static const crown = "assets/icons/crown.png";
   static const crownCircle = "assets/icons/crown circle.png";
 

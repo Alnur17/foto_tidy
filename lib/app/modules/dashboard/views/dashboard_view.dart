@@ -61,6 +61,7 @@ class DashboardView extends GetView<DashboardController> {
     PersistentTabController(initialIndex: 0);
 
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       body: PersistentTabView(
         padding: EdgeInsets.only(bottom: 8),
         margin: EdgeInsets.all(20),
