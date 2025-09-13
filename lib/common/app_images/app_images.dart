@@ -63,6 +63,7 @@ class AppImages {
   static const onboardingImageTwo = "assets/images/onboarding 2.png";
   static const onboardingBackImage = "assets/images/onboarding back.png";
   static const verifySuccess = "assets/images/verify success.png";
+  static const success = "assets/images/success.png";
   static const offerImage = "assets/images/nike.png";
 
 
