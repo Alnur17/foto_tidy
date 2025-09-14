@@ -233,9 +233,10 @@ import 'dart:io';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:foto_tidy/app/modules/dashboard/views/dashboard_view.dart';
 import 'package:foto_tidy/app/modules/gallery/views/gallery_view.dart';
 import 'package:foto_tidy/app/modules/home/controllers/home_controller.dart';
+import 'package:foto_tidy/app/modules/profile/controllers/profile_controller.dart';
+import 'package:foto_tidy/app/modules/profile/views/profile_view.dart';
 import 'package:foto_tidy/common/app_color/app_colors.dart';
 import 'package:foto_tidy/common/app_images/app_images.dart';
 import 'package:foto_tidy/common/widgets/custom_button.dart';
@@ -245,6 +246,7 @@ import '../../../../common/app_text_style/styles.dart';
 import '../../../../common/helper/custom_filter_chip.dart';
 import '../../../../common/helper/gallery_item.dart';
 import '../../../../common/size_box/custom_sizebox.dart';
+import '../../../../common/widgets/popup_helper.dart';
 import '../../gallery/controllers/gallery_controller.dart';
 
 class HomeView extends StatefulWidget {
@@ -257,6 +259,7 @@ class HomeView extends StatefulWidget {
 class _HomeViewState extends State<HomeView> {
   final homeController = Get.put(HomeController());
   final galleryController = Get.put(GalleryController());
+  final profileController = Get.put(ProfileController());
 
   @override
   Widget build(BuildContext context) {
@@ -272,12 +275,43 @@ class _HomeViewState extends State<HomeView> {
         ),
         actions: [
           GestureDetector(
-            onTap: () {},
-            child: CircleAvatar(
-              radius: 20,
-              backgroundImage:
-                  CachedNetworkImageProvider(AppImages.profileImage),
-            ),
+            onTap: () {
+              Get.to(() => ProfileView(
+                    showBackButton: true,
+                  ));
+            },
+            child: Obx(() {
+              final imagePath = profileController.profileImageUrl.value;
+              return CircleAvatar(
+                radius: 20,
+                backgroundColor: AppColors.whiteDark,
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(20),
+                  child: imagePath.startsWith("http")
+                      ? CachedNetworkImage(
+                          imageUrl: imagePath,
+                          height: Get.height.h,
+                          width: Get.width.w,
+                          fit: BoxFit.cover,
+                          placeholder: (context, url) => const Center(
+                            child: CircularProgressIndicator(
+                              color: AppColors.orange,
+                            ),
+                          ),
+                          errorWidget: (context, url, error) => const Icon(
+                            Icons.error,
+                            color: Colors.red,
+                          ),
+                        )
+                      : Image.file(
+                          File(imagePath),
+                          height: Get.height.h,
+                          width: Get.width.w,
+                          fit: BoxFit.cover,
+                        ),
+                ),
+              );
+            }),
           ),
           sw20,
         ],
@@ -307,15 +341,30 @@ class _HomeViewState extends State<HomeView> {
                   gradientColors: AppColors.buttonColor,
                   borderRadius: 12,
                   height: 40,
+                  centerImageWithText: true,
+                  imageAssetPath: AppImages.camera,
                 ),
                 sh8,
                 CustomButton(
                   text: 'Browse Photos',
-                  onPressed: () {},
+                  onPressed: () {
+                    PopupHelper.showCustomPopupForImageUpload(
+                      title: 'Upload your image',
+                      description: 'Drag and drop or browse to choose a file',
+                      iconPath: AppImages.uploadImage,
+                      onPrimaryPressed: () {
+                        homeController.pickImage();
+                      },
+                      primaryButtonText: 'Choose File',
+                      footerText: 'PNG, JPG up to 10MB',
+                    );
+                  },
                   borderColor: AppColors.borderColor,
                   borderRadius: 12,
                   textColor: AppColors.black,
                   height: 40,
+                  centerImageWithText: true,
+                  imageAssetPath: AppImages.browsePhotos,
                 ),
               ],
             ),
@@ -461,184 +510,6 @@ class _HomeViewState extends State<HomeView> {
           onFavoriteToggle: () {},
         );
       },
-    );
-  }
-}
-
-class CameraReviewScreen extends StatelessWidget {
-  final String imagePath;
-
-  const CameraReviewScreen({super.key, required this.imagePath});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppColors.mainColor,
-      appBar: AppBar(
-        title: Text(
-          'Upload Image',
-          style: appBarStyle,
-        ),
-        backgroundColor: AppColors.white,
-        centerTitle: true,
-      ),
-      body: Column(
-        mainAxisAlignment: MainAxisAlignment.start,
-        children: [
-          Image.file(
-            File(imagePath),
-            fit: BoxFit.contain,
-            height: Get.height * 0.8.h,
-            width: Get.width,
-            errorBuilder: (context, error, stackTrace) => const Center(
-              child: Text('Failed to load image'),
-            ),
-          ),
-          sh20,
-          Padding(
-            padding: EdgeInsets.symmetric(horizontal: 20.w),
-            child: CustomButton(
-              text: 'Next',
-              onPressed: () {
-                Get.to(() => TagPhotoScreen(imagePath: imagePath));
-              },
-              gradientColors: AppColors.buttonColor,
-              borderRadius: 12,
-              height: 40,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class TagPhotoScreen extends StatefulWidget {
-  final String imagePath;
-
-  const TagPhotoScreen({super.key, required this.imagePath});
-
-  @override
-  State<TagPhotoScreen> createState() => _TagPhotoScreenState();
-}
-
-class _TagPhotoScreenState extends State<TagPhotoScreen> {
-  final galleryController = Get.find<GalleryController>();
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppColors.mainColor,
-      appBar: AppBar(
-        title: Text('Tag Your Photo', style: appBarStyle),
-        backgroundColor: AppColors.mainColor,
-        centerTitle: true,
-      ),
-      body: Padding(
-        padding: EdgeInsets.symmetric(horizontal: 20.w),
-        child: Column(
-          children: [
-            // Image display
-            Container(
-              height: 300.h,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(16).r,
-                color: AppColors.silver,
-              ),
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(16).r,
-                child: Image.file(
-                  File(widget.imagePath),
-                  fit: BoxFit.cover,
-                  width: Get.width,
-                  errorBuilder: (context, error, stackTrace) => const Center(
-                    child: Text('Failed to load image'),
-                  ),
-                ),
-              ),
-            ),
-            sh20,
-            // Category selection
-            Wrap(
-              spacing: 10.w,
-              runSpacing: 10.h,
-              children: galleryController.categories.map((category) {
-                return Obx(
-                  () => CustomFilterChip(
-                    text: category,
-                    isSelected:
-                        galleryController.selectedCategory.value == category,
-                    onTap: () {
-                      galleryController.selectCategory(
-                          category); // Update category using GetX
-                    },
-                  ),
-                );
-              }).toList(),
-            ),
-            sh20,
-            // Save button
-            CustomButton(
-              text: 'Save All Photos',
-              onPressed: () {
-                if (galleryController.selectedCategory.value != null) {
-                  Get.to(() =>
-                      SaveConfirmationScreen(imagePath: widget.imagePath));
-                } else {
-                  Get.snackbar('No Category', 'Please select a category');
-                }
-              },
-              gradientColors: AppColors.buttonColor,
-              borderRadius: 12,
-              height: 40,
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class SaveConfirmationScreen extends StatelessWidget {
-  final String imagePath;
-
-  const SaveConfirmationScreen({super.key, required this.imagePath});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppColors.mainColor,
-      appBar: AppBar(
-        title: Text('Photo saved',style: appBarStyle,),
-        backgroundColor: AppColors.mainColor,
-        automaticallyImplyLeading: false,
-      ),
-      body: Padding(
-        padding: EdgeInsets.symmetric(horizontal: 20.w),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Image.asset(
-              AppImages.success,
-              scale: 4,
-            ),
-            sh20,
-            Text(
-              'Photo saved successfully!',
-              style: h3,
-            ),
-            sh20,
-            CustomButton(
-              text: 'Back to Homepage',
-              onPressed: () {
-                Get.offAll(() => DashboardView());
-              },
-              borderColor: AppColors.orange,
-              textColor: AppColors.orange,
-            ),
-          ],
-        ),
-      ),
     );
   }
 }

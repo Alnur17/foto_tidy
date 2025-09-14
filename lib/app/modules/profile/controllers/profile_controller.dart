@@ -5,6 +5,9 @@ import 'package:image_picker/image_picker.dart';
 import '../../../../common/app_images/app_images.dart';
 
 class ProfileController extends GetxController {
+  final isProUser = true.obs;
+  final isFirstTimeLock = false.obs;
+
   final ImagePicker _picker = ImagePicker();
 
   // To store selected image

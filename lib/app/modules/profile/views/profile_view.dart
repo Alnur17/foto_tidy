@@ -3,6 +3,8 @@ import 'dart:io';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:foto_tidy/app/modules/gallery/views/gallery_view.dart';
+import 'package:foto_tidy/app/modules/profile/views/gallery_lock_view.dart';
 import 'package:foto_tidy/app/modules/profile/views/privacy_and_policy_view.dart';
 import 'package:foto_tidy/app/modules/profile/views/subscription_view.dart';
 import 'package:foto_tidy/app/modules/profile/views/terms_and_conditions_view.dart';
@@ -15,6 +17,7 @@ import '../../../../../common/app_text_style/styles.dart';
 import '../../../../../common/size_box/custom_sizebox.dart';
 import '../../../../../common/widgets/custom_list_tile.dart';
 import '../../../../common/widgets/popup_helper.dart';
+import '../../auth/login/views/login_view.dart';
 import '../controllers/profile_controller.dart';
 import 'change_password_view.dart';
 import 'edit_profile_view.dart';
@@ -34,7 +37,10 @@ class ProfileView extends GetView<ProfileController> {
       appBar: AppBar(
         backgroundColor: AppColors.background,
         scrolledUnderElevation: 0,
-        title: Text('Profile',style: appBarStyle,),
+        title: Text(
+          'Profile',
+          style: appBarStyle,
+        ),
         automaticallyImplyLeading: showBackButton,
         leading: showBackButton
             ? GestureDetector(
@@ -75,7 +81,7 @@ class ProfileView extends GetView<ProfileController> {
                                   fit: BoxFit.cover,
                                   placeholder: (context, url) => const Center(
                                     child: CircularProgressIndicator(
-                                      color: AppColors.bottomBarText,
+                                      color: AppColors.orange,
                                     ),
                                   ),
                                   errorWidget: (context, url, error) =>
@@ -148,18 +154,20 @@ class ProfileView extends GetView<ProfileController> {
                   ),
                   CustomListTile(
                     onTap: () {
+                      profileController.isProUser.value == true ?
+                      Get.to(() => GalleryLockView()) :
                       PopupHelper.showCustomPopup(
                           title: 'Keep Your Gallery Private ',
                           description:
-                              'Gallery lock is a pro feature. Protect your private memories with a PIN.',
-                          iconPath: AppImages.crownCircle,
+                          'Gallery lock is a pro feature. Protect your private memories with a PIN.',
+                          iconPath: AppImages.changePassPro,
                           onPrimaryPressed: () {
                             Get.to(() => SubscriptionView());
                           },
                           primaryButtonText: 'Upgrade to Pro',
                           secondaryButtonText: 'Maybe Later');
                     },
-                    leadingImage: AppImages.lock,
+                    leadingImage: AppImages.lockPro,
                     title: 'Gallery Lock',
                     trailingImage: AppImages.arrowRight,
                   ),
@@ -205,7 +213,15 @@ class ProfileView extends GetView<ProfileController> {
               sh16,
               CustomListTile(
                 onTap: () {
-                  PopupHelper.showLogoutDialog(context);
+                  PopupHelper.showConfirmationDialog(
+                    title: "Logout",
+                    description: "Are you sure you want to log out of your account?",
+                    confirmText: "Confirm Log Out",
+                    icon: AppImages.logoutBig,
+                    onConfirm: () {
+                      Get.offAll(() => LoginView());
+                    },
+                  );
                 },
                 leadingImage: AppImages.logout,
                 title: 'Log Out',
