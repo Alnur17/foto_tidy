@@ -61,6 +61,7 @@ class AppImages {
   static const uploadImage = "assets/icons/upload image.png";
   static const cameraCircle = "assets/icons/camera circle.png";
   static const camera = "assets/icons/camera.png";
+  static const toggle = "assets/icons/tooogle.png";
 
 
   //================ Images ==================>

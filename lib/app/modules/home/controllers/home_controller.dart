@@ -6,24 +6,30 @@ import '../views/upload_image_view.dart';
 
 class HomeController extends GetxController {
   final ImagePicker _picker = ImagePicker();
+  RxList<XFile> selectedImages = <XFile>[].obs; // RxList for selected images
+  RxBool isLimitReached = false.obs; // Flag to check if the image limit is reached
 
-  RxList<String> galleryImages = RxList<String>();
+  // Function to pick multiple images from gallery
+  Future<void> pickImages() async {
+    final List<XFile>? pickedFiles = await _picker.pickMultiImage();
 
-  // Pick an image using image_picker or file_picker
-  Future<String?> pickImage() async {
-    final picker = ImagePicker();
-    final pickedFile = await picker.pickImage(source: ImageSource.gallery);
-    if (pickedFile != null) {
-      return pickedFile.path;
+    if (pickedFiles != null) {
+      selectedImages.addAll(pickedFiles); // Add selected images to the list
+
+      // Check if the number of images exceeds the limit of 5
+      if (selectedImages.length >= 5) {
+        isLimitReached.value = true;
+      }
     }
-    return null;
   }
 
-  // // Add image to gallery
-  // void addImageToGallery(String imagePath) {
-  //   galleryImages.add(imagePath);
-  //   update(); // Refresh the UI
-  // }
+  // Function to remove an image from the list
+  void removeImage(XFile image) {
+    selectedImages.remove(image);
+    if (selectedImages.length < 5) {
+      isLimitReached.value = false; // Reset the limit flag if under 5 images
+    }
+  }
 
   // Function to initiate photo capture
   Future<void> takePhoto() async {
@@ -45,4 +51,5 @@ class HomeController extends GetxController {
       Get.snackbar('Error', 'Failed to take photo: $e');
     }
   }
+
 }

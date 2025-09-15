@@ -31,7 +31,7 @@ class SetNewPasswordView extends GetView {
                     child: Image.asset(
                       AppImages.back,
                       scale: 4,
-                    )),
+                    ),),
                 sh12,
                 Text(
                   'Set new password',

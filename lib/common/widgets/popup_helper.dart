@@ -1,12 +1,9 @@
-import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 
-import '../../app/modules/auth/login/views/login_view.dart';
 import '../app_color/app_colors.dart';
-import '../app_images/app_images.dart';
 import '../app_text_style/styles.dart';
 import '../size_box/custom_sizebox.dart';
 import 'custom_button.dart';
@@ -78,6 +75,7 @@ class PopupHelper {
     );
   }
 
+
   static void showCustomPopupForImageUpload({
     required String title,
     required String description,
@@ -87,7 +85,6 @@ class PopupHelper {
     String? secondaryButtonText,
     VoidCallback? onSecondaryPressed,
     String? footerText,
-    String? selectedImagePath,
   }) {
     Get.dialog(
       Dialog(
@@ -116,15 +113,6 @@ class PopupHelper {
                   color: AppColors.greyMedium,
                 ),
               ),
-              sh12,
-              // Show the selected image preview if available
-              if (selectedImagePath != null)
-                Image.file(
-                  File(selectedImagePath),
-                  width: 100.w,
-                  height: 100.h,
-                  fit: BoxFit.cover,
-                ),
               sh20,
               CustomButton(
                 text: primaryButtonText,
@@ -164,6 +152,7 @@ class PopupHelper {
       ),
     );
   }
+
 
   // static void showLogoutDialog(BuildContext context) {
   //   Get.dialog(

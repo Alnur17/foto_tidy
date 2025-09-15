@@ -235,6 +235,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:foto_tidy/app/modules/gallery/views/gallery_view.dart';
 import 'package:foto_tidy/app/modules/home/controllers/home_controller.dart';
+import 'package:foto_tidy/app/modules/home/views/browse_photos_view.dart';
 import 'package:foto_tidy/app/modules/profile/controllers/profile_controller.dart';
 import 'package:foto_tidy/app/modules/profile/views/profile_view.dart';
 import 'package:foto_tidy/common/app_color/app_colors.dart';
@@ -246,7 +247,6 @@ import '../../../../common/app_text_style/styles.dart';
 import '../../../../common/helper/custom_filter_chip.dart';
 import '../../../../common/helper/gallery_item.dart';
 import '../../../../common/size_box/custom_sizebox.dart';
-import '../../../../common/widgets/popup_helper.dart';
 import '../../gallery/controllers/gallery_controller.dart';
 
 class HomeView extends StatefulWidget {
@@ -348,16 +348,17 @@ class _HomeViewState extends State<HomeView> {
                 CustomButton(
                   text: 'Browse Photos',
                   onPressed: () {
-                    PopupHelper.showCustomPopupForImageUpload(
-                      title: 'Upload your image',
-                      description: 'Drag and drop or browse to choose a file',
-                      iconPath: AppImages.uploadImage,
-                      onPrimaryPressed: () {
-                        homeController.pickImage();
-                      },
-                      primaryButtonText: 'Choose File',
-                      footerText: 'PNG, JPG up to 10MB',
-                    );
+                    Get.to(()=> BrowsePhotosView());
+                    // PopupHelper.showCustomPopupForImageUpload(
+                    //   title: 'Upload your image',
+                    //   description: 'Drag and drop or browse to choose a file',
+                    //   iconPath: AppImages.uploadImage,
+                    //   onPrimaryPressed: () {
+                    //     homeController.pickImage();
+                    //   },
+                    //   primaryButtonText: 'Choose File',
+                    //   footerText: 'PNG, JPG up to 10MB',
+                    // );
                   },
                   borderColor: AppColors.borderColor,
                   borderRadius: 12,

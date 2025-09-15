@@ -11,9 +11,10 @@ import '../../../../common/widgets/custom_button.dart';
 import '../../dashboard/views/dashboard_view.dart';
 
 class PhotoSavedSuccessfullyView extends StatelessWidget {
-  final String imagePath;
+  //final String imagePath;
 
-  const PhotoSavedSuccessfullyView({super.key, required this.imagePath});
+  //const PhotoSavedSuccessfullyView({super.key, required this.imagePath});
+  const PhotoSavedSuccessfullyView({super.key});
 
   @override
   Widget build(BuildContext context) {
