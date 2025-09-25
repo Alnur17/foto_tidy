@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:foto_tidy/common/widgets/custom_background_image.dart';
+import 'package:foto_tidy/common/widgets/custom_background_color.dart';
 
 import 'package:get/get.dart';
 
@@ -21,7 +21,7 @@ class _SplashViewState extends State<SplashView> {
       Get.to(
             () => OnboardingView(),
         transition: Transition.rightToLeft,
-        duration: Duration(milliseconds: 1500),
+        duration: Duration(milliseconds: 1000),
       );
     });
   }
@@ -29,7 +29,7 @@ class _SplashViewState extends State<SplashView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: CustomBackgroundImage(
+      body: CustomBackgroundColor(
         child: Image.asset(
           AppImages.logoMain,
           scale: 4,

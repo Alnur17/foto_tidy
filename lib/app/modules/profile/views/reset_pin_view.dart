@@ -1,18 +1,18 @@
 import 'package:flutter/material.dart';
-import 'package:foto_tidy/app/modules/auth/forgot_password/views/reset_success_view.dart';
+import 'package:foto_tidy/app/modules/profile/views/success_view.dart';
 
 import 'package:get/get.dart';
-import '../../../../../common/app_color/app_colors.dart';
-import '../../../../../common/app_images/app_images.dart';
-import '../../../../../common/app_text_style/styles.dart';
-import '../../../../../common/size_box/custom_sizebox.dart';
-import '../../../../../common/widgets/custom_background_color.dart';
-import '../../../../../common/widgets/custom_button.dart';
-import '../../../../../common/widgets/custom_textfield.dart';
 
-class SetNewPasswordView extends GetView {
-  const SetNewPasswordView({super.key});
+import '../../../../common/app_color/app_colors.dart';
+import '../../../../common/app_images/app_images.dart';
+import '../../../../common/app_text_style/styles.dart';
+import '../../../../common/size_box/custom_sizebox.dart';
+import '../../../../common/widgets/custom_background_color.dart';
+import '../../../../common/widgets/custom_button.dart';
+import '../../../../common/widgets/custom_textfield.dart';
 
+class ResetPinView extends GetView {
+  const ResetPinView({super.key});
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -31,20 +31,22 @@ class SetNewPasswordView extends GetView {
                     child: Image.asset(
                       AppImages.back,
                       scale: 4,
-                    ),),
+                    )),
                 sh12,
-                Text(
-                  'Set new password',
-                  style: h2.copyWith(fontWeight: FontWeight.w700),
-                ),
-                sh12,
-                Text(
-                  'Enter your new password and make sure you remember it',
-                  style: h5.copyWith(color: AppColors.grey),
-                ),
+                // Text(
+                //   'Enter Previous PIN',
+                //   style: h2.copyWith(fontWeight: FontWeight.w700),
+                // ),
+                // sh12,
+                // Text(
+                //   'Enter your new password and make sure you remember it',
+                //   style: h5.copyWith(color: AppColors.grey),
+                // ),
+                // sh16,
+                Center(child: Image.asset(AppImages.changePassPro,scale: 4,)),
                 sh16,
                 Text(
-                  'New password',
+                  'Old Pin',
                   style: h4,
                 ),
                 sh12,
@@ -57,7 +59,7 @@ class SetNewPasswordView extends GetView {
                 ),
                 sh16,
                 Text(
-                  'Re-type New Password',
+                  'New Pin',
                   style: h4,
                 ),
                 sh12,
@@ -72,7 +74,7 @@ class SetNewPasswordView extends GetView {
                 CustomButton(
                   text: 'Save changes',
                   onPressed: () {
-                    Get.offAll(() => ResetSuccessView());
+                    Get.offAll(() => SuccessView());
                   },
                   imageAssetPath: AppImages.arrowRightNormal,
                   gradientColors: AppColors.buttonColor,

@@ -9,9 +9,8 @@ import '../../../../common/app_color/app_colors.dart';
 import '../../../../common/size_box/custom_sizebox.dart';
 
 class FavouriteView extends GetView {
-  final bool isPro; // Add this variable to check if the user is Pro
+  final bool isPro;
 
-  // Constructor with isPro as a parameter
   const FavouriteView({super.key, required this.isPro});
 
   @override
