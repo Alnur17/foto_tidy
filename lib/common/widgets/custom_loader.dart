@@ -39,7 +39,7 @@ class CustomLoader extends StatelessWidget {
       width: double.infinity,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(40),
-        gradient: LinearGradient(colors: AppColors.gradientColorGreen),
+        gradient: LinearGradient(colors: AppColors.buttonColor),
       ),
       child: Center(
         child: CircularProgressIndicator(

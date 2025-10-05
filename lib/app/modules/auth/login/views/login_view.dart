@@ -10,6 +10,7 @@ import '../../../../../common/app_text_style/styles.dart';
 import '../../../../../common/size_box/custom_sizebox.dart';
 import '../../../../../common/widgets/custom_background_color.dart';
 import '../../../../../common/widgets/custom_button.dart';
+import '../../../../../common/widgets/custom_loader.dart';
 import '../../../../../common/widgets/custom_textfield.dart';
 import '../../../dashboard/views/dashboard_view.dart';
 import '../../forgot_password/views/forgot_password_view.dart';
@@ -48,7 +49,10 @@ class _LoginViewState extends State<LoginView> {
                 //       scale: 4,
                 //     )),
                 // sh12,
-                Image.asset(AppImages.logo,scale: 4,),
+                Image.asset(
+                  AppImages.logo,
+                  scale: 4,
+                ),
                 sh16,
                 Text(
                   'Login to your Account',
@@ -75,14 +79,24 @@ class _LoginViewState extends State<LoginView> {
                     const SizedBox(height: 12),
                     Text('Password', style: h4),
                     sh8,
-                    CustomTextField(
-                      sufIcon: Image.asset(
-                        AppImages.eyeClose,
-                        scale: 4,
+                    Obx(
+                      () => CustomTextField(
+                        sufIcon: GestureDetector(
+                          onTap: () {
+                            loginController.togglePasswordVisibility();
+                          },
+                          child: Image.asset(
+                            loginController.isPasswordVisible.value
+                                ? AppImages.eyeOpen
+                                : AppImages.eyeClose,
+                            scale: 4,
+                          ),
+                        ),
+                        obscureText: !loginController.isPasswordVisible.value,
+                        hintText: '**********',
+                        containerColor: AppColors.white,
+                        controller: passwordTEController,
                       ),
-                      hintText: '**********',
-                      containerColor: AppColors.white,
-                      controller: passwordTEController,
                     ),
                   ],
                 ),
@@ -109,24 +123,23 @@ class _LoginViewState extends State<LoginView> {
                   ),
                 ),
                 sh24,
-                // Obx(
-                //       () {
-                //     return loginController.isLoading.value == true
-                //         ? CustomLoader(color: AppColors.white)
-                //         :
-                CustomButton(
-                  text: 'Login',
-                  onPressed: () {
-                    Get.to(()=> DashboardView());
-                    // loginController.userLogin(
-                    //   email: emailTEController.text,
-                    //   password: passwordTEController.text,
-                    // );
+                Obx(
+                  () {
+                    return loginController.isLoading.value == true
+                        ? CustomLoader(color: AppColors.white)
+                        : CustomButton(
+                            text: 'Login',
+                            onPressed: () {
+                              Get.to(() => DashboardView());
+                              loginController.userLogin(
+                                email: emailTEController.text,
+                                password: passwordTEController.text,
+                              );
+                            },
+                            imageAssetPath: AppImages.arrowRightNormal,
+                            gradientColors: AppColors.buttonColor,
+                          );
                   },
-                  imageAssetPath: AppImages.arrowRightNormal,
-                  gradientColors: AppColors.buttonColor,
-                  //   );
-                  // },
                 ),
               ],
             ),
