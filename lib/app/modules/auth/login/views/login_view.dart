@@ -12,7 +12,6 @@ import '../../../../../common/widgets/custom_background_color.dart';
 import '../../../../../common/widgets/custom_button.dart';
 import '../../../../../common/widgets/custom_loader.dart';
 import '../../../../../common/widgets/custom_textfield.dart';
-import '../../../dashboard/views/dashboard_view.dart';
 import '../../forgot_password/views/forgot_password_view.dart';
 import '../controllers/login_controller.dart';
 
@@ -130,7 +129,6 @@ class _LoginViewState extends State<LoginView> {
                         : CustomButton(
                             text: 'Login',
                             onPressed: () {
-                              Get.to(() => DashboardView());
                               loginController.userLogin(
                                 email: emailTEController.text,
                                 password: passwordTEController.text,

@@ -27,7 +27,9 @@ class ForgotPasswordController extends GetxController {
   final TextEditingController otpTEController = TextEditingController();
   final TextEditingController newPasswordTEController = TextEditingController();
   final TextEditingController confirmNewPasswordTEController =
-      TextEditingController();
+  TextEditingController();
+
+  Timer? timer;
 
   void togglePasswordVisibility() {
     isPasswordVisible.toggle();
@@ -43,9 +45,15 @@ class ForgotPasswordController extends GetxController {
     startCountdown();
   }
 
+  @override
+  void onClose() {
+    super.onClose();
+    timer?.cancel(); // Cancel the timer when the controller is disposed
+  }
+
   // Countdown timer logic
   void startCountdown() {
-    Timer.periodic(Duration(seconds: 1), (timer) {
+    timer = Timer.periodic(Duration(seconds: 1), (timer) {
       if (countdown.value > 0) {
         countdown.value--;
       } else {
@@ -56,8 +64,7 @@ class ForgotPasswordController extends GetxController {
 
   Future forgotPassword({
     required String email,
-  })
-  async {
+  }) async {
     try {
       isLoading(true);
       var map = <String, dynamic>{};
@@ -77,16 +84,15 @@ class ForgotPasswordController extends GetxController {
       if (responseBody != null) {
         String message = responseBody['message'].toString();
         kSnackBar(message: message, bgColor: AppColors.green);
-        String verifyToken = responseBody['data']['verifyToken'].toString();
 
+        String verifyToken = responseBody['data']['verifyToken'].toString();
         LocalStorage.saveData(key: AppConstant.verifyToken, data: verifyToken);
 
         if (Get.currentRoute != '/VerifyOtpView') {
           Get.to(() => VerifyOtpView(isSignupVerify: false, email: email));
         }
-        isLoading(false);
       } else {
-        throw 'forgot in Failed!';
+        throw 'Forgot Password Failed!';
       }
     } catch (e) {
       debugPrint("Catch Error:::::: $e");
@@ -96,15 +102,16 @@ class ForgotPasswordController extends GetxController {
     }
   }
 
-  /// Otp verification
+  /// OTP verification
   Future verifyOtp({required bool isSignupVerify}) async {
-    print('check');
     try {
       isLoading(true);
 
-      // Retrieve OTP token
+      // Retrieve OTP token and verify token
       String otpToken = LocalStorage.getData(key: AppConstant.otpToken);
-      debugPrint("Verify Token: $otpToken");
+      String verifyToken = LocalStorage.getData(key: AppConstant.verifyToken);
+      debugPrint("Otp Token: $otpToken");
+      debugPrint("Verify Token: $verifyToken");
 
       // Ensure OTP is not empty
       if (otpTEController.text.isEmpty) {
@@ -119,7 +126,7 @@ class ForgotPasswordController extends GetxController {
       print('OTP Map: $map'); // For debugging
 
       final headers = {
-        'Authorization': otpToken,
+        'Authorization': isSignupVerify == true ? otpToken : verifyToken,
         'Content-Type': 'application/json',
       };
 
@@ -145,7 +152,7 @@ class ForgotPasswordController extends GetxController {
       kSnackBar(message: message, bgColor: AppColors.green);
 
       // Ensure 'data' and 'accessToken' are available, and handle null values gracefully
-      if (responseBody['data'] != null && responseBody['data']['accessToken'] != null) {
+      if (responseBody != null) {
         final String accessToken = responseBody['data']['accessToken'].toString();
         if (accessToken.isNotEmpty) {
           LocalStorage.saveData(key: AppConstant.accessToken, data: accessToken);
@@ -171,9 +178,7 @@ class ForgotPasswordController extends GetxController {
     }
   }
 
-
-
-  /// Resend Otp
+  /// Resend OTP
   Future reSendOtp() async {
     try {
       isResendLoading(true);
@@ -192,14 +197,10 @@ class ForgotPasswordController extends GetxController {
         String message = responseBody['message'].toString();
         kSnackBar(message: message, bgColor: AppColors.green);
 
-        // bool success = responseBody['success'];
-        String accessToken = responseBody['data']['token'].toString();
-
-        LocalStorage.saveData(key: AppConstant.accessToken, data: accessToken);
-
-        isResendLoading(false);
+        String otpToken = responseBody['data']['token'].toString();
+        LocalStorage.saveData(key: AppConstant.otpToken, data: otpToken);
       } else {
-        throw 'Fail to resend Otp';
+        throw 'Failed to resend OTP';
       }
     } catch (e) {
       debugPrint("Catch Error:::::: $e");
@@ -208,19 +209,24 @@ class ForgotPasswordController extends GetxController {
     }
   }
 
-  Future resetPass() async {
+  Future resetPass({required String email}) async {
     if (newPasswordTEController.text.trim() !=
         confirmNewPasswordTEController.text.trim()) {
-      kSnackBar(message: 'Password not match', bgColor: AppColors.orange);
+      kSnackBar(message: 'Passwords do not match', bgColor: AppColors.orange);
       return;
     }
     try {
       isLoading(true);
+
+      String accessToken = LocalStorage.getData(key: AppConstant.accessToken);
+
       var map = <String, dynamic>{};
-      map['email'] = emailTEController.text.trim();
-      map['password'] = newPasswordTEController.text.trim();
+      map['email'] = email;
+      map['newPassword'] = newPasswordTEController.text.trim();
+      map['confirmPassword'] = confirmNewPasswordTEController.text.trim();
 
       var headers = {
+        'Authorization': accessToken,
         'Content-Type': 'application/json',
       };
       dynamic responseBody = await BaseClient.handleResponse(
@@ -236,10 +242,8 @@ class ForgotPasswordController extends GetxController {
         kSnackBar(message: message, bgColor: AppColors.green);
 
         Get.offAll(() => ResetSuccessView());
-
-        isLoading(false);
       } else {
-        throw 'Failed to login!';
+        throw 'Failed to reset password';
       }
     } catch (e) {
       debugPrint("Catch Error:::::: $e");

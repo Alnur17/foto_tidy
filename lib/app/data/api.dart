@@ -12,4 +12,8 @@ class Api {
   static const resetPassword = "$baseUrl/auth/reset-password"; //
   static const changePassword = "$baseUrl/auth/change-password"; //
 
+
+  ///profile
+  static const profile = "$baseUrl/users/my-profile"; //
+
 }

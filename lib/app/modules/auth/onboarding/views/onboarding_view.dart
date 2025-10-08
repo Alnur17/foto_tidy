@@ -8,6 +8,8 @@ import 'package:foto_tidy/common/widgets/custom_background_image.dart';
 import 'package:foto_tidy/common/widgets/custom_button.dart';
 import 'package:get/get.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
+import '../../../../../common/app_constant/app_constant.dart';
+import '../../../../../common/helper/local_store.dart';
 import '../../../../../common/widgets/onboarding_page.dart';
 import '../controllers/onboarding_controller.dart';
 
@@ -73,6 +75,7 @@ class _OnboardingViewState extends State<OnboardingView> {
                   CustomButton(
                     text: 'Get Started',
                     onPressed: () {
+                      LocalStorage.saveData(key: AppConstant.onboardingDone, data: "onboardingDone");
                       Get.to(()=> LoginView());
                     },
                     gradientColors: AppColors.buttonColor,
