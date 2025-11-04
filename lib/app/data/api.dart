@@ -1,7 +1,7 @@
 class Api {
   /// base url
   //static const baseUrl = "http://206.162.244.133:5006/api/v1";
-  static const baseUrl = "http://206.162.244.133:5014/api/v1";
+  static const baseUrl = "http://74.118.168.203:5014/api/v1";
 
   ///auth api
   static const register = "$baseUrl/users/register"; //

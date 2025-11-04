@@ -34,7 +34,7 @@ class UploadImageView extends StatelessWidget {
           Image.file(
             File(imagePath),
             fit: BoxFit.contain,
-            height: Get.height * 0.8.h,
+            //height: Get.height * 0.8.h,
             width: Get.width,
             errorBuilder: (context, error, stackTrace) => const Center(
               child: Text('Failed to load image'),

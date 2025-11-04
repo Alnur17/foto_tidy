@@ -108,8 +108,8 @@ class ForgotPasswordController extends GetxController {
       isLoading(true);
 
       // Retrieve OTP token and verify token
-      String otpToken = LocalStorage.getData(key: AppConstant.otpToken);
-      String verifyToken = LocalStorage.getData(key: AppConstant.verifyToken);
+      String otpToken = LocalStorage.getData(key: AppConstant.otpToken).toString();
+      String verifyToken = LocalStorage.getData(key: AppConstant.verifyToken).toString();
       debugPrint("Otp Token: $otpToken");
       debugPrint("Verify Token: $verifyToken");
 
@@ -130,6 +130,7 @@ class ForgotPasswordController extends GetxController {
         'Content-Type': 'application/json',
       };
 
+      print("This is headers $headers");
       // Send the OTP to the server for verification
       dynamic responseBody = await BaseClient.handleResponse(
         await BaseClient.postRequest(
