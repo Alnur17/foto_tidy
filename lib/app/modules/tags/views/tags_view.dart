@@ -6,8 +6,8 @@ import 'package:foto_tidy/common/size_box/custom_sizebox.dart';
 import 'package:foto_tidy/common/widgets/custom_button.dart';
 import 'package:foto_tidy/common/widgets/custom_textfield.dart';
 import 'package:get/get.dart';
-
 import '../../../../common/app_color/app_colors.dart';
+import '../../../../common/widgets/custom_snackbar.dart';
 import '../controllers/tags_controller.dart';
 
 class TagsView extends StatefulWidget {
@@ -21,6 +21,15 @@ class _TagsViewState extends State<TagsView> {
   final TagsController tagsController = Get.put(TagsController());
 
   @override
+  void initState() {
+    super.initState();
+    // Fetch tags from API
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      tagsController.fetchAllTags();
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.background,
@@ -29,10 +38,7 @@ class _TagsViewState extends State<TagsView> {
         title: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text(
-              'Tags',
-              style: appBarStyle,
-            ),
+            Text('Tags', style: appBarStyle),
             CustomButton(
               text: 'Add Tag',
               onPressed: () => _showAddTagDialog(context),
@@ -45,11 +51,21 @@ class _TagsViewState extends State<TagsView> {
         ),
       ),
       body: Obx(() {
+        if (tagsController.isLoading.value) {
+          return const Center(child: CircularProgressIndicator(color: AppColors.orange,));
+        }
+
+        final tags = tagsController.allTagsList;
+
+        if (tags.isEmpty) {
+          return const Center(child: Text("No tags found"));
+        }
+
         return ListView.builder(
           padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 16.h),
-          itemCount: tagsController.tags.length,
+          itemCount: tags.length,
           itemBuilder: (context, index) {
-            final tag = tagsController.tags[index];
+            final tag = tags[index];
             return Container(
               margin: EdgeInsets.only(bottom: 12.h),
               decoration: BoxDecoration(
@@ -58,16 +74,17 @@ class _TagsViewState extends State<TagsView> {
                 color: AppColors.white,
               ),
               child: ListTile(
-                title: Text(tag),
+                title: Text(tag.title ?? ''),
                 trailing: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     GestureDetector(
-                        onTap: () => _showEditTagDialog(context, tag, index),
-                        child: Image.asset(AppImages.editCircle, scale: 4)),
+                      onTap: () => _showEditTagDialog(context, tag.title ?? '', index),
+                      child: Image.asset(AppImages.editCircle, scale: 4),
+                    ),
                     sw16,
                     GestureDetector(
-                      onTap: () => _showDeleteTagDialog(context, tag),
+                      onTap: () => _showDeleteTagDialog(context, tag.title ?? ''),
                       child: Image.asset(AppImages.deleteCircle, scale: 4),
                     ),
                   ],
@@ -80,6 +97,7 @@ class _TagsViewState extends State<TagsView> {
     );
   }
 
+  /// Dialog to add a tag (still local-only for now)
   void _showAddTagDialog(BuildContext context) {
     final TextEditingController tagController = TextEditingController();
 
@@ -95,21 +113,14 @@ class _TagsViewState extends State<TagsView> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text('Add Tag', style: appBarStyle),
-              CloseButton(
-                onPressed: (){
-                  Get.back();
-                },
-              )
+              CloseButton(onPressed: () => Get.back()),
             ],
           ),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                'Tag Name',
-                style: h4,
-              ),
+              Text('Tag Name', style: h4),
               sh8,
               CustomTextField(
                 controller: tagController,
@@ -119,23 +130,44 @@ class _TagsViewState extends State<TagsView> {
             ],
           ),
           actions: [
-            CustomButton(
-              text: "Add",
-              onPressed: () {
-                final added = tagsController.addTag(tagController.text);
-                if (added) {
-                  Get.back(); // close only if tag added
-                }
-              },
-              borderRadius: 12,
-              gradientColors: AppColors.buttonColor,
-            ),
+            Obx(() {
+              return CustomButton(
+                text: tagsController.isLoading.value ? "Adding..." : "Add",
+                onPressed: tagsController.isLoading.value
+                    ? (){}
+                    : () async {
+                  final title = tagController.text.trim();
+                  if (title.isEmpty) {
+                    kSnackBar(
+                        message: "Please enter a tag name",
+                        bgColor: AppColors.orange);
+                    return;
+                  }
+
+                  final success =
+                  await tagsController.addTags(title: title);
+
+                  if (success) {
+                    // Refresh list and close popup
+                    await tagsController.fetchAllTags();
+                    if (Get.isDialogOpen == true) {
+                      Navigator.pop(context);
+                    }
+                  }
+                },
+                borderRadius: 12,
+                gradientColors: AppColors.buttonColor,
+              );
+            }),
           ],
         );
       },
     );
   }
 
+
+
+  /// Delete confirmation dialog
   void _showDeleteTagDialog(BuildContext context, String tag) {
     Get.dialog(
       Dialog(
@@ -147,18 +179,11 @@ class _TagsViewState extends State<TagsView> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Image.asset(
-                AppImages.deleteCircle,
-                height: 60.h,
-                width: 60.w,
-              ),
+              Image.asset(AppImages.deleteCircle, height: 60.h, width: 60.w),
               sh16,
+              Text('Delete Tag?', style: h3),
               Text(
-                'Delete Tag?',
-                style: h3,
-              ),
-              Text(
-                "Are you sure you want to delete this item? This action cannot be undone.",
+                "Are you sure you want to delete this tag? This action cannot be undone.",
                 textAlign: TextAlign.center,
                 style: h3.copyWith(fontWeight: FontWeight.w500),
               ),
@@ -169,7 +194,9 @@ class _TagsViewState extends State<TagsView> {
                 backgroundColor: AppColors.red,
                 textColor: AppColors.white,
                 onPressed: () {
-                  tagsController.tags.remove(tag);
+                  // currently just removing locally
+                  tagsController.allTagsList
+                      .removeWhere((element) => element.title == tag);
                   Get.back();
                 },
               ),
@@ -179,9 +206,7 @@ class _TagsViewState extends State<TagsView> {
                 borderRadius: 12,
                 backgroundColor: AppColors.silver,
                 textColor: AppColors.black,
-                onPressed: () {
-                  Get.back();
-                },
+                onPressed: () => Get.back(),
               ),
             ],
           ),
@@ -190,9 +215,10 @@ class _TagsViewState extends State<TagsView> {
     );
   }
 
+  /// Edit dialog
   void _showEditTagDialog(BuildContext context, String oldTag, int index) {
     final TextEditingController tagController =
-        TextEditingController(text: oldTag);
+    TextEditingController(text: oldTag);
 
     showDialog(
       context: context,
@@ -220,7 +246,7 @@ class _TagsViewState extends State<TagsView> {
               text: "Update",
               onPressed: () {
                 tagsController.updateTag(index, tagController.text);
-                Get.back(); // close dialog
+                Get.back();
               },
               borderRadius: 12,
               gradientColors: AppColors.buttonColor,
@@ -230,5 +256,4 @@ class _TagsViewState extends State<TagsView> {
       },
     );
   }
-
 }

@@ -1,26 +1,29 @@
+import 'dart:convert';
+
+import 'package:flutter/cupertino.dart';
+import 'package:foto_tidy/app/modules/profile/controllers/profile_controller.dart';
 import 'package:foto_tidy/app/modules/profile/views/subscription_view.dart';
 import 'package:foto_tidy/common/app_images/app_images.dart';
 import 'package:foto_tidy/common/widgets/popup_helper.dart';
 import 'package:get/get.dart';
 
-class TagsController extends GetxController {
-  var tags = <String>[].obs;
+import '../../../../common/app_color/app_colors.dart';
+import '../../../../common/app_constant/app_constant.dart';
+import '../../../../common/helper/local_store.dart';
+import '../../../../common/widgets/custom_snackbar.dart';
+import '../../../data/api.dart';
+import '../../../data/base_client.dart';
+import '../model/all_tags_model.dart';
 
-  // void addTag(String tagName) {
-  //   if (tagName.trim().isNotEmpty) {
-  //     if (tags.length >= 5) {
-  //       // Show upgrade popup instead of adding
-  //      showUpgradePopup();
-  //       return;
-  //     }
-  //     tags.add(tagName.trim());
-  //   }
-  // }
+class TagsController extends GetxController {
+  var isLoading = false.obs;
+  var tags = <String>[].obs;
+  var allTagsList = <TagsDatum>[].obs;
+  final ProfileController profileController = Get.find();
 
   bool addTag(String tagName) {
     if (tagName.trim().isNotEmpty) {
       if (tags.length >= 5) {
-        // show popup
         PopupHelper.showCustomPopup(
           title: 'Unlock Unlimited Tags',
           description:
@@ -53,6 +56,87 @@ class TagsController extends GetxController {
   void updateTag(int index, String newTagName) {
     if (newTagName.trim().isNotEmpty && index >= 0 && index < tags.length) {
       tags[index] = newTagName.trim();
+    }
+  }
+
+  Future<void> fetchAllTags() async {
+    try {
+      isLoading(true);
+      String accessToken =
+          LocalStorage.getData(key: AppConstant.accessToken)?.toString() ?? "";
+      if (accessToken.isEmpty) {
+        kSnackBar(message: "User not authenticated", bgColor: AppColors.orange);
+        return;
+      }
+      var response = await BaseClient.getRequest(
+        api: Api.allTags,
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': accessToken,
+        },
+      );
+
+      var data = await BaseClient.handleResponse(response);
+      if (data != null && data['success'] == true) {
+        var model = AllTagsModel.fromJson(data);
+        allTagsList.value = model.data;
+      } else {
+        kSnackBar(
+            message: data['message'] ?? 'Failed to load tags',
+            bgColor: AppColors.orange);
+      }
+    } catch (e) {
+      kSnackBar(message: e.toString(), bgColor: AppColors.orange);
+    } finally {
+      isLoading(false);
+    }
+  }
+
+  Future<bool> addTags({required String title}) async {
+    try {
+      isLoading(true);
+
+      String authorId = profileController.profileData.value?.data?.id ?? '';
+
+      var map = {
+        "author": authorId,
+        "title": title,
+      };
+
+      var headers = {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+        'Authorization':
+            LocalStorage.getData(key: AppConstant.accessToken)?.toString() ??
+                '',
+      };
+
+      var response = await BaseClient.postRequest(
+        api: Api.addTags,
+        body: jsonEncode(map),
+        headers: headers,
+      );
+
+      dynamic responseBody = await BaseClient.handleResponse(response);
+      if (responseBody != null && responseBody['success'] == true) {
+        kSnackBar(
+          message: responseBody['message'] ?? "Tag added successfully",
+          bgColor: AppColors.green,
+        );
+        return true;
+      } else {
+        kSnackBar(
+          message: responseBody?['message'] ?? "Failed to add tag",
+          bgColor: AppColors.orange,
+        );
+        return false;
+      }
+    } catch (e) {
+      debugPrint("Catch Error:::::: $e");
+      kSnackBar(message: e.toString(), bgColor: AppColors.orange);
+      return false;
+    } finally {
+      isLoading(false);
     }
   }
 }
