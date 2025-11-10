@@ -71,72 +71,49 @@ class BaseClient {
   }
 
 
-
   static handleResponse(http.Response response) async {
     try {
+      debugPrint('ResponseCode: ${response.statusCode}');
+      debugPrint('ResponseBody: ${response.body}');
+
+      var decodedBody = response.body.isNotEmpty ? jsonDecode(response.body) : null;
+
       if (response.statusCode >= 200 && response.statusCode <= 210) {
-        debugPrint('SuccessCode: ${response.statusCode}');
-        debugPrint('SuccessResponse: ${response.body}');
-
-        if (response.body.isNotEmpty) {
-          return json.decode(response.body);
-        } else {
-          return response.body;
-        }
-      } else if (response.statusCode == 401) {
-
-        String msg = "Unauthorized";
-        if (response.body.isNotEmpty) {
-          if(json.decode(response.body)['errors'] != null){
-            msg = json.decode(response.body)['errors'];
-          }
-        }
-        throw msg;
-      } else if (response.statusCode == 404) {
-        print(response.body);
+        return decodedBody;
       }
-      else if (response.statusCode == 400) {
-        kSnackBar(message: json.decode(response.body)['message'].toString(), bgColor: AppColors.orange);
-        debugPrint('Response: ${response.body}');
+
+      // For all known errors — return decoded response instead of throwing
+      if (response.statusCode == 400 ||
+          response.statusCode == 401 ||
+          response.statusCode == 403 ||
+          response.statusCode == 404 ||
+          response.statusCode == 406 ||
+          response.statusCode == 409 ||
+          response.statusCode == 500) {
+
+        // Extract message if available
+        String message = decodedBody?['message'] ?? 'Something went wrong.';
+
+        // Show snackbar automatically for quick user feedback
+        kSnackBar(message: message, bgColor: AppColors.red);
+
+        // Return decoded body so controller can still handle it
+        return decodedBody;
       }
-      else if(response.statusCode == 403){
-        kSnackBar(message: json.decode(response.body)['message'].toString(), bgColor: AppColors.orange);
 
-      } else if(response.statusCode == 406){
-        kSnackBar(message: json.decode(response.body)['message'].toString(), bgColor: AppColors.orange);
+      // Default fallback
+      String msg = decodedBody?['message'] ?? 'Unexpected error occurred.';
+      kSnackBar(message: msg, bgColor: AppColors.red);
+      return decodedBody;
 
-      }
-      else if(response.statusCode == 409){
-        kSnackBar(message: json.decode(response.body)['message'].toString(), bgColor: AppColors.orange);
-
-      }else if (response.statusCode == 500) {
-        kSnackBar(message: json.decode(response.body)['message'].toString(), bgColor: AppColors.orange);
-        throw "Server Error";
-      } else {
-        debugPrint('ErrorCode: ${response.statusCode}');
-        debugPrint('ErrorResponse: ${response.body}');
-
-        String msg = "Something went wrong";
-        if (response.body.isNotEmpty) {
-          var data = jsonDecode(response.body)['errors'];
-          if(data == null){
-            msg = jsonDecode(response.body)['message'] ?? msg;
-          }
-          else if (data is String) {
-            msg = data;
-          } else if (data is Map) {
-            msg = data['email'][0];
-          }
-        }
-
-        throw msg;
-      }
-    } on SocketException catch (_) {
-      throw "noInternetMessage";
-    } on FormatException catch (e) {
-      print(e);
+    } on SocketException {
+      kSnackBar(message: "No Internet connection", bgColor: AppColors.red);
+      throw "No Internet connection";
+    } on FormatException {
+      kSnackBar(message: "Bad response format", bgColor: AppColors.red);
       throw "Bad response format";
     } catch (e) {
+      kSnackBar(message: e.toString(), bgColor: AppColors.red);
       throw e.toString();
     }
   }

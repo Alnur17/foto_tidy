@@ -24,14 +24,12 @@ class LoginController extends GetxController {
 
   void toggleCheckboxVisibility() {
     isCheckboxVisible.toggle();
-
   }
 
   Future userLogin({
     required String email,
     required String password,
-  })
-  async {
+  }) async {
     try {
       isLoading(true);
       var map = {
@@ -44,13 +42,9 @@ class LoginController extends GetxController {
         'Content-Type': 'application/json',
       };
 
-
       dynamic responseBody = await BaseClient.handleResponse(
         await BaseClient.postRequest(
-            api: Api.login,
-            body: jsonEncode(map),
-            headers: headers
-        ),
+            api: Api.login, body: jsonEncode(map), headers: headers),
       );
       if (responseBody != null) {
         String message = responseBody['message'].toString();
@@ -60,21 +54,18 @@ class LoginController extends GetxController {
 
         LocalStorage.saveData(key: AppConstant.accessToken, data: accessToken);
 
-
         kSnackBar(message: message, bgColor: AppColors.green);
 
-        if(success == true){
+        if (success == true) {
           Get.offAll(() => DashboardView());
-        }else{
-          kSnackBar(message: 'Failed', bgColor: AppColors.red);
+        } else {
+          kSnackBar(message: message, bgColor: AppColors.red);
         }
-
         isLoading(false);
-      } else {
-        throw 'SignIn in Failed!';
       }
     } catch (e) {
       debugPrint("Catch Error:::::: $e");
+      kSnackBar(message: 'Invalid email or password.', bgColor: AppColors.red);
     } finally {
       isLoading(false);
     }

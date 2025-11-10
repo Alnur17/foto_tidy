@@ -232,6 +232,11 @@ class PopupHelper {
                 sh16,
               ],
               Text(
+                title,
+                style: h2,
+                textAlign: TextAlign.center,
+              ),
+              Text(
                 description,
                 textAlign: TextAlign.center,
                 style: h3.copyWith(fontWeight: FontWeight.w500),
@@ -243,8 +248,15 @@ class PopupHelper {
                 backgroundColor: confirmColor,
                 textColor: AppColors.white,
                 onPressed: () {
-                  Get.back(); // close first
-                  onConfirm();
+                  // close dialog first
+                  Get.back();
+
+                  // Give the close animation a moment to finish, then run callback
+                  Future.delayed(const Duration(milliseconds: 200), () {
+                    try {
+                      onConfirm();
+                    } catch (_) {}
+                  });
                 },
               ),
               sh12,
@@ -252,10 +264,16 @@ class PopupHelper {
                 text: cancelText,
                 borderRadius: 12,
                 backgroundColor: cancelColor,
-                textColor: AppColors.black,
+                textColor: AppColors.white,
                 onPressed: () {
                   Get.back();
-                  if (onCancel != null) onCancel();
+                  if (onCancel != null) {
+                    Future.delayed(const Duration(milliseconds: 200), () {
+                      try {
+                        onCancel();
+                      } catch (_) {}
+                    });
+                  }
                 },
               ),
             ],
@@ -264,4 +282,5 @@ class PopupHelper {
       ),
     );
   }
+
 }

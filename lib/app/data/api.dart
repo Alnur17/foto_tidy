@@ -16,6 +16,8 @@ class Api {
   static const profile = "$baseUrl/users/my-profile"; //done
   static const editProfile = "$baseUrl/users/update-my-profile"; //done
   static const allTags = "$baseUrl/tags"; //done
-  static const addTags = "$baseUrl/tags"; //
+  static const addTags = "$baseUrl/tags"; //done
+  static editTag(String tagId) => "$baseUrl/tags/$tagId"; //done
+  static deleteTag(String tagId) => "$baseUrl/tags/$tagId"; //
 
 }

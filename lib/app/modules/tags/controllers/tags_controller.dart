@@ -96,19 +96,17 @@ class TagsController extends GetxController {
     try {
       isLoading(true);
 
-      String authorId = profileController.profileData.value?.data?.id ?? '';
+      //String authorId = profileController.profileData.value?.data?.id ?? '';
+      String token = LocalStorage.getData(key: AppConstant.accessToken)?.toString() ?? '';
 
       var map = {
-        "author": authorId,
         "title": title,
       };
 
       var headers = {
         'Accept': 'application/json',
         'Content-Type': 'application/json',
-        'Authorization':
-            LocalStorage.getData(key: AppConstant.accessToken)?.toString() ??
-                '',
+        'Authorization': token,
       };
 
       var response = await BaseClient.postRequest(
@@ -127,6 +125,55 @@ class TagsController extends GetxController {
       } else {
         kSnackBar(
           message: responseBody?['message'] ?? "Failed to add tag",
+          bgColor: AppColors.orange,
+        );
+        return false;
+      }
+    } catch (e) {
+      debugPrint("Catch Error:::::: $e");
+      kSnackBar(message: e.toString(), bgColor: AppColors.orange);
+      return false;
+    } finally {
+      isLoading(false);
+    }
+  }
+
+  Future<bool> editTag({required String tagId,required String title}) async {
+    try {
+      isLoading(true);
+
+      //String authorId = profileController.profileData.value?.data?.id ?? '';
+      String token = LocalStorage.getData(key: AppConstant.accessToken)?.toString() ?? '';
+
+      var map = {
+        "title": title,
+      };
+
+      var headers = {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+        'Authorization': token,
+      };
+
+      var response = await BaseClient.putRequest(
+        api: Api.editTag(tagId),
+        body: jsonEncode(map),
+        headers: headers,
+      );
+
+      dynamic responseBody = await BaseClient.handleResponse(response);
+      if (responseBody != null && responseBody['success'] == true) {
+        kSnackBar(
+          message: responseBody['message'] ?? "Tag edit successfully",
+          bgColor: AppColors.green,
+        );
+
+        // Refresh list after editing
+        await fetchAllTags();
+        return true;
+      } else {
+        kSnackBar(
+          message: responseBody?['message'] ?? "Failed to edit tag",
           bgColor: AppColors.orange,
         );
         return false;
