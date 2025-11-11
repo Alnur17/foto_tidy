@@ -19,5 +19,9 @@ class Api {
   static const addTags = "$baseUrl/tags"; //done
   static editTag(String tagId) => "$baseUrl/tags/$tagId"; //done
   static deleteTag(String tagId) => "$baseUrl/tags/$tagId"; //
+  static const settings = "$baseUrl/contents"; //done
+
+  ///Gallery and Home
+  static const myGallery = "$baseUrl/upload-photos/my-photos"; //
 
 }

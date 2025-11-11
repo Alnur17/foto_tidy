@@ -8,6 +8,7 @@ import 'package:foto_tidy/common/widgets/custom_textfield.dart';
 import 'package:get/get.dart';
 import '../../../../common/app_color/app_colors.dart';
 import '../../../../common/widgets/custom_snackbar.dart';
+import '../../../../common/widgets/popup_helper.dart';
 import '../controllers/tags_controller.dart';
 
 class TagsView extends StatefulWidget {
@@ -18,16 +19,15 @@ class TagsView extends StatefulWidget {
 }
 
 class _TagsViewState extends State<TagsView> {
-  final TagsController tagsController = Get.put(TagsController());
+  final TagsController tagsController = Get.find();
 
-  @override
-  void initState() {
-    super.initState();
-    // Fetch tags from API
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      tagsController.fetchAllTags();
-    });
-  }
+  // @override
+  // void initState() {
+  //   super.initState();
+  //   WidgetsBinding.instance.addPostFrameCallback((_) {
+  //     tagsController.fetchAllTags();
+  //   });
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -88,69 +88,19 @@ class _TagsViewState extends State<TagsView> {
                     ),
                     sw16,
                     GestureDetector(
-                      onTap: () {
-                        Get.dialog(
-                          Dialog(
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(16),
-                            ),
-                            child: Padding(
-                              padding: EdgeInsets.all(20.w),
-                              child: Column(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  Image.asset(AppImages.deleteCircle,
-                                      height: 60.h, width: 60.w),
-                                  sh16,
-                                  Text('Where to go?', style: h3),
-                                  Text(
-                                    "Do you want to transfer photos before delete this tag?",
-                                    textAlign: TextAlign.center,
-                                    style: h3.copyWith(
-                                        fontWeight: FontWeight.w500),
-                                  ),
-                                  sh20,
-                                  CustomButton(
-                                    text: "Continue on deleting",
-                                    borderRadius: 12,
-                                    backgroundColor: AppColors.red,
-                                    textColor: AppColors.white,
-                                    onPressed: () => _showDeleteTagDialog(
-                                        context, tag.title ?? ''),
-                                    // onPressed: () {
-                                    //   // currently just removing locally
-                                    //   tagsController.allTagsList
-                                    //       .removeWhere((element) => element.title == tag);
-                                    //   Get.back();
-                                    // },
-                                  ),
-                                  sh12,
-                                  CustomButton(
-                                    text: "Transfer",
-                                    borderRadius: 12,
-                                    backgroundColor: AppColors.silver,
-                                    textColor: AppColors.black,
-                                    onPressed: () => _showTransferPhotoDialog(
-                                        context, tag.title ?? ''),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                        );
-                      },
-                      // onTap: () => PopupHelper.showConfirmationDialog(
-                      //   title: 'Where to go?',
-                      //   description:
-                      //       'Do you want to transfer photos before delete this tag?',
-                      //   confirmText: 'Transfer',
-                      //   onConfirm: () => _showTransferPhotoDialog(context, tag.title ?? ''),
-                      //   confirmColor: AppColors.green,
-                      //   cancelText: 'Continues on deleting',
-                      //   onCancel: () =>
-                      //       _showDeleteTagDialog(context, tag.title ?? ''),
-                      //   cancelColor: AppColors.red,
-                      // ),
+                      onTap: () => PopupHelper.showConfirmationDialog(
+                        title: 'Where to go?',
+                        description:
+                            'Do you want to transfer photos before delete this tag?',
+                        confirmText: 'Transfer File',
+                        onConfirm: () =>
+                            _showTransferPhotoDialog(context, tag.title ?? ''),
+                        confirmColor: AppColors.green,
+                        cancelText: 'Continues on deleting',
+                        onCancel: () =>
+                            _showDeleteTagDialog(context, tag.title ?? ''),
+                        cancelColor: AppColors.red,
+                      ),
                       child: Image.asset(AppImages.deleteCircle, scale: 4),
                     ),
                   ],
@@ -172,6 +122,7 @@ class _TagsViewState extends State<TagsView> {
       context: context,
       builder: (context) {
         return AlertDialog(
+          backgroundColor: AppColors.white,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
           ),
@@ -235,6 +186,7 @@ class _TagsViewState extends State<TagsView> {
   void _showDeleteTagDialog(BuildContext context, String tag) {
     Get.dialog(
       Dialog(
+        backgroundColor: AppColors.white,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(16),
         ),
@@ -286,10 +238,11 @@ class _TagsViewState extends State<TagsView> {
         TextEditingController(text: oldTag);
 
     showDialog(
-      barrierDismissible: false,
+      //barrierDismissible: false,
       context: context,
       builder: (context) {
         return AlertDialog(
+          backgroundColor: AppColors.white,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
           ),
@@ -349,6 +302,7 @@ class _TagsViewState extends State<TagsView> {
 
     Get.dialog(
       Dialog(
+        backgroundColor: AppColors.white,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(20.r),
         ),

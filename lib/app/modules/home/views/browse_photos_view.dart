@@ -18,7 +18,10 @@ class BrowsePhotosView extends StatelessWidget {
     final HomeController homeController = Get.put(HomeController());
 
     return Scaffold(
+      backgroundColor: AppColors.white,
       appBar: AppBar(
+        backgroundColor: AppColors.white,
+        scrolledUnderElevation: 0,
         title: Text('Browse Photos'),
       ),
       body: Padding(

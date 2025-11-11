@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:foto_tidy/app/modules/home/views/photo_saved_successfully_view.dart';
+import 'package:foto_tidy/app/modules/tags/controllers/tags_controller.dart';
 
 import 'package:get/get.dart';
 
@@ -24,6 +25,7 @@ class TagYourPhotoView extends StatefulWidget {
 
 class _TagYourPhotoViewState extends State<TagYourPhotoView> {
   final galleryController = Get.find<GalleryController>();
+  final tagsController = Get.find<TagsController>();
 
   @override
   Widget build(BuildContext context) {
@@ -62,15 +64,15 @@ class _TagYourPhotoViewState extends State<TagYourPhotoView> {
             Wrap(
               spacing: 10.w,
               runSpacing: 10.h,
-              children: galleryController.categories.map((category) {
+              children: tagsController.allTagsList.map((category) {
                 return Obx(
                       () => CustomFilterChip(
-                    text: category,
+                    text: category.title?? '',
                     isSelected:
-                    galleryController.selectedCategory.value == category,
+                    galleryController.selectedCategory.value == category.title,
                     onTap: () {
                       galleryController.selectCategory(
-                          category); // Update category using GetX
+                          category.title ?? '');
                     },
                   ),
                 );

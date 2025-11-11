@@ -13,6 +13,7 @@ import '../../../../common/helper/custom_filter_chip.dart';
 import '../../../../common/size_box/custom_sizebox.dart';
 import '../../../../common/widgets/custom_button.dart';
 import '../../gallery/controllers/gallery_controller.dart';
+import '../../tags/controllers/tags_controller.dart';
 
 class TagYourPhotoFromGalleryView extends StatefulWidget {
   const TagYourPhotoFromGalleryView({super.key});
@@ -23,6 +24,7 @@ class TagYourPhotoFromGalleryView extends StatefulWidget {
 
 class _TagYourPhotoFromGalleryViewState extends State<TagYourPhotoFromGalleryView> {
   final galleryController = Get.find<GalleryController>();
+  final tagsController = Get.find<TagsController>();
 
   @override
   Widget build(BuildContext context) {
@@ -42,9 +44,9 @@ class _TagYourPhotoFromGalleryViewState extends State<TagYourPhotoFromGalleryVie
               height: 80.h, // height stays fixed
               child: ListView.builder(
                 scrollDirection: Axis.horizontal,
-                itemCount: galleryController.galleryImages.length, // your list of images
+                itemCount: galleryController.galleryList.length, // your list of images
                 itemBuilder: (context, index) {
-                  final imagePath = galleryController.galleryImages[index];
+                  final imagePath = galleryController.galleryList[index];
                   return Padding(
                     padding: EdgeInsets.only(right: 10.w), // spacing between items
                     child: Container(
@@ -55,9 +57,9 @@ class _TagYourPhotoFromGalleryViewState extends State<TagYourPhotoFromGalleryVie
                       ),
                       child: ClipRRect(
                         borderRadius: BorderRadius.circular(8).r,
-                        child: imagePath.startsWith('http')
-                            ? Image.network(imagePath, fit: BoxFit.cover)
-                            : Image.file(File(imagePath), fit: BoxFit.cover),
+                        // child: imagePath.startsWith('http')
+                        //     ? Image.network(imagePath, fit: BoxFit.cover)
+                        //     : Image.file(File(imagePath), fit: BoxFit.cover),
                       ),
                     ),
                   );
@@ -93,15 +95,15 @@ class _TagYourPhotoFromGalleryViewState extends State<TagYourPhotoFromGalleryVie
             Wrap(
               spacing: 10.w,
               runSpacing: 10.h,
-              children: galleryController.categories.map((category) {
+              children: tagsController.allTagsList.map((category) {
                 return Obx(
                       () => CustomFilterChip(
-                    text: category,
+                    text: category.title?? '',
                     isSelected:
-                    galleryController.selectedCategory.value == category,
+                    galleryController.selectedCategory.value == category.title,
                     onTap: () {
                       galleryController.selectCategory(
-                          category); // Update category using GetX
+                          category.title ?? ''); // Update category using GetX
                     },
                   ),
                 );

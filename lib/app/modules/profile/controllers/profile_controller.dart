@@ -19,7 +19,6 @@ import '../model/profile_model.dart';
 
 class ProfileController extends GetxController {
   RxBool isLoading = false.obs;
-  RxBool isProUser = true.obs;
   RxBool isFirstTimeLock = false.obs;
   Rx<File?> selectedImage = Rx<File?>(null);
   Rx<ProfileModel?> profileData = Rx<ProfileModel?>(null);

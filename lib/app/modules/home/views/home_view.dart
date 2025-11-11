@@ -1,15 +1,19 @@
 // import 'dart:developer';
-//
+// import 'dart:io';
 // import 'package:cached_network_image/cached_network_image.dart';
 // import 'package:flutter/material.dart';
 // import 'package:flutter_screenutil/flutter_screenutil.dart';
+// import 'package:foto_tidy/app/modules/gallery/views/gallery_view.dart';
+// import 'package:foto_tidy/app/modules/home/controllers/home_controller.dart';
+// import 'package:foto_tidy/app/modules/home/views/browse_photos_view.dart';
+// import 'package:foto_tidy/app/modules/profile/controllers/profile_controller.dart';
+// import 'package:foto_tidy/app/modules/profile/views/profile_view.dart';
+// import 'package:foto_tidy/app/modules/tags/controllers/tags_controller.dart';
 // import 'package:foto_tidy/common/app_color/app_colors.dart';
 // import 'package:foto_tidy/common/app_images/app_images.dart';
 // import 'package:foto_tidy/common/widgets/custom_button.dart';
-//
 // import 'package:get/get.dart';
 // import 'package:pin_code_fields/pin_code_fields.dart';
-//
 // import '../../../../common/app_text_style/styles.dart';
 // import '../../../../common/helper/custom_filter_chip.dart';
 // import '../../../../common/helper/gallery_item.dart';
@@ -17,14 +21,17 @@
 // import '../../gallery/controllers/gallery_controller.dart';
 //
 // class HomeView extends StatefulWidget {
-//   const HomeView({super.key,});
+//   const HomeView({super.key});
 //
 //   @override
 //   State<HomeView> createState() => _HomeViewState();
 // }
 //
 // class _HomeViewState extends State<HomeView> {
+//   final homeController = Get.put(HomeController());
 //   final galleryController = Get.put(GalleryController());
+//   final profileController = Get.put(ProfileController());
+//   final tagsController = Get.put(TagsController());
 //
 //   @override
 //   Widget build(BuildContext context) {
@@ -40,12 +47,43 @@
 //         ),
 //         actions: [
 //           GestureDetector(
-//             onTap: () {},
-//             child: CircleAvatar(
-//               radius: 20,
-//               backgroundImage:
-//                   CachedNetworkImageProvider(AppImages.profileImage),
-//             ),
+//             onTap: () {
+//               Get.to(() => ProfileView(
+//                     showBackButton: true,
+//                   ));
+//             },
+//             child: Obx(() {
+//               final imagePath = profileController.profileImageUrl.value;
+//               return CircleAvatar(
+//                 radius: 20,
+//                 backgroundColor: AppColors.whiteDark,
+//                 child: ClipRRect(
+//                   borderRadius: BorderRadius.circular(20),
+//                   child: imagePath.startsWith("http")
+//                       ? CachedNetworkImage(
+//                           imageUrl: imagePath,
+//                           height: Get.height.h,
+//                           width: Get.width.w,
+//                           fit: BoxFit.cover,
+//                           placeholder: (context, url) => const Center(
+//                             child: CircularProgressIndicator(
+//                               color: AppColors.orange,
+//                             ),
+//                           ),
+//                           errorWidget: (context, url, error) => const Icon(
+//                             Icons.error,
+//                             color: Colors.red,
+//                           ),
+//                         )
+//                       : Image.file(
+//                           File(imagePath),
+//                           height: Get.height.h,
+//                           width: Get.width.w,
+//                           fit: BoxFit.cover,
+//                         ),
+//                 ),
+//               );
+//             }),
 //           ),
 //           sw20,
 //         ],
@@ -71,21 +109,35 @@
 //                 sh12,
 //                 CustomButton(
 //                   text: 'Take Photo',
-//                   onPressed: () {
-//                     //Get.to(() => CameraView(cameras: widget.cameras!));
-//                   },
+//                   onPressed: homeController.takePhoto,
 //                   gradientColors: AppColors.buttonColor,
 //                   borderRadius: 12,
 //                   height: 40,
+//                   centerImageWithText: true,
+//                   imageAssetPath: AppImages.camera,
 //                 ),
 //                 sh8,
 //                 CustomButton(
 //                   text: 'Browse Photos',
-//                   onPressed: () {},
+//                   onPressed: () {
+//                     Get.to(()=> BrowsePhotosView());
+//                     // PopupHelper.showCustomPopupForImageUpload(
+//                     //   title: 'Upload your image',
+//                     //   description: 'Drag and drop or browse to choose a file',
+//                     //   iconPath: AppImages.uploadImage,
+//                     //   onPrimaryPressed: () {
+//                     //     homeController.pickImage();
+//                     //   },
+//                     //   primaryButtonText: 'Choose File',
+//                     //   footerText: 'PNG, JPG up to 10MB',
+//                     // );
+//                   },
 //                   borderColor: AppColors.borderColor,
 //                   borderRadius: 12,
 //                   textColor: AppColors.black,
 //                   height: 40,
+//                   centerImageWithText: true,
+//                   imageAssetPath: AppImages.browsePhotos,
 //                 ),
 //               ],
 //             ),
@@ -101,7 +153,9 @@
 //                   style: h3,
 //                 ),
 //                 GestureDetector(
-//                   onTap: () {},
+//                   onTap: () {
+//                     Get.to(() => GalleryView());
+//                   },
 //                   child: Text(
 //                     'View All',
 //                     style: h5.copyWith(color: AppColors.blue),
@@ -113,19 +167,73 @@
 //           sh12,
 //           SizedBox(
 //             height: 35.h,
-//             child: ListView.builder(
-//               scrollDirection: Axis.horizontal,
-//               padding: EdgeInsets.symmetric(horizontal: 20.w),
-//               itemCount: galleryController.categories.length,
-//               itemBuilder: (context, index) {
-//                 final category = galleryController.categories[index];
-//                 return Obx(() => CustomFilterChip(
-//                       text: category,
-//                       isSelected:
-//                           galleryController.selectedCategory.value == category,
-//                       onTap: () => galleryController.selectCategory(category),
-//                     ));
-//               },
+//             child: Obx(() {
+//               final tags = tagsController.allTagsList;
+//               final selected = galleryController.selectedCategory.value;
+//               final isLoading = tagsController.isLoading.value; // Add loading flag in controller if missing
+//
+//               if (isLoading) {
+//                 return Center(
+//                   child: SizedBox(
+//                     width: 24.w,
+//                     height: 24.w,
+//                     child: CircularProgressIndicator(strokeWidth: 2, color: AppColors.orange),
+//                   ),
+//                 );
+//               }
+//
+//               if (tags.isEmpty) {
+//                 return Center(
+//                   child: Text(
+//                     "No tags available",
+//                     style: h5.copyWith(color: AppColors.grey),
+//                   ),
+//                 );
+//               }
+//
+//               return ListView.builder(
+//                 scrollDirection: Axis.horizontal,
+//                 padding: EdgeInsets.symmetric(horizontal: 20.w),
+//                 itemCount: tags.length,
+//                 itemBuilder: (context, index) {
+//                   final tag = tags[index];
+//                   final tagName = tag.title ?? '';
+//                   final isSelected = selected == tagName;
+//
+//                   return Padding(
+//                     padding: EdgeInsets.only(right: 8.w),
+//                     child: CustomFilterChip(
+//                       text: tagName,
+//                       isSelected: isSelected,
+//                       onTap: () {
+//                         if (isSelected) {
+//                           galleryController.selectedCategory.value = '';
+//                           galleryController.filterGalleryByTag('');
+//                         } else {
+//                           galleryController.selectedCategory.value = tagName;
+//                           galleryController.filterGalleryByTag(tagName);
+//                         }
+//                       },
+//                     ),
+//                   );
+//                 },
+//               );
+//             }),
+//           ),
+//           sh12,
+//
+//           // Storage Info (show only if NOT Pro user)
+//           profileController.profileData.value?.data?.isActiveSubscription ==
+//               true
+//               ? SizedBox.shrink()
+//               : Padding(
+//             padding: EdgeInsets.symmetric(horizontal: 20.w),
+//             child: Text(
+//               "Storage Used: ${profileController.profileData.value?.data?.freeStorage} MB / ${profileController.profileData.value?.data?.storageLimit} MB",
+//               style: h5.copyWith(
+//                 color: AppColors.black,
+//                 fontWeight: FontWeight.w500,
+//               ),
 //             ),
 //           ),
 //           sh12,
@@ -172,7 +280,6 @@
 //                 borderRadius: BorderRadius.circular(8),
 //                 fieldHeight: 40,
 //                 fieldWidth: 40,
-//                 // Reduce the width slightly for the gap
 //                 activeColor: AppColors.white,
 //                 activeFillColor: AppColors.white,
 //                 inactiveColor: AppColors.borderColor,
@@ -185,7 +292,13 @@
 //               cursorColor: AppColors.blue,
 //               enablePinAutofill: true,
 //               enableActiveFill: true,
-//               onCompleted: (v) {},
+//               onCompleted: (pin) {
+//                 // if (pin == "123456") {
+//                 //   galleryController.unlockGallery();
+//                 // } else {
+//                 //   Get.snackbar('Invalid PIN', 'Please enter the correct PIN');
+//                 // }
+//               },
 //               onChanged: (value) {},
 //               beforeTextPaste: (text) {
 //                 log("Allowing to paste $text");
@@ -219,8 +332,8 @@
 //       itemBuilder: (context, index) {
 //         return GalleryItem(
 //           imageUrl: galleryController.galleryImages[index],
-//           isFavorite: true,
-//           isProUser: true,
+//           isFavorite: false,
+//           isProUser: galleryController.isProUser.value,
 //           onFavoriteToggle: () {},
 //         );
 //       },
@@ -238,6 +351,7 @@ import 'package:foto_tidy/app/modules/home/controllers/home_controller.dart';
 import 'package:foto_tidy/app/modules/home/views/browse_photos_view.dart';
 import 'package:foto_tidy/app/modules/profile/controllers/profile_controller.dart';
 import 'package:foto_tidy/app/modules/profile/views/profile_view.dart';
+import 'package:foto_tidy/app/modules/tags/controllers/tags_controller.dart';
 import 'package:foto_tidy/common/app_color/app_colors.dart';
 import 'package:foto_tidy/common/app_images/app_images.dart';
 import 'package:foto_tidy/common/widgets/custom_button.dart';
@@ -245,7 +359,6 @@ import 'package:get/get.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
 import '../../../../common/app_text_style/styles.dart';
 import '../../../../common/helper/custom_filter_chip.dart';
-import '../../../../common/helper/gallery_item.dart';
 import '../../../../common/size_box/custom_sizebox.dart';
 import '../../gallery/controllers/gallery_controller.dart';
 
@@ -260,6 +373,7 @@ class _HomeViewState extends State<HomeView> {
   final homeController = Get.put(HomeController());
   final galleryController = Get.put(GalleryController());
   final profileController = Get.put(ProfileController());
+  final tagsController = Get.put(TagsController());
 
   @override
   Widget build(BuildContext context) {
@@ -277,8 +391,8 @@ class _HomeViewState extends State<HomeView> {
           GestureDetector(
             onTap: () {
               Get.to(() => ProfileView(
-                    showBackButton: true,
-                  ));
+                showBackButton: true,
+              ));
             },
             child: Obx(() {
               final imagePath = profileController.profileImageUrl.value;
@@ -289,26 +403,26 @@ class _HomeViewState extends State<HomeView> {
                   borderRadius: BorderRadius.circular(20),
                   child: imagePath.startsWith("http")
                       ? CachedNetworkImage(
-                          imageUrl: imagePath,
-                          height: Get.height.h,
-                          width: Get.width.w,
-                          fit: BoxFit.cover,
-                          placeholder: (context, url) => const Center(
-                            child: CircularProgressIndicator(
-                              color: AppColors.orange,
-                            ),
-                          ),
-                          errorWidget: (context, url, error) => const Icon(
-                            Icons.error,
-                            color: Colors.red,
-                          ),
-                        )
+                    imageUrl: imagePath,
+                    height: Get.height.h,
+                    width: Get.width.w,
+                    fit: BoxFit.cover,
+                    placeholder: (context, url) => const Center(
+                      child: CircularProgressIndicator(
+                        color: AppColors.orange,
+                      ),
+                    ),
+                    errorWidget: (context, url, error) => const Icon(
+                      Icons.error,
+                      color: Colors.red,
+                    ),
+                  )
                       : Image.file(
-                          File(imagePath),
-                          height: Get.height.h,
-                          width: Get.width.w,
-                          fit: BoxFit.cover,
-                        ),
+                    File(imagePath),
+                    height: Get.height.h,
+                    width: Get.width.w,
+                    fit: BoxFit.cover,
+                  ),
                 ),
               );
             }),
@@ -318,6 +432,7 @@ class _HomeViewState extends State<HomeView> {
       ),
       body: Column(
         mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           sh12,
           Padding(
@@ -348,17 +463,7 @@ class _HomeViewState extends State<HomeView> {
                 CustomButton(
                   text: 'Browse Photos',
                   onPressed: () {
-                    Get.to(()=> BrowsePhotosView());
-                    // PopupHelper.showCustomPopupForImageUpload(
-                    //   title: 'Upload your image',
-                    //   description: 'Drag and drop or browse to choose a file',
-                    //   iconPath: AppImages.uploadImage,
-                    //   onPrimaryPressed: () {
-                    //     homeController.pickImage();
-                    //   },
-                    //   primaryButtonText: 'Choose File',
-                    //   footerText: 'PNG, JPG up to 10MB',
-                    // );
+                    Get.to(() => BrowsePhotosView());
                   },
                   borderColor: AppColors.borderColor,
                   borderRadius: 12,
@@ -395,21 +500,80 @@ class _HomeViewState extends State<HomeView> {
           sh12,
           SizedBox(
             height: 35.h,
-            child: ListView.builder(
-              scrollDirection: Axis.horizontal,
-              padding: EdgeInsets.symmetric(horizontal: 20.w),
-              itemCount: galleryController.categories.length,
-              itemBuilder: (context, index) {
-                final category = galleryController.categories[index];
-                return Obx(() => CustomFilterChip(
-                      text: category,
-                      isSelected:
-                          galleryController.selectedCategory.value == category,
-                      onTap: () => galleryController.selectCategory(category),
-                    ));
-              },
-            ),
+            child: Obx(() {
+              final tags = tagsController.allTagsList;
+              final selected = galleryController.selectedCategory.value;
+              final isLoading = tagsController.isLoading.value;
+
+              if (isLoading) {
+                return Center(
+                  child: SizedBox(
+                    width: 24.w,
+                    height: 24.w,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2,
+                      color: AppColors.orange,
+                    ),
+                  ),
+                );
+              }
+
+              if (tags.isEmpty) {
+                return Center(
+                  child: Text(
+                    "No tags available",
+                    style: h5.copyWith(color: AppColors.grey),
+                  ),
+                );
+              }
+
+              return ListView.builder(
+                scrollDirection: Axis.horizontal,
+                padding: EdgeInsets.symmetric(horizontal: 20.w),
+                itemCount: tags.length,
+                itemBuilder: (context, index) {
+                  final tag = tags[index];
+                  final tagName = tag.title ?? '';
+                  final isSelected = selected == tagName;
+
+                  return Padding(
+                    padding: EdgeInsets.only(right: 8.w),
+                    child: CustomFilterChip(
+                      text: tagName,
+                      isSelected: isSelected,
+                      onTap: () {
+                        if (isSelected) {
+                          galleryController.selectedCategory.value = '';
+                        } else {
+                          galleryController.selectedCategory.value = tagName;
+                        }
+                      },
+                    ),
+                  );
+                },
+              );
+            }),
           ),
+          sh12,
+
+          /// ---------- STORAGE INFO (Only for Free Users) ----------
+          Obx(() {
+            final data = profileController.profileData.value?.data;
+            if (data == null) return SizedBox();
+            if (data.isActiveSubscription == true) return const SizedBox.shrink();
+            return Padding(
+              padding: EdgeInsets.symmetric(horizontal: 20.w),
+              child: Text(
+                "Storage Used: ${data.freeStorage ?? 0} MB / ${data.storageLimit ?? 0} MB",
+                style: h5.copyWith(
+                  color: AppColors.black,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            );
+          }),
+
+
           sh12,
           Expanded(
             child: galleryController.isGalleryLocked.value
@@ -466,13 +630,7 @@ class _HomeViewState extends State<HomeView> {
               cursorColor: AppColors.blue,
               enablePinAutofill: true,
               enableActiveFill: true,
-              onCompleted: (pin) {
-                // if (pin == "123456") {
-                //   galleryController.unlockGallery();
-                // } else {
-                //   Get.snackbar('Invalid PIN', 'Please enter the correct PIN');
-                // }
-              },
+              onCompleted: (pin) {},
               onChanged: (value) {},
               beforeTextPaste: (text) {
                 log("Allowing to paste $text");
@@ -492,25 +650,80 @@ class _HomeViewState extends State<HomeView> {
     );
   }
 
-  /// Unlocked gallery grid view
+  /// ✅ Modified only this method — rest untouched
   Widget _buildGalleryGrid() {
-    return GridView.builder(
-      padding: EdgeInsets.only(left: 20.w, right: 20.w, bottom: 116.h),
-      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 2,
-        crossAxisSpacing: 10.w,
-        mainAxisSpacing: 10.h,
-        childAspectRatio: 1,
-      ),
-      itemCount: galleryController.galleryImages.length,
-      itemBuilder: (context, index) {
-        return GalleryItem(
-          imageUrl: galleryController.galleryImages[index],
-          isFavorite: true,
-          isProUser: galleryController.isProUser.value,
-          onFavoriteToggle: () {},
+    return Obx(() {
+      if (galleryController.isLoading.value) {
+        return const Center(
+          child: CircularProgressIndicator(color: AppColors.orange),
         );
-      },
-    );
+      }
+
+      if (galleryController.galleryList.isEmpty) {
+        return Center(
+          child: Text(
+            "No gallery items found",
+            style: h4.copyWith(color: AppColors.grey),
+          ),
+        );
+      }
+
+      return GridView.builder(
+        padding: EdgeInsets.only(left: 20.w, right: 20.w, bottom: 116.h),
+        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: 2,
+          crossAxisSpacing: 10.w,
+          mainAxisSpacing: 10.h,
+          childAspectRatio: 1,
+        ),
+        itemCount: galleryController.galleryList.length,
+        itemBuilder: (context, index) {
+          final item = galleryController.galleryList[index];
+          final imageUrl = item.image ?? '';
+
+          return Container(
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(12),
+              color: AppColors.white,
+              boxShadow: [
+                BoxShadow(
+                  color: AppColors.grey.withOpacity(0.2),
+                  blurRadius: 4,
+                  offset: const Offset(0, 2),
+                ),
+              ],
+            ),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(12),
+              child: imageUrl.isNotEmpty
+                  ? CachedNetworkImage(
+                imageUrl: imageUrl,
+                fit: BoxFit.cover,
+                placeholder: (context, url) => const Center(
+                  child: CircularProgressIndicator(
+                    color: AppColors.orange,
+                  ),
+                ),
+                errorWidget: (context, url, error) => Center(
+                  child: Text(
+                    item.tag?.title ?? 'Untitled',
+                    style: h5.copyWith(color: AppColors.grey),
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+              )
+                  : Center(
+                child: Text(
+                  item.tag?.title ?? 'Untitled',
+                  style: h5.copyWith(color: AppColors.grey),
+                  textAlign: TextAlign.center,
+                ),
+              ),
+            ),
+          );
+        },
+      );
+    });
   }
 }
+

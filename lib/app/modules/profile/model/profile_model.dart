@@ -34,18 +34,22 @@ class ProfileData {
     required this.dataId,
     required this.createdAt,
     required this.storageLimit,
+    required this.isActiveSubscription,
+    required this.type,
   });
 
   final String? id;
   final String? name;
   final String? email;
-  final String? photoUrl;
+  final dynamic photoUrl;
   final dynamic contractNumber;
   final String? status;
   final int? freeStorage;
   final String? dataId;
   final DateTime? createdAt;
   final int? storageLimit;
+  final bool? isActiveSubscription;
+  final dynamic type;
 
   factory ProfileData.fromJson(Map<String, dynamic> json){
     return ProfileData(
@@ -59,6 +63,8 @@ class ProfileData {
       dataId: json["id"],
       createdAt: DateTime.tryParse(json["createdAt"] ?? ""),
       storageLimit: json["storageLimit"],
+      isActiveSubscription: json["isActiveSubscription"],
+      type: json["type"],
     );
   }
 

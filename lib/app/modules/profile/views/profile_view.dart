@@ -7,6 +7,8 @@ import 'package:foto_tidy/app/modules/profile/views/gallery_lock_view.dart';
 import 'package:foto_tidy/app/modules/profile/views/privacy_and_policy_view.dart';
 import 'package:foto_tidy/app/modules/profile/views/subscription_view.dart';
 import 'package:foto_tidy/app/modules/profile/views/terms_and_conditions_view.dart';
+import 'package:foto_tidy/common/app_constant/app_constant.dart';
+import 'package:foto_tidy/common/helper/local_store.dart';
 
 import 'package:get/get.dart';
 
@@ -148,7 +150,7 @@ class ProfileView extends GetView<ProfileController> {
                     CustomListTile(
                       onTap: () {
                         Get.to(() => FavouriteView(
-                              isPro: true,
+                              isPro: profileController.profileData.value?.data?.isActiveSubscription ?? false,
                             ));
                       },
                       leadingImage: AppImages.favoriteFilled,
@@ -157,7 +159,7 @@ class ProfileView extends GetView<ProfileController> {
                     ),
                     CustomListTile(
                       onTap: () {
-                        profileController.isProUser.value == true
+                        profileController.profileData.value?.data?.isActiveSubscription == true
                             ? Get.to(() => GalleryLockView())
                             : PopupHelper.showCustomPopup(
                                 title: 'Keep Your Gallery Private ',
@@ -223,7 +225,11 @@ class ProfileView extends GetView<ProfileController> {
                       confirmText: "Confirm Log Out",
                       icon: AppImages.logoutBig,
                       onConfirm: () {
+                        LocalStorage.removeData(key: AppConstant.accessToken);
                         Get.offAll(() => LoginView());
+                      },
+                      onCancel: (){
+                        Get.back();
                       },
                     );
                   },

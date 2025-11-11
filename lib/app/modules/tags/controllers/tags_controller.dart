@@ -21,6 +21,13 @@ class TagsController extends GetxController {
   var allTagsList = <TagsDatum>[].obs;
   final ProfileController profileController = Get.find();
 
+  @override
+  void onInit() {
+    super.onInit();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      fetchAllTags();
+    });
+  }
   bool addTag(String tagName) {
     if (tagName.trim().isNotEmpty) {
       if (tags.length >= 5) {

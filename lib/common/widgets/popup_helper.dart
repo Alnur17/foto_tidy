@@ -20,6 +20,7 @@ class PopupHelper {
   }) {
     Get.dialog(
       Dialog(
+        backgroundColor: AppColors.white,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(16),
         ),
@@ -215,6 +216,7 @@ class PopupHelper {
   }) {
     Get.dialog(
       Dialog(
+        backgroundColor: AppColors.white,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(16),
         ),
@@ -247,35 +249,19 @@ class PopupHelper {
                 borderRadius: 12,
                 backgroundColor: confirmColor,
                 textColor: AppColors.white,
-                onPressed: () {
-                  // close dialog first
-                  Get.back();
-
-                  // Give the close animation a moment to finish, then run callback
-                  Future.delayed(const Duration(milliseconds: 200), () {
-                    try {
-                      onConfirm();
-                    } catch (_) {}
-                  });
-                },
+                onPressed: onConfirm,
               ),
               sh12,
-              CustomButton(
-                text: cancelText,
-                borderRadius: 12,
-                backgroundColor: cancelColor,
-                textColor: AppColors.white,
-                onPressed: () {
-                  Get.back();
-                  if (onCancel != null) {
-                    Future.delayed(const Duration(milliseconds: 200), () {
-                      try {
-                        onCancel();
-                      } catch (_) {}
-                    });
-                  }
-                },
-              ),
+              if (onCancel != null) ...[
+                sh12,
+                CustomButton(
+                  text: cancelText,
+                  borderRadius: 12,
+                  backgroundColor: cancelColor,
+                  textColor: AppColors.black,
+                  onPressed: onCancel,
+                ),
+              ],
             ],
           ),
         ),
