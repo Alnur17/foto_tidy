@@ -376,6 +376,17 @@ class _HomeViewState extends State<HomeView> {
   final tagsController = Get.put(TagsController());
 
   @override
+  void initState() {
+    super.initState();
+    _loadInitialData();
+  }
+
+  Future<void> _loadInitialData() async {
+    await profileController.fetchProfile();
+    await galleryController.fetchMyGallery();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.background,
@@ -573,7 +584,6 @@ class _HomeViewState extends State<HomeView> {
             );
           }),
 
-
           sh12,
           Expanded(
             child: galleryController.isGalleryLocked.value
@@ -650,7 +660,6 @@ class _HomeViewState extends State<HomeView> {
     );
   }
 
-  /// ✅ Modified only this method — rest untouched
   Widget _buildGalleryGrid() {
     return Obx(() {
       if (galleryController.isLoading.value) {
