@@ -1,4 +1,3 @@
-import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -103,7 +102,7 @@ class _TagYourPhotoFromGalleryViewState extends State<TagYourPhotoFromGalleryVie
                     galleryController.selectedCategory.value == category.title,
                     onTap: () {
                       galleryController.selectCategory(
-                          category.title ?? ''); // Update category using GetX
+                          category.title ?? '', category.id.toString()); // Update category using GetX
                     },
                   ),
                 );

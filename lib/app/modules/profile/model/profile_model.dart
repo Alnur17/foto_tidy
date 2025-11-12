@@ -11,7 +11,7 @@ class ProfileModel {
   final String? message;
   final ProfileData? data;
 
-  factory ProfileModel.fromJson(Map<String, dynamic> json){
+  factory ProfileModel.fromJson(Map<String, dynamic> json) {
     return ProfileModel(
       success: json["success"],
       statusCode: json["statusCode"],
@@ -19,7 +19,6 @@ class ProfileModel {
       data: json["data"] == null ? null : ProfileData.fromJson(json["data"]),
     );
   }
-
 }
 
 class ProfileData {
@@ -44,14 +43,14 @@ class ProfileData {
   final dynamic photoUrl;
   final dynamic contractNumber;
   final String? status;
-  final int? freeStorage;
+  final double? freeStorage;
   final String? dataId;
   final DateTime? createdAt;
   final int? storageLimit;
   final bool? isActiveSubscription;
   final dynamic type;
 
-  factory ProfileData.fromJson(Map<String, dynamic> json){
+  factory ProfileData.fromJson(Map<String, dynamic> json) {
     return ProfileData(
       id: json["_id"],
       name: json["name"],
@@ -59,7 +58,11 @@ class ProfileData {
       photoUrl: json["photoUrl"],
       contractNumber: json["contractNumber"],
       status: json["status"],
-      freeStorage: json["freeStorage"],
+      freeStorage: json["freeStorage"] == null
+          ? null
+          : (json["freeStorage"] is int
+          ? (json["freeStorage"] as int).toDouble()
+          : json["freeStorage"] as double),
       dataId: json["id"],
       createdAt: DateTime.tryParse(json["createdAt"] ?? ""),
       storageLimit: json["storageLimit"],
@@ -67,5 +70,4 @@ class ProfileData {
       type: json["type"],
     );
   }
-
 }

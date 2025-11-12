@@ -23,8 +23,18 @@ class GalleryController extends GetxController {
     fetchMyGallery();
   }
 
-  /// Fetch user's gallery from API
+  /// Fetch user's full gallery
   Future<void> fetchMyGallery() async {
+    await _fetchGallery(apiUrl: Api.myGallery);
+  }
+
+  /// Fetch gallery by tag ID (from API)
+  Future<void> fetchPhotosByTagId(String tagId) async {
+    await _fetchGallery(apiUrl: Api.getPhotoByTagId(tagId));
+  }
+
+  /// Shared internal fetch method
+  Future<void> _fetchGallery({required String apiUrl}) async {
     try {
       isLoading(true);
       final accessToken =
@@ -39,7 +49,7 @@ class GalleryController extends GetxController {
       }
 
       final response = await BaseClient.getRequest(
-        api: Api.myGallery,
+        api: apiUrl,
         headers: {
           'Content-Type': 'application/json',
           'Authorization': accessToken,
@@ -66,29 +76,14 @@ class GalleryController extends GetxController {
     }
   }
 
-  /// Select a category (tag)
-  void selectCategory(String category) {
-    if (selectedCategory.value == category) {
+  /// Select category (tag) — updated to fetch from API instead of filtering locally
+  Future<void> selectCategory(String tagId, String tagName) async {
+    if (selectedCategory.value == tagName) {
       selectedCategory.value = '';
-      fetchMyGallery(); // reset
+      await fetchMyGallery();
     } else {
-      selectedCategory.value = category;
-      filterByTag(category);
+      selectedCategory.value = tagName;
+      await fetchPhotosByTagId(tagId);
     }
-  }
-
-  /// Filter gallery by tag
-  void filterByTag(String tag) {
-    if (tag.isEmpty || tag == 'All') {
-      fetchMyGallery();
-      return;
-    }
-
-    final filtered = galleryList
-        .where((item) =>
-    item.tag?.title?.toLowerCase().contains(tag.toLowerCase()) ?? false)
-        .toList();
-
-    galleryList.assignAll(filtered);
   }
 }

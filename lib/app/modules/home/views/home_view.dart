@@ -545,6 +545,7 @@ class _HomeViewState extends State<HomeView> {
                 itemBuilder: (context, index) {
                   final tag = tags[index];
                   final tagName = tag.title ?? '';
+                  final tagId = tag.id?.toString() ?? '';
                   final isSelected = selected == tagName;
 
                   return Padding(
@@ -553,11 +554,7 @@ class _HomeViewState extends State<HomeView> {
                       text: tagName,
                       isSelected: isSelected,
                       onTap: () {
-                        if (isSelected) {
-                          galleryController.selectedCategory.value = '';
-                        } else {
-                          galleryController.selectedCategory.value = tagName;
-                        }
+                        galleryController.selectCategory(tagId, tagName);
                       },
                     ),
                   );

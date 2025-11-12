@@ -20,8 +20,10 @@ class Api {
   static editTag(String tagId) => "$baseUrl/tags/$tagId"; //done
   static deleteTag(String tagId) => "$baseUrl/tags/$tagId"; //
   static const settings = "$baseUrl/contents"; //done
+  static const subscriptionPackages = "$baseUrl//packages"; //done
 
   ///Gallery and Home
-  static const myGallery = "$baseUrl/upload-photos/my-photos"; //
+  static const myGallery = "$baseUrl/upload-photos/my-photos"; //done
+  static getPhotoByTagId(String tagId) => "$baseUrl/upload-photos/tags/$tagId"; //done
 
 }

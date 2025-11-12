@@ -72,7 +72,7 @@ class _TagYourPhotoViewState extends State<TagYourPhotoView> {
                     galleryController.selectedCategory.value == category.title,
                     onTap: () {
                       galleryController.selectCategory(
-                          category.title ?? '');
+                          category.title ?? '',category.id.toString());
                     },
                   ),
                 );

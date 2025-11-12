@@ -290,9 +290,9 @@ class _GalleryViewState extends State<GalleryView> {
       ),
       body: Obx(() {
         if (galleryController.isLoading.value) {
-          return const Center(child: CircularProgressIndicator(
-            color: AppColors.orange,
-          ));
+          return const Center(
+            child: CircularProgressIndicator(color: AppColors.orange),
+          );
         }
 
         return Column(
@@ -337,6 +337,7 @@ class _GalleryViewState extends State<GalleryView> {
                   itemBuilder: (context, index) {
                     final tag = tags[index];
                     final tagName = tag.title ?? '';
+                    final tagId = tag.id?.toString() ?? '';
                     final isSelected = selected == tagName;
 
                     return Padding(
@@ -344,12 +345,25 @@ class _GalleryViewState extends State<GalleryView> {
                       child: CustomFilterChip(
                         text: tagName,
                         isSelected: isSelected,
+                        // onTap: () {
+                        //   final matchedPhoto = galleryController.galleryList.firstWhereOrNull(
+                        //         (item) => item.tag?.title?.toLowerCase().trim() ==
+                        //         tagName.toLowerCase().trim(),
+                        //   );
+                        //
+                        //   final galleryTagId = matchedPhoto?.tag?.id?.toString();
+                        //
+                        //   if (galleryTagId != null) {
+                        //     galleryController.selectCategory(galleryTagId, tagName);
+                        //   } else {
+                        //     kSnackBar(
+                        //       message: 'No photos found for this tag',
+                        //       bgColor: AppColors.orange,
+                        //     );
+                        //   }
+                        // },
                         onTap: () {
-                          if (isSelected) {
-                            galleryController.selectCategory('');
-                          } else {
-                            galleryController.selectCategory(tagName);
-                          }
+                          galleryController.selectCategory(tagId, tagName);
                         },
                       ),
                     );
