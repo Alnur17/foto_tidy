@@ -6,7 +6,6 @@ import 'package:get/get.dart';
 import '../../../../common/app_color/app_colors.dart';
 import '../../../../common/app_constant/app_constant.dart';
 import '../../../../common/helper/local_store.dart';
-import '../../../../common/widgets/custom_snackbar.dart';
 import '../../../data/api.dart';
 import '../../../data/base_client.dart';
 import '../../auth/login/views/login_view.dart';
@@ -41,17 +40,24 @@ class ChangePasswordController extends GetxController {
     // }
     if (currentPassTEController.text.trim().isEmpty ||
         currentPassTEController.text.length < 6) {
-      kSnackBar(
-          message: 'Current Password must be at least 6 characters',
-          bgColor: AppColors.orange);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text("Current Password must be at least 6 characters"),
+          backgroundColor: AppColors.orange,
+        ),
+      );
       return;
     }
 
     if (newPassTEController.text.trim().isEmpty ||
         newPassTEController.text.length < 6) {
-      kSnackBar(
-          message: 'New Password must be at least 6 characters',
-          bgColor: AppColors.orange);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text("New Password must be at least 6 characters"),
+          backgroundColor: AppColors.orange,
+        ),
+      );
+
       return;
     }
 
@@ -90,8 +96,12 @@ class ChangePasswordController extends GetxController {
         LocalStorage.removeData(key: AppConstant.accessToken);
         Get.offAll(() => LoginView());
       } else {
-        kSnackBar(
-            message: "Change password failed!", bgColor: AppColors.orange);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(responseBody["message"]),
+            backgroundColor: AppColors.orange,
+          ),
+        );
       }
     } catch (e) {
       debugPrint("Catch Error:::::: $e");
