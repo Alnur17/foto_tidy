@@ -213,7 +213,7 @@ class ForgotPasswordController extends GetxController {
   Future resetPass({required String email}) async {
     if (newPasswordTEController.text.trim() !=
         confirmNewPasswordTEController.text.trim()) {
-      kSnackBar(message: 'Passwords do not match', bgColor: AppColors.orange);
+     kSnackBar(message: 'Passwords do not match', bgColor: AppColors.orange);
       return;
     }
     try {

@@ -84,7 +84,12 @@
 //   }
 // }
 
+import 'dart:convert';
+
+import 'package:flutter/cupertino.dart';
 import 'package:foto_tidy/app/data/api.dart';
+import 'package:foto_tidy/app/modules/dashboard/views/dashboard_view.dart';
+import 'package:foto_tidy/app/modules/profile/controllers/profile_controller.dart';
 import 'package:foto_tidy/app/modules/profile/model/subscription_package_model.dart';
 import 'package:get/get.dart';
 
@@ -93,6 +98,7 @@ import '../../../../common/app_constant/app_constant.dart';
 import '../../../../common/helper/local_store.dart';
 import '../../../../common/widgets/custom_snackbar.dart';
 import '../../../data/base_client.dart';
+import '../views/payment_view.dart';
 
 class SubscriptionController extends GetxController {
   // State
@@ -101,6 +107,10 @@ class SubscriptionController extends GetxController {
 
   // Selected package ID (for purchase flow)
   var selectedPackageId = RxnString();
+
+  ProfileController profileController = Get.find<ProfileController>();
+
+  late String userId = profileController.profileData.value?.data?.id ?? '';
 
   @override
   void onInit() {
@@ -123,7 +133,8 @@ class SubscriptionController extends GetxController {
   SubsPackageDatum? getPackage(String planType, bool isMonthly) {
     final pkgs = groupedPackages[planType.toLowerCase()] ?? [];
     return pkgs.firstWhereOrNull(
-          (p) => (p.billingCycle?.toLowerCase() == (isMonthly ? 'monthly' : 'yearly')),
+      (p) =>
+          (p.billingCycle?.toLowerCase() == (isMonthly ? 'monthly' : 'yearly')),
     );
   }
 
@@ -163,6 +174,108 @@ class SubscriptionController extends GetxController {
       kSnackBar(message: e.toString(), bgColor: AppColors.orange);
     } finally {
       isLoading(false);
+    }
+  }
+
+  Future createSubscription({
+    required String packageId,
+  }) async {
+    try {
+      isLoading(true);
+      String token =
+          LocalStorage.getData(key: AppConstant.accessToken)?.toString() ?? "";
+
+      var map = {
+        "user": userId,
+        "package": packageId,
+      };
+
+      var headers = {
+        'Authorization': token,
+        'Content-Type': 'application/json',
+      };
+
+      dynamic responseBody = await BaseClient.handleResponse(
+        await BaseClient.postRequest(
+            api: Api.buySubscription, body: jsonEncode(map), headers: headers),
+      );
+
+      if (responseBody != null) {
+        final String subscriptionId = responseBody['data']['_id'].toString();
+        createPaymentSession(subscriptionId: subscriptionId, userId: userId);
+        isLoading.value = false;
+      } else {
+        Get.snackbar("Error", "Failed to create subscription");
+      }
+    } catch (e) {
+      debugPrint("Catch Error:::::: $e");
+    } finally {
+      isLoading(false);
+    }
+  }
+
+  Future<void> createPaymentSession({
+    required String userId,
+    required String subscriptionId,
+  }) async {
+    isLoading.value = true;
+    debugPrint(';;;;;;;;;;;;;;;;;; $subscriptionId ;;;;;;;;;;;;;;;;;;;');
+    String token = LocalStorage.getData(key: AppConstant.accessToken);
+
+    var headers = {
+      'Authorization': token,
+      'Content-Type': 'application/json',
+    };
+
+    var map = {"user": userId, "subscription": subscriptionId};
+
+    dynamic responseBody = await BaseClient.handleResponse(
+      await BaseClient.postRequest(
+        api: Api.createPayment,
+        body: jsonEncode(map),
+        headers: headers,
+      ),
+    );
+
+    if (responseBody != null) {
+      Get.to(() => PaymentView(paymentUrl: responseBody["data"]));
+      isLoading.value = false;
+    } else {
+      Get.snackbar("Error", "Failed to create payment session");
+    }
+  }
+
+  Future<void> paymentResults({required String paymentLink}) async {
+    try {
+      isLoading.value = true;
+
+      var headers = {
+        'Content-Type': "application/json",
+      };
+
+      var response =
+          await BaseClient.getRequest(api: paymentLink, headers: headers);
+
+      var responseBody = await BaseClient.handleResponse(response);
+
+      if (responseBody['success'] = true) {
+        // var paymentId = responseBody['data']['_id'].toString();
+        //
+        // LocalStorage.saveData(key: AppConstant.paymentId, data: paymentId);
+        // String id = LocalStorage.getData(key: AppConstant.paymentId);
+        // debugPrint('::::::::::::::::: $id :::::::::::::::::');
+        Get.offAll(() => DashboardView(),routeName: '/dashboard');
+      } else {
+        debugPrint("Error on Payment Result: $responseBody['message'] ");
+      }
+    } catch (e) {
+      debugPrint("Error on Payment Result: $e");
+      kSnackBar(
+        message: "Error on Payment Result: $e",
+        bgColor: AppColors.orange,
+      );
+    } finally {
+      isLoading.value = false;
     }
   }
 }

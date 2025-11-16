@@ -7,7 +7,7 @@ plugins {
 
 android {
     namespace = "com.fototidy.foto_tidy"
-    compileSdk = 35
+    compileSdk = 36
     ndkVersion = flutter.ndkVersion
 
     compileOptions {

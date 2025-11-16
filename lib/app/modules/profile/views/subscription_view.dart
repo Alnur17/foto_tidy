@@ -11,8 +11,15 @@ import '../../../../common/widgets/custom_button.dart';
 import '../../../../common/widgets/custom_circular_container.dart';
 import '../controllers/subscription_controller.dart';
 
-class SubscriptionView extends GetView<SubscriptionController> {
+class SubscriptionView extends StatefulWidget {
   const SubscriptionView({super.key});
+
+  @override
+  State<SubscriptionView> createState() => _SubscriptionViewState();
+}
+
+class _SubscriptionViewState extends State<SubscriptionView> {
+  final SubscriptionController subscriptionController = Get.put(SubscriptionController());
 
   Widget _buildPlanCard({
     required String planKey,
@@ -22,13 +29,13 @@ class SubscriptionView extends GetView<SubscriptionController> {
     required Color toggleBgColor,
   })
   {
-    final monthlyPkg = controller.getPackage(planKey, true);
-    final yearlyPkg = controller.getPackage(planKey, false);
+    final monthlyPkg = subscriptionController.getPackage(planKey, true);
+    final yearlyPkg = subscriptionController.getPackage(planKey, false);
 
     if (monthlyPkg == null && yearlyPkg == null) return const SizedBox();
 
     final isPremium = planKey.contains('premium');
-    final monthlyRx = controller.selectedPackageId;
+    final monthlyRx = subscriptionController.selectedPackageId;
 
     // Default to monthly if none selected
     final isMonthly = monthlyRx.value == null
@@ -118,7 +125,7 @@ class SubscriptionView extends GetView<SubscriptionController> {
                     onPressed: monthlyPkg == null
                         ? () {}
                         : () =>
-                            controller.selectedPackageId.value = monthlyPkg.id,
+                            subscriptionController.selectedPackageId.value = monthlyPkg.id,
                     backgroundColor:
                         isMonthly ? AppColors.white : AppColors.transparent,
                     textColor: AppColors.black,
@@ -133,7 +140,7 @@ class SubscriptionView extends GetView<SubscriptionController> {
                     onPressed: yearlyPkg == null
                         ? () {}
                         : () =>
-                            controller.selectedPackageId.value = yearlyPkg.id,
+                            subscriptionController.selectedPackageId.value = yearlyPkg.id,
                     backgroundColor:
                         !isMonthly ? AppColors.white : AppColors.transparent,
                     textColor: AppColors.black,
@@ -169,8 +176,8 @@ class SubscriptionView extends GetView<SubscriptionController> {
           CustomButton(
             text: 'Upgrade to $displayTitle',
             onPressed: () {
-              // TODO: Call purchase with currentPkg.id
-              Get.snackbar('Upgrade', 'Selected: ${currentPkg.title}');
+              subscriptionController.createSubscription(packageId: currentPkg.id ?? '');
+              Get.snackbar('Upgrade', 'Selected: ${currentPkg.id}');
             },
             backgroundColor: AppColors.orange,
             textColor: AppColors.white,
@@ -201,10 +208,10 @@ class SubscriptionView extends GetView<SubscriptionController> {
         ),
       ),
       body: Obx(() {
-        final hasBasic = controller.getPackage('pro_basic', true) != null ||
-            controller.getPackage('pro_basic', false) != null;
-        final hasPremium = controller.getPackage('pro_premium', true) != null ||
-            controller.getPackage('pro_premium', false) != null;
+        final hasBasic = subscriptionController.getPackage('pro_basic', true) != null ||
+            subscriptionController.getPackage('pro_basic', false) != null;
+        final hasPremium = subscriptionController.getPackage('pro_premium', true) != null ||
+            subscriptionController.getPackage('pro_premium', false) != null;
 
         return Padding(
           padding: EdgeInsets.symmetric(horizontal: 20.w),
@@ -244,7 +251,7 @@ class SubscriptionView extends GetView<SubscriptionController> {
                 sh30,
 
                 // LOADING
-                if (controller.isLoading.value)
+                if (subscriptionController.isLoading.value)
                   const Center(child: CircularProgressIndicator())
                 else ...[
                   // PRO BASIC

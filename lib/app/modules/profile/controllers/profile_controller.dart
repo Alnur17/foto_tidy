@@ -93,7 +93,7 @@ class ProfileController extends GetxController {
       isLoading.value = true;
       String accessToken = LocalStorage.getData(key: AppConstant.accessToken)?.toString() ?? "";
       if (accessToken.isEmpty) {
-        kSnackBar(message: "User not authenticated", bgColor: AppColors.orange);
+       kSnackBar(message: "User not authenticated", bgColor: AppColors.orange);
         return;
       }
 

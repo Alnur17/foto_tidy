@@ -13,22 +13,32 @@ import '../../auth/login/views/login_view.dart';
 
 class ChangePasswordController extends GetxController {
   var isLoading = false.obs;
+  var isCurrentPasswordVisible = false.obs;
+  var isNewPasswordVisible = false.obs;
 
   final TextEditingController currentPassTEController = TextEditingController();
   final TextEditingController newPassTEController = TextEditingController();
   final TextEditingController confirmPassTEController = TextEditingController();
 
+  void toggleCurrentPasswordVisibility() {
+    isCurrentPasswordVisible.toggle();
+  }
+
+  void toggleNewPasswordVisibility() {
+    isNewPasswordVisible.toggle();
+  }
+
   ///change password
   Future changePassword({
     required BuildContext context,
   }) async {
-    if (newPassTEController.text.trim() !=
-        confirmPassTEController.text.trim()) {
-      kSnackBar(
-          message: 'New Password & Confirm password not match',
-          bgColor: AppColors.orange);
-      return;
-    }
+    // if (newPassTEController.text.trim() !=
+    //     confirmPassTEController.text.trim()) {
+    //   kSnackBar(
+    //       message: 'New Password & Confirm password not match',
+    //       bgColor: AppColors.orange);
+    //   return;
+    // }
     if (currentPassTEController.text.trim().isEmpty ||
         currentPassTEController.text.length < 6) {
       kSnackBar(
@@ -45,17 +55,18 @@ class ChangePasswordController extends GetxController {
       return;
     }
 
-    if (confirmPassTEController.text.trim().isEmpty ||
-        confirmPassTEController.text.length < 6) {
-      kSnackBar(
-          message: 'Confirm Password must be at least 6 characters',
-          bgColor: AppColors.orange);
-      return;
-    }
+    // if (confirmPassTEController.text.trim().isEmpty ||
+    //     confirmPassTEController.text.length < 6) {
+    //   kSnackBar(
+    //       message: 'Confirm Password must be at least 6 characters',
+    //       bgColor: AppColors.orange);
+    //   return;
+    // }
 
     try {
-
-      final token = LocalStorage.getData(key: AppConstant.accessToken)?.toString() ?? "";
+      debugPrint("Change Password");
+      final token =
+          LocalStorage.getData(key: AppConstant.accessToken)?.toString() ?? "";
       isLoading(true);
       var map = {
         "oldPassword": currentPassTEController.text.trim(),
@@ -75,12 +86,12 @@ class ChangePasswordController extends GetxController {
         ),
       );
 
-      if (responseBody != null) {
-        kSnackBar(message: responseBody["message"], bgColor: AppColors.green);
+      if (responseBody["success"] == true) {
+        LocalStorage.removeData(key: AppConstant.accessToken);
         Get.offAll(() => LoginView());
-        isLoading(false);
       } else {
-        throw 'Change password in Failed!';
+        kSnackBar(
+            message: "Change password failed!", bgColor: AppColors.orange);
       }
     } catch (e) {
       debugPrint("Catch Error:::::: $e");

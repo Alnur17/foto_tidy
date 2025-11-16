@@ -5,8 +5,6 @@ import 'package:flutter/cupertino.dart';
 
 import 'package:http/http.dart' as http;
 
-import '../../common/app_color/app_colors.dart';
-import '../../common/widgets/custom_snackbar.dart';
 
 
 
@@ -94,26 +92,21 @@ class BaseClient {
         // Extract message if available
         String message = decodedBody?['message'] ?? 'Something went wrong.';
 
-        // Show snackbar automatically for quick user feedback
-        kSnackBar(message: message, bgColor: AppColors.red);
-
         // Return decoded body so controller can still handle it
         return decodedBody;
       }
 
       // Default fallback
       String msg = decodedBody?['message'] ?? 'Unexpected error occurred.';
-      kSnackBar(message: msg, bgColor: AppColors.red);
+
       return decodedBody;
 
-    } on SocketException {
-      kSnackBar(message: "No Internet connection", bgColor: AppColors.red);
-      throw "No Internet connection";
+    } on SocketException { throw "No Internet connection";
     } on FormatException {
-      kSnackBar(message: "Bad response format", bgColor: AppColors.red);
+
       throw "Bad response format";
     } catch (e) {
-      kSnackBar(message: e.toString(), bgColor: AppColors.red);
+
       throw e.toString();
     }
   }
