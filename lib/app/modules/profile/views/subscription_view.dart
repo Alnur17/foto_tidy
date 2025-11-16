@@ -20,7 +20,8 @@ class SubscriptionView extends GetView<SubscriptionController> {
     required Color accentColor,
     required Color backgroundColor,
     required Color toggleBgColor,
-  }) {
+  })
+  {
     final monthlyPkg = controller.getPackage(planKey, true);
     final yearlyPkg = controller.getPackage(planKey, false);
 
