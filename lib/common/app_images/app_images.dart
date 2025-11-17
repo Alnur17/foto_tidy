@@ -42,6 +42,7 @@ class AppImages {
   static const changePassBig = "assets/icons/change password big.png";
   static const logoutBig = "assets/icons/log out big.png";
   static const notification = "assets/icons/Notification.png";
+  static const notificationTwo = "assets/icons/notification two.png";
   static const search = "assets/icons/search.png";
   static const faq = "assets/icons/faq.png";
   static const feedback = "assets/icons/feedback.png";

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:foto_tidy/app/modules/home/views/tag_your_photo_from_gallery_view.dart';
+import 'package:foto_tidy/app/modules/profile/views/subscription_view.dart';
 import 'package:foto_tidy/common/app_color/app_colors.dart';
 import 'package:foto_tidy/common/app_images/app_images.dart';
 import 'package:foto_tidy/common/widgets/custom_button.dart';
@@ -32,11 +32,11 @@ class BrowsePhotosView extends StatelessWidget {
               // Use Obx to reactively update the UI based on state changes
               Obx(() {
                 if (homeController.selectedImages.isEmpty) {
-                  return _buildInitialUploadView(homeController);
+                  return _buildInitialUploadView(homeController, context);
                 } else if (homeController.selectedImages.length < 5) {
-                  return _buildImageListView(homeController);
-                } else {
-                  return _buildLimitReachedView(homeController);
+                  return _buildImageListView(homeController, context);
+                } else{
+                  return _buildLimitReachedView(homeController, context);
                 }
               }),
             ],
@@ -47,7 +47,8 @@ class BrowsePhotosView extends StatelessWidget {
   }
 
   // Initial upload view when no images are selected
-  Widget _buildInitialUploadView(HomeController homeController) {
+  Widget _buildInitialUploadView(
+      HomeController homeController, BuildContext context) {
     return Container(
       width: Get.width.w,
       padding: EdgeInsets.all(16),
@@ -76,7 +77,9 @@ class BrowsePhotosView extends StatelessWidget {
           sh16,
           CustomButton(
             text: 'Chose File',
-            onPressed: homeController.pickImages,
+            onPressed: () {
+              homeController.pickImages(context: context);
+            },
             gradientColors: AppColors.buttonColor,
             borderRadius: 12,
           ),
@@ -91,10 +94,11 @@ class BrowsePhotosView extends StatelessWidget {
   }
 
   // View showing the list of selected images and allowing removal
-  Widget _buildImageListView(HomeController homeController) {
+  Widget _buildImageListView(
+      HomeController homeController, BuildContext context) {
     return Column(
       children: [
-        _buildInitialUploadView(homeController),
+        _buildInitialUploadView(homeController, context),
         sh12,
         // List of selected images
         ...homeController.selectedImages.map((image) {
@@ -128,52 +132,65 @@ class BrowsePhotosView extends StatelessWidget {
         CustomButton(
           text: 'Next',
           onPressed: () {
-            Get.to(()=> TagYourPhotoFromGalleryView());
+            homeController.uploadPhotos(context: context);
           },
           gradientColors: AppColors.buttonColor,
           borderRadius: 12,
-        ),
+        )
+        ,
       ],
     );
   }
 
   // View when the image limit (5) is reached
-  Widget _buildLimitReachedView(homeController) {
+  Widget _buildLimitReachedView(homeController, BuildContext context) {
     return Column(
       children: [
-        Container(
-          width: Get.width.w,
-          padding: EdgeInsets.all(16),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: AppColors.borderColor),
-          ),
-          child: Column(
-            children: [
-              Image.asset(
-                AppImages.changePassPro,
-                scale: 4,
+        homeController.isSubscribed.value == true
+            ? _buildInitialUploadView(homeController, context)
+            : Container(
+                width: Get.width.w,
+                padding: EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: AppColors.borderColor),
+                ),
+                child: Column(
+                  children: [
+                    Image.asset(
+                      AppImages.changePassPro,
+                      scale: 4,
+                    ),
+                    sh16,
+                    Text("Update Pro to Add More", style: h3),
+                    sh12,
+                    Text(
+                      'Stay organized with unlimited photo uploads.',
+                      style: h5.copyWith(color: AppColors.grey),
+                      textAlign: TextAlign.center,
+                    ),
+                    sh8,
+                    CustomButton(
+                      text: 'Upgrade to Pro',
+                      onPressed: () {
+                        Get.to(() => SubscriptionView());
+                      },
+                      gradientColors: AppColors.buttonColor,
+                      borderRadius: 12,
+                    ),
+                  ],
+                ),
               ),
-              sh16,
-              Text("Update Pro to Add More", style: h3),
-              sh12,
-              Text(
-                'Stay organized with unlimited photo uploads.',
-                style: h5.copyWith(color: AppColors.grey),
-                textAlign: TextAlign.center,
-              ),
-            ],
-          ),
-        ),
         sh20,
         CustomButton(
           text: 'Next',
           onPressed: () {
-            Get.to(()=> TagYourPhotoFromGalleryView());
+            homeController.uploadPhotos(context: context);
           },
           gradientColors: AppColors.buttonColor,
           borderRadius: 12,
         ),
+
         sh20,
         // List of selected images
         ...homeController.selectedImages.map((image) {

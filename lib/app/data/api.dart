@@ -24,6 +24,10 @@ class Api {
   static const buySubscription = "$baseUrl/subscriptions"; //done
   static const createPayment = "$baseUrl/payments/checkout"; //done
 
+  /// Upload Photos
+  static const uploadPhotos = "$baseUrl/uploads/multiple"; //
+  static const uploadBadgePhotos = "$baseUrl/upload-photos/batch-upload"; //
+
   ///Gallery and Home
   static const myGallery = "$baseUrl/upload-photos/my-photos"; //done
   static getPhotoByTagId(String tagId) => "$baseUrl/upload-photos/tags/$tagId"; //done

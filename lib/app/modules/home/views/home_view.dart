@@ -349,8 +349,8 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:foto_tidy/app/modules/gallery/views/gallery_view.dart';
 import 'package:foto_tidy/app/modules/home/controllers/home_controller.dart';
 import 'package:foto_tidy/app/modules/home/views/browse_photos_view.dart';
+import 'package:foto_tidy/app/modules/home/views/notifications_view.dart';
 import 'package:foto_tidy/app/modules/profile/controllers/profile_controller.dart';
-import 'package:foto_tidy/app/modules/profile/views/profile_view.dart';
 import 'package:foto_tidy/app/modules/tags/controllers/tags_controller.dart';
 import 'package:foto_tidy/common/app_color/app_colors.dart';
 import 'package:foto_tidy/common/app_images/app_images.dart';
@@ -401,43 +401,49 @@ class _HomeViewState extends State<HomeView> {
         actions: [
           GestureDetector(
             onTap: () {
-              Get.to(() => ProfileView(
-                showBackButton: true,
-              ));
+              Get.to(()=> NotificationsView());
             },
-            child: Obx(() {
-              final imagePath = profileController.profileImageUrl.value;
-              return CircleAvatar(
-                radius: 20,
-                backgroundColor: AppColors.whiteDark,
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(20),
-                  child: imagePath.startsWith("http")
-                      ? CachedNetworkImage(
-                    imageUrl: imagePath,
-                    height: Get.height.h,
-                    width: Get.width.w,
-                    fit: BoxFit.cover,
-                    placeholder: (context, url) => const Center(
-                      child: CircularProgressIndicator(
-                        color: AppColors.orange,
-                      ),
-                    ),
-                    errorWidget: (context, url, error) => const Icon(
-                      Icons.error,
-                      color: Colors.red,
-                    ),
-                  )
-                      : Image.file(
-                    File(imagePath),
-                    height: Get.height.h,
-                    width: Get.width.w,
-                    fit: BoxFit.cover,
-                  ),
-                ),
-              );
-            }),
+            child: Image.asset(AppImages.notification,scale: 4,color: AppColors.black,),
           ),
+          // GestureDetector(
+          //   onTap: () {
+          //     Get.to(() => ProfileView(
+          //       showBackButton: true,
+          //     ));
+          //   },
+          //   child: Obx(() {
+          //     final imagePath = profileController.profileImageUrl.value;
+          //     return CircleAvatar(
+          //       radius: 20,
+          //       backgroundColor: AppColors.whiteDark,
+          //       child: ClipRRect(
+          //         borderRadius: BorderRadius.circular(20),
+          //         child: imagePath.startsWith("http")
+          //             ? CachedNetworkImage(
+          //           imageUrl: imagePath,
+          //           height: Get.height.h,
+          //           width: Get.width.w,
+          //           fit: BoxFit.cover,
+          //           placeholder: (context, url) => const Center(
+          //             child: CircularProgressIndicator(
+          //               color: AppColors.orange,
+          //             ),
+          //           ),
+          //           errorWidget: (context, url, error) => const Icon(
+          //             Icons.error,
+          //             color: Colors.red,
+          //           ),
+          //         )
+          //             : Image.file(
+          //           File(imagePath),
+          //           height: Get.height.h,
+          //           width: Get.width.w,
+          //           fit: BoxFit.cover,
+          //         ),
+          //       ),
+          //     );
+          //   }),
+          // ),
           sw20,
         ],
       ),
@@ -568,7 +574,8 @@ class _HomeViewState extends State<HomeView> {
           Obx(() {
             final data = profileController.profileData.value?.data;
             if (data == null) return SizedBox();
-            if (data.isActiveSubscription == true) return const SizedBox.shrink();
+            if (data.isActiveSubscription == true)
+              return const SizedBox.shrink();
             return Padding(
               padding: EdgeInsets.symmetric(horizontal: 20.w),
               child: Text(
@@ -703,28 +710,28 @@ class _HomeViewState extends State<HomeView> {
               borderRadius: BorderRadius.circular(12),
               child: imageUrl.isNotEmpty
                   ? CachedNetworkImage(
-                imageUrl: imageUrl,
-                fit: BoxFit.cover,
-                placeholder: (context, url) => const Center(
-                  child: CircularProgressIndicator(
-                    color: AppColors.orange,
-                  ),
-                ),
-                errorWidget: (context, url, error) => Center(
-                  child: Text(
-                    item.tag?.title ?? 'Untitled',
-                    style: h5.copyWith(color: AppColors.grey),
-                    textAlign: TextAlign.center,
-                  ),
-                ),
-              )
+                      imageUrl: imageUrl,
+                      fit: BoxFit.cover,
+                      placeholder: (context, url) => const Center(
+                        child: CircularProgressIndicator(
+                          color: AppColors.orange,
+                        ),
+                      ),
+                      errorWidget: (context, url, error) => Center(
+                        child: Text(
+                          item.tag?.title ?? 'Untitled',
+                          style: h5.copyWith(color: AppColors.grey),
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
+                    )
                   : Center(
-                child: Text(
-                  item.tag?.title ?? 'Untitled',
-                  style: h5.copyWith(color: AppColors.grey),
-                  textAlign: TextAlign.center,
-                ),
-              ),
+                      child: Text(
+                        item.tag?.title ?? 'Untitled',
+                        style: h5.copyWith(color: AppColors.grey),
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
             ),
           );
         },
@@ -732,4 +739,3 @@ class _HomeViewState extends State<HomeView> {
     });
   }
 }
-

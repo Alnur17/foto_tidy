@@ -5,13 +5,8 @@ import 'package:flutter/cupertino.dart';
 
 import 'package:http/http.dart' as http;
 
-
-
-
 class BaseClient {
-
   static getRequest({required String api, params, headers}) async {
-
     debugPrint("API Hit: $api");
     debugPrint("Header: $headers");
 
@@ -23,7 +18,6 @@ class BaseClient {
   }
 
   static postRequest({required String api, body, headers}) async {
-
     debugPrint("API Hit: $api");
     debugPrint("body: $body");
     http.Response response = await http.post(
@@ -31,11 +25,13 @@ class BaseClient {
       body: body,
       headers: headers,
     );
-    debugPrint("<================= response ====== ${response.body} ===========>");
+    debugPrint(
+        "<================= response ====== ${response.body} ===========>");
 
     return response;
   }
-  static patchRequest({required String api, body,headers}) async {
+
+  static patchRequest({required String api, body, headers}) async {
     debugPrint("API Hit: $api");
     debugPrint("body: $body");
     http.Response response = await http.patch(
@@ -46,7 +42,7 @@ class BaseClient {
     return response;
   }
 
-  static putRequest({required String api, body,headers}) async {
+  static putRequest({required String api, body, headers}) async {
     debugPrint("API Hit: $api");
     debugPrint("body: $body");
     http.Response response = await http.put(
@@ -57,8 +53,7 @@ class BaseClient {
     return response;
   }
 
-
-  static deleteRequest({required String api, body,headers}) async {
+  static deleteRequest({required String api, body, headers}) async {
     debugPrint("API Hit: $api");
     debugPrint("body: $body");
     http.Response response = await http.delete(
@@ -68,13 +63,13 @@ class BaseClient {
     return response;
   }
 
-
   static handleResponse(http.Response response) async {
     try {
       debugPrint('ResponseCode: ${response.statusCode}');
       debugPrint('ResponseBody: ${response.body}');
 
-      var decodedBody = response.body.isNotEmpty ? jsonDecode(response.body) : null;
+      var decodedBody =
+          response.body.isNotEmpty ? jsonDecode(response.body) : null;
 
       if (response.statusCode >= 200 && response.statusCode <= 210) {
         return decodedBody;
@@ -88,7 +83,6 @@ class BaseClient {
           response.statusCode == 406 ||
           response.statusCode == 409 ||
           response.statusCode == 500) {
-
         // Extract message if available
         String message = decodedBody?['message'] ?? 'Something went wrong.';
 
@@ -100,13 +94,11 @@ class BaseClient {
       String msg = decodedBody?['message'] ?? 'Unexpected error occurred.';
 
       return decodedBody;
-
-    } on SocketException { throw "No Internet connection";
+    } on SocketException {
+      throw "No Internet connection";
     } on FormatException {
-
       throw "Bad response format";
     } catch (e) {
-
       throw e.toString();
     }
   }

@@ -25,9 +25,8 @@ import 'edit_profile_view.dart';
 import 'favourite_view.dart';
 
 class ProfileView extends GetView<ProfileController> {
-  final bool showBackButton;
 
-  ProfileView({super.key, this.showBackButton = false});
+  ProfileView({super.key});
 
   final ProfileController profileController = Get.put(ProfileController());
 
@@ -42,18 +41,18 @@ class ProfileView extends GetView<ProfileController> {
           'Profile',
           style: appBarStyle,
         ),
-        automaticallyImplyLeading: showBackButton,
-        leading: showBackButton
-            ? GestureDetector(
-                onTap: () {
-                  Get.back();
-                },
-                child: Image.asset(
-                  AppImages.back,
-                  scale: 4,
-                ),
-              )
-            : null,
+        //automaticallyImplyLeading: showBackButton,
+        // leading: showBackButton
+        //     ? GestureDetector(
+        //         onTap: () {
+        //           Get.back();
+        //         },
+        //         child: Image.asset(
+        //           AppImages.back,
+        //           scale: 4,
+        //         ),
+        //       )
+        //     : null,
         centerTitle: true,
       ),
       body: Obx(() {

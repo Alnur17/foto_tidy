@@ -76,6 +76,62 @@ class GalleryController extends GetxController {
     }
   }
 
+  Future<void> uploadBatchPhotos(List<Map<String, dynamic>> payload) async {
+    try {
+      isLoading(true);
+
+      final accessToken =
+          LocalStorage.getData(key: AppConstant.accessToken)?.toString() ?? "";
+
+      if (accessToken.isEmpty) {
+        kSnackBar(
+          message: "User not authenticated",
+          bgColor: AppColors.orange,
+        );
+        return;
+      }
+
+      /// Prepare body exactly like API expects
+      final body = {
+        "data": payload,
+      };
+
+      final response = await BaseClient.postRequest(
+        api: Api.uploadBadgePhotos,
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': accessToken,
+        },
+        body: body,
+      );
+
+      final data = await BaseClient.handleResponse(response);
+
+      if (data != null && data['success'] == true) {
+        kSnackBar(
+          message: data['message'] ?? "Uploaded successfully!",
+          bgColor: AppColors.green,
+        );
+
+        /// Refresh gallery after upload
+        fetchMyGallery();
+      } else {
+        kSnackBar(
+          message: data?['message'] ?? "Failed to upload photos",
+          bgColor: AppColors.orange,
+        );
+      }
+    } catch (e) {
+      kSnackBar(
+        message: e.toString(),
+        bgColor: AppColors.orange,
+      );
+    } finally {
+      isLoading(false);
+    }
+  }
+
+
   /// Select category (tag) — updated to fetch from API instead of filtering locally
   Future<void> selectCategory(String tagId, String tagName) async {
     if (selectedCategory.value == tagName) {
