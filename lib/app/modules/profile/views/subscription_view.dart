@@ -5,6 +5,7 @@ import 'package:get/get.dart';
 
 import '../../../../common/app_color/app_colors.dart';
 import '../../../../common/app_text_style/styles.dart';
+import '../../../../common/helper/subscription_card.dart';
 import '../../../../common/helper/subscription_feature_list.dart';
 import '../../../../common/size_box/custom_sizebox.dart';
 import '../../../../common/widgets/custom_button.dart';
@@ -19,7 +20,8 @@ class SubscriptionView extends StatefulWidget {
 }
 
 class _SubscriptionViewState extends State<SubscriptionView> {
-  final SubscriptionController subscriptionController = Get.put(SubscriptionController());
+  final SubscriptionController subscriptionController =
+      Get.put(SubscriptionController());
 
   Widget _buildPlanCard({
     required String planKey,
@@ -124,8 +126,8 @@ class _SubscriptionViewState extends State<SubscriptionView> {
                     text: 'Monthly',
                     onPressed: monthlyPkg == null
                         ? () {}
-                        : () =>
-                            subscriptionController.selectedPackageId.value = monthlyPkg.id,
+                        : () => subscriptionController.selectedPackageId.value =
+                            monthlyPkg.id,
                     backgroundColor:
                         isMonthly ? AppColors.white : AppColors.transparent,
                     textColor: AppColors.black,
@@ -139,8 +141,8 @@ class _SubscriptionViewState extends State<SubscriptionView> {
                     text: 'Yearly',
                     onPressed: yearlyPkg == null
                         ? () {}
-                        : () =>
-                            subscriptionController.selectedPackageId.value = yearlyPkg.id,
+                        : () => subscriptionController.selectedPackageId.value =
+                            yearlyPkg.id,
                     backgroundColor:
                         !isMonthly ? AppColors.white : AppColors.transparent,
                     textColor: AppColors.black,
@@ -176,7 +178,8 @@ class _SubscriptionViewState extends State<SubscriptionView> {
           CustomButton(
             text: 'Upgrade to $displayTitle',
             onPressed: () {
-              subscriptionController.createSubscription(packageId: currentPkg.id ?? '');
+              subscriptionController.createSubscription(
+                  packageId: currentPkg.id ?? '');
               Get.snackbar('Upgrade', 'Selected: ${currentPkg.id}');
             },
             backgroundColor: AppColors.orange,
@@ -208,10 +211,12 @@ class _SubscriptionViewState extends State<SubscriptionView> {
         ),
       ),
       body: Obx(() {
-        final hasBasic = subscriptionController.getPackage('pro_basic', true) != null ||
-            subscriptionController.getPackage('pro_basic', false) != null;
-        final hasPremium = subscriptionController.getPackage('pro_premium', true) != null ||
-            subscriptionController.getPackage('pro_premium', false) != null;
+        final hasBasic =
+            subscriptionController.getPackage('pro_basic', true) != null ||
+                subscriptionController.getPackage('pro_basic', false) != null;
+        final hasPremium =
+            subscriptionController.getPackage('pro_premium', true) != null ||
+                subscriptionController.getPackage('pro_premium', false) != null;
 
         return Padding(
           padding: EdgeInsets.symmetric(horizontal: 20.w),
@@ -219,6 +224,30 @@ class _SubscriptionViewState extends State<SubscriptionView> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                sh20,
+                Obx(() {
+                  final sub = subscriptionController.mySubscription.value?.data;
+
+                  if (sub == null) {
+                    return SubscriptionCard(
+                      title: 'My Subscription',
+                      planName: 'Free Plan',
+                      deadlineText: 'No Active Subscription',
+                      daysLeft: '0 Days',
+                    );
+                  }
+
+                  final planName = sub.package?.title?.toUpperCase() ?? 'Unknown';
+                  final daysLeft = subscriptionController.getRemainingDays();
+
+                  return SubscriptionCard(
+                    title: 'My Subscription',
+                    planName: planName,
+                    deadlineText: 'Subscription Deadline',
+                    daysLeft: '$daysLeft Days Left',
+                  );
+                }),
+
                 sh20,
                 Center(child: Image.asset(AppImages.crown, scale: 4)),
                 sh20,
@@ -252,7 +281,7 @@ class _SubscriptionViewState extends State<SubscriptionView> {
 
                 // LOADING
                 if (subscriptionController.isLoading.value)
-                  const Center(child: CircularProgressIndicator())
+                  const Center(child: CircularProgressIndicator( color: AppColors.orange,))
                 else ...[
                   // PRO BASIC
                   if (hasBasic)

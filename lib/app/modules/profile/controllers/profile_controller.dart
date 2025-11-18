@@ -24,6 +24,7 @@ class ProfileController extends GetxController {
   Rx<ProfileModel?> profileData = Rx<ProfileModel?>(null);
   RxString profileImageUrl = AppImages.profileImage.obs;
 
+
   final ImagePicker _picker = ImagePicker();
 
 

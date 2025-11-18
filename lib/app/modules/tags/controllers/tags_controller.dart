@@ -66,6 +66,15 @@ class TagsController extends GetxController {
     }
   }
 
+  String? getTagIdByTitle(String title) {
+    try {
+      return allTagsList.firstWhere((t) => t.title == title).id.toString();
+    } catch (e) {
+      return null;
+    }
+  }
+
+
   Future<void> fetchAllTags() async {
     try {
       isLoading(true);

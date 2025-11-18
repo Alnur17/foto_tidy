@@ -98,12 +98,15 @@ import '../../../../common/app_constant/app_constant.dart';
 import '../../../../common/helper/local_store.dart';
 import '../../../../common/widgets/custom_snackbar.dart';
 import '../../../data/base_client.dart';
+import '../model/current_subscription_model.dart';
 import '../views/payment_view.dart';
 
 class SubscriptionController extends GetxController {
   // State
   var isLoading = false.obs;
   var subscriptionPackageList = <SubsPackageDatum>[].obs;
+  var mySubscription = Rxn<MySubscriptionModel>();
+
 
   // Selected package ID (for purchase flow)
   var selectedPackageId = RxnString();
@@ -116,6 +119,7 @@ class SubscriptionController extends GetxController {
   void onInit() {
     super.onInit();
     fetchSubscriptionPackages();
+    fetchMySubscription();
   }
 
   // Group packages: { "pro_basic": [monthlyPkg, yearlyPkg], "pro_premium": [...] }
@@ -137,6 +141,36 @@ class SubscriptionController extends GetxController {
           (p.billingCycle?.toLowerCase() == (isMonthly ? 'monthly' : 'yearly')),
     );
   }
+
+  Future<void> fetchMySubscription() async {
+    try {
+      isLoading(true);
+
+      String token = LocalStorage.getData(key: AppConstant.accessToken) ?? "";
+
+      var response = await BaseClient.getRequest(
+        api: Api.mySubscription,
+        headers: {
+          "Authorization": token,
+          "Content-Type": "application/json",
+        },
+      );
+
+      var data = await BaseClient.handleResponse(response);
+
+      if (data != null && data['success'] == true) {
+        mySubscription.value = MySubscriptionModel.fromJson(data);
+      } else {
+        mySubscription.value = null;
+      }
+    } catch (e) {
+      debugPrint("Fetch My Subscription Error: $e");
+      mySubscription.value = null;
+    } finally {
+      isLoading(false);
+    }
+  }
+
 
   Future<void> fetchSubscriptionPackages() async {
     try {
@@ -278,4 +312,13 @@ class SubscriptionController extends GetxController {
       isLoading.value = false;
     }
   }
+
+  int getRemainingDays() {
+    final exp = mySubscription.value?.data?.expiredAt;
+    if (exp == null) return 0;
+
+    final now = DateTime.now();
+    return exp.difference(now).inDays;
+  }
+
 }

@@ -11,7 +11,6 @@ class Api {
   static const resetPassword = "$baseUrl/auth/reset-password"; //done
   static const changePassword = "$baseUrl/auth/change-password"; //done
 
-
   ///profile
   static const profile = "$baseUrl/users/my-profile"; //done
   static const editProfile = "$baseUrl/users/update-my-profile"; //done
@@ -20,16 +19,26 @@ class Api {
   static editTag(String tagId) => "$baseUrl/tags/$tagId"; //done
   static deleteTag(String tagId) => "$baseUrl/tags/$tagId"; //
   static const settings = "$baseUrl/contents"; //done
+  static const favorite = "$baseUrl/favorite/my-favorite"; //done
+  static const addFavorite = "$baseUrl/favorite"; //done
+  static removeFavorite(String photoId) => "$baseUrl/favorite/photo/$photoId"; //done
+
+  ///Subscription and payments
+  static const mySubscription = "$baseUrl/subscriptions/my-subscriptions"; //done
   static const subscriptionPackages = "$baseUrl/packages"; //done
   static const buySubscription = "$baseUrl/subscriptions"; //done
   static const createPayment = "$baseUrl/payments/checkout"; //done
 
   /// Upload Photos
-  static const uploadPhotos = "$baseUrl/uploads/multiple"; //
-  static const uploadBadgePhotos = "$baseUrl/upload-photos/batch-upload"; //
+  static const uploadPhotos = "$baseUrl/uploads/multiple"; //done
+  static const uploadBadgePhotos = "$baseUrl/upload-photos/batch-upload"; //done
 
   ///Gallery and Home
   static const myGallery = "$baseUrl/upload-photos/my-photos"; //done
   static getPhotoByTagId(String tagId) => "$baseUrl/upload-photos/tags/$tagId"; //done
+  static const setGalleryLock = "$baseUrl/gallery-lock/add-key"; //
+  static const unlockGallery = "$baseUrl/gallery-lock/access-journal"; //
+  static const changeGalleryLock = "$baseUrl/gallery-lock/change-key"; //
+  static const deleteGalleryLock = "$baseUrl/gallery-lock/delete-key"; //
 
 }

@@ -4,6 +4,7 @@ import 'package:foto_tidy/app/modules/profile/views/subscription_view.dart';
 import 'package:foto_tidy/common/app_color/app_colors.dart';
 import 'package:foto_tidy/common/app_images/app_images.dart';
 import 'package:foto_tidy/common/widgets/custom_button.dart';
+import 'package:foto_tidy/common/widgets/custom_loader.dart';
 import 'package:get/get.dart';
 import '../../../../common/app_text_style/styles.dart';
 import '../../../../common/size_box/custom_sizebox.dart';
@@ -35,7 +36,7 @@ class BrowsePhotosView extends StatelessWidget {
                   return _buildInitialUploadView(homeController, context);
                 } else if (homeController.selectedImages.length < 5) {
                   return _buildImageListView(homeController, context);
-                } else{
+                } else {
                   return _buildLimitReachedView(homeController, context);
                 }
               }),
@@ -129,15 +130,16 @@ class BrowsePhotosView extends StatelessWidget {
           );
         }).toList(),
         sh16,
-        CustomButton(
-          text: 'Next',
-          onPressed: () {
-            homeController.uploadPhotos(context: context);
-          },
-          gradientColors: AppColors.buttonColor,
-          borderRadius: 12,
-        )
-        ,
+        Obx(() => homeController.isLoading.value == true
+            ? CustomLoader(color: AppColors.white)
+            : CustomButton(
+                text: 'Next',
+                onPressed: () {
+                  homeController.uploadPhotos(context: context);
+                },
+                gradientColors: AppColors.buttonColor,
+                borderRadius: 12,
+              )),
       ],
     );
   }
@@ -182,13 +184,17 @@ class BrowsePhotosView extends StatelessWidget {
                 ),
               ),
         sh20,
-        CustomButton(
-          text: 'Next',
-          onPressed: () {
-            homeController.uploadPhotos(context: context);
-          },
-          gradientColors: AppColors.buttonColor,
-          borderRadius: 12,
+        Obx(
+          () => homeController.isLoading.value == true
+              ? CustomLoader(color: AppColors.white)
+              : CustomButton(
+                  text: 'Next',
+                  onPressed: () {
+                    homeController.uploadPhotos(context: context);
+                  },
+                  gradientColors: AppColors.buttonColor,
+                  borderRadius: 12,
+                ),
         ),
 
         sh20,

@@ -67,7 +67,7 @@ class GalleryItem extends StatelessWidget {
                 ),
                 decoration: ShapeDecoration(
                   shape: CircleBorder(),
-                  color: Colors.black26,
+                  color: Colors.black87,
                 ),
                 child: Image.asset(
                   isFavorite ? AppImages.favoriteFilled : AppImages.favorite,

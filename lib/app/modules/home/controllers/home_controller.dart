@@ -16,6 +16,7 @@ class HomeController extends GetxController {
   RxList<XFile> selectedImages = <XFile>[].obs;
   RxBool isLimitReached = false.obs;
   RxBool isSubscribed = false.obs;
+  RxBool isLoading = false.obs;
 
   // Function to pick multiple images
   Future<void> pickImages({
@@ -94,6 +95,7 @@ class HomeController extends GetxController {
     }
 
     try {
+      isLoading.value = true;
       var request = http.MultipartRequest(
         "POST",
         Uri.parse(Api.uploadPhotos),
@@ -126,9 +128,8 @@ class HomeController extends GetxController {
       var result = await BaseClient.handleResponse(response);
 
       if (response.statusCode >= 200 && response.statusCode <= 210) {
-
         var uploadedData = result?['data'];
-        Get.off(()=> TagYourPhotoFromGalleryView(uploadedFiles: uploadedData));
+        Get.off(() => TagYourPhotoFromGalleryView(uploadedFiles: uploadedData));
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text("Photos uploaded successfully!"),
@@ -150,8 +151,8 @@ class HomeController extends GetxController {
           backgroundColor: AppColors.red,
         ),
       );
+    } finally {
+      isLoading.value = false;
     }
   }
-
-
 }

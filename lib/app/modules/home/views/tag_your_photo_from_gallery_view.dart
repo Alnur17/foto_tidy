@@ -165,12 +165,10 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:foto_tidy/app/modules/home/views/photo_saved_successfully_view.dart';
 import 'package:foto_tidy/common/app_text_style/styles.dart';
 import 'package:get/get.dart';
 
 import '../../../../common/app_color/app_colors.dart';
-import '../../../../common/app_images/app_images.dart';
 import '../../../../common/helper/custom_filter_chip.dart';
 import '../../../../common/size_box/custom_sizebox.dart';
 import '../../../../common/widgets/custom_button.dart';
@@ -307,13 +305,13 @@ class TagYourPhotoFromGalleryView extends StatelessWidget {
             /// --------------------------
             /// APPLY TO ALL
             /// --------------------------
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text('Apply to all photos', style: h5),
-                Image.asset(AppImages.toggle, scale: 4),
-              ],
-            ),
+            // Row(
+            //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            //   children: [
+            //     Text('Apply to all photos', style: h5),
+            //     Image.asset(AppImages.toggle, scale: 4),
+            //   ],
+            // ),
 
             sh20,
 
@@ -341,15 +339,13 @@ class TagYourPhotoFromGalleryView extends StatelessWidget {
                   return {
                     "tag": selectedTagId,
                     "image": file["url"],
-                    "fileSize": file["fileSize"] ?? 0.0,
+                    "fileSize": file["size"] ?? 0.0,
                   };
                 }).toList();
 
                 /// 💥 Upload now
-                await galleryController.uploadBatchPhotos(payload);
+                await galleryController.uploadBatchPhotos(payload, context);
 
-                /// Navigate on success
-                Get.to(() => PhotoSavedSuccessfullyView());
               },
               gradientColors: AppColors.buttonColor,
               borderRadius: 12,

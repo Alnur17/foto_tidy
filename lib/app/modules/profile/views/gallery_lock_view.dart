@@ -42,7 +42,7 @@ class GalleryLockView extends GetView {
       ),
       body: Padding(
         padding: EdgeInsets.symmetric(horizontal: 20).r,
-        child: profileController.isFirstTimeLock.value == true
+        child: profileController.profileData.value?.data?.isGalleryLock == false
             ? Column(
                 children: [
                   sh116,

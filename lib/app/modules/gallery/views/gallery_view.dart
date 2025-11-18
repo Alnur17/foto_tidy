@@ -248,6 +248,7 @@ import '../../../../common/helper/custom_filter_chip.dart';
 import '../../../../common/helper/gallery_item.dart';
 import '../../../../common/size_box/custom_sizebox.dart';
 import '../../../../common/widgets/custom_button.dart';
+import '../../profile/controllers/favorite_controller.dart';
 import '../controllers/gallery_controller.dart';
 
 class GalleryView extends StatefulWidget {
@@ -261,6 +262,7 @@ class _GalleryViewState extends State<GalleryView> {
   final profileController = Get.put(ProfileController());
   final tagsController = Get.find<TagsController>();
   final galleryController = Get.put(GalleryController());
+  final favoriteController = Get.put(FavoriteController());
 
   @override
   Widget build(BuildContext context) {
@@ -393,7 +395,7 @@ class _GalleryViewState extends State<GalleryView> {
 
             /// ---------- GALLERY SECTION ----------
             Expanded(
-              child: galleryController.isGalleryLocked.value
+              child: profileController.profileData.value?.data?.isGalleryLock == true
                   ? _buildLockedGallery()
                   : _buildGalleryGrid(),
             ),
@@ -417,10 +419,11 @@ class _GalleryViewState extends State<GalleryView> {
             Text('Enter PIN to Unlock',
                 style: h2.copyWith(fontWeight: FontWeight.w700)),
             sh12,
-            Text('Please enter your 6-digit PIN to continue', style: h4),
+            Text('Please enter your 4-digit PIN to continue', style: h4),
             const SizedBox(height: 30),
             PinCodeTextField(
-              length: 6,
+              controller: galleryController.pinTEController,
+              length: 4,
               keyboardType: TextInputType.number,
               animationType: AnimationType.fade,
               pinTheme: PinTheme(
@@ -444,7 +447,9 @@ class _GalleryViewState extends State<GalleryView> {
             sh20,
             CustomButton(
               text: 'Submit',
-              onPressed: () {},
+              onPressed: () {
+                galleryController.setGalleryLockAPI(galleryController.pinTEController.text.toString().trim());
+              },
               gradientColors: AppColors.buttonColor,
             ),
           ],
@@ -456,6 +461,10 @@ class _GalleryViewState extends State<GalleryView> {
   /// Unlocked gallery grid view
   Widget _buildGalleryGrid() {
     final gallery = galleryController.galleryList;
+
+    final isProUser = profileController
+        .profileData.value?.data?.isActiveSubscription ??
+        false;
 
     if (gallery.isEmpty) {
       return Center(
@@ -477,10 +486,36 @@ class _GalleryViewState extends State<GalleryView> {
       itemCount: gallery.length,
       itemBuilder: (context, index) {
         final item = gallery[index];
+        final isFav = RxBool(item.isFavorite ?? false);
         return GalleryItem(
+          isProUser: isProUser,
           imageUrl: item.image ?? '',
           isFavorite: item.isFavorite ?? false,
-          onFavoriteToggle: () {},
+          onFavoriteToggle: () async {
+            final userId = profileController.profileData.value?.data?.id ?? "";
+            final photoId = item.id ?? "";
+
+            if (userId.isEmpty || photoId.isEmpty) {
+              print("❌ Missing userId or photoId");
+              return;
+            }
+
+            // -------- INSTANT UI UPDATE --------
+            isFav.value = !isFav.value;
+
+            // -------- API CALL --------
+            if (isFav.value) {
+              await favoriteController.addFavorite(
+                userId: userId,
+                photoId: photoId,
+              );
+            } else {
+              await favoriteController.removeFavorite(photoId: photoId);
+            }
+
+            // -------- OPTIONAL REFRESH --------
+            await galleryController.fetchMyGallery();
+          },
         );
       },
     );
