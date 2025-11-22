@@ -33,11 +33,11 @@ class _HomeViewState extends State<HomeView> {
   final tagsController = Get.put(TagsController());
   final favoriteController = Get.put(FavoriteController());
 
-
   @override
   void initState() {
     super.initState();
     _loadInitialData();
+
   }
 
   Future<void> _loadInitialData() async {
@@ -254,10 +254,13 @@ class _HomeViewState extends State<HomeView> {
 
           sh12,
           Expanded(
-            child: profileController.profileData.value?.data?.isGalleryLock == true
-                ? _buildLockedGallery()
-                : _buildGalleryGrid(),
-          )
+            child: Obx(
+              () => profileController.profileData.value?.data?.isGalleryLock ==
+                      true
+                  ? _buildLockedGallery()
+                  : _buildGalleryGrid(),
+            ),
+          ),
         ],
       ),
     );
@@ -385,7 +388,8 @@ class _HomeViewState extends State<HomeView> {
             //   await galleryController.fetchMyGallery();
             // },
             onFavoriteToggle: () async {
-              final userId = profileController.profileData.value?.data?.id ?? "";
+              final userId =
+                  profileController.profileData.value?.data?.id ?? "";
               final photoId = item.id ?? "";
 
               if (userId.isEmpty || photoId.isEmpty) {
@@ -409,85 +413,84 @@ class _HomeViewState extends State<HomeView> {
               // -------- OPTIONAL REFRESH --------
               await galleryController.fetchMyGallery();
             },
-
           );
         },
       );
     });
   }
 
-  // Widget _buildGalleryGrid() {
-  //   return Obx(() {
-  //     if (galleryController.isLoading.value) {
-  //       return const Center(
-  //         child: CircularProgressIndicator(color: AppColors.orange),
-  //       );
-  //     }
-  //
-  //     if (galleryController.galleryList.isEmpty) {
-  //       return Center(
-  //         child: Text(
-  //           "No gallery items found",
-  //           style: h4.copyWith(color: AppColors.grey),
-  //         ),
-  //       );
-  //     }
-  //
-  //     return GridView.builder(
-  //       padding: EdgeInsets.only(left: 20.w, right: 20.w, bottom: 116.h),
-  //       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-  //         crossAxisCount: 2,
-  //         crossAxisSpacing: 10.w,
-  //         mainAxisSpacing: 10.h,
-  //         childAspectRatio: 1,
-  //       ),
-  //       itemCount: galleryController.galleryList.length,
-  //       itemBuilder: (context, index) {
-  //         final item = galleryController.galleryList[index];
-  //         final imageUrl = item.image ?? '';
-  //
-  //         return Container(
-  //           decoration: BoxDecoration(
-  //             borderRadius: BorderRadius.circular(12),
-  //             color: AppColors.white,
-  //             boxShadow: [
-  //               BoxShadow(
-  //                 color: AppColors.grey.withOpacity(0.2),
-  //                 blurRadius: 4,
-  //                 offset: const Offset(0, 2),
-  //               ),
-  //             ],
-  //           ),
-  //           child: ClipRRect(
-  //             borderRadius: BorderRadius.circular(12),
-  //             child: imageUrl.isNotEmpty
-  //                 ? CachedNetworkImage(
-  //                     imageUrl: imageUrl,
-  //                     fit: BoxFit.cover,
-  //                     placeholder: (context, url) => const Center(
-  //                       child: CircularProgressIndicator(
-  //                         color: AppColors.orange,
-  //                       ),
-  //                     ),
-  //                     errorWidget: (context, url, error) => Center(
-  //                       child: Text(
-  //                         item.tag?.title ?? 'Untitled',
-  //                         style: h5.copyWith(color: AppColors.grey),
-  //                         textAlign: TextAlign.center,
-  //                       ),
-  //                     ),
-  //                   )
-  //                 : Center(
-  //                     child: Text(
-  //                       item.tag?.title ?? 'Untitled',
-  //                       style: h5.copyWith(color: AppColors.grey),
-  //                       textAlign: TextAlign.center,
-  //                     ),
-  //                   ),
-  //           ),
-  //         );
-  //       },
-  //     );
-  //   });
-  // }
+// Widget _buildGalleryGrid() {
+//   return Obx(() {
+//     if (galleryController.isLoading.value) {
+//       return const Center(
+//         child: CircularProgressIndicator(color: AppColors.orange),
+//       );
+//     }
+//
+//     if (galleryController.galleryList.isEmpty) {
+//       return Center(
+//         child: Text(
+//           "No gallery items found",
+//           style: h4.copyWith(color: AppColors.grey),
+//         ),
+//       );
+//     }
+//
+//     return GridView.builder(
+//       padding: EdgeInsets.only(left: 20.w, right: 20.w, bottom: 116.h),
+//       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+//         crossAxisCount: 2,
+//         crossAxisSpacing: 10.w,
+//         mainAxisSpacing: 10.h,
+//         childAspectRatio: 1,
+//       ),
+//       itemCount: galleryController.galleryList.length,
+//       itemBuilder: (context, index) {
+//         final item = galleryController.galleryList[index];
+//         final imageUrl = item.image ?? '';
+//
+//         return Container(
+//           decoration: BoxDecoration(
+//             borderRadius: BorderRadius.circular(12),
+//             color: AppColors.white,
+//             boxShadow: [
+//               BoxShadow(
+//                 color: AppColors.grey.withOpacity(0.2),
+//                 blurRadius: 4,
+//                 offset: const Offset(0, 2),
+//               ),
+//             ],
+//           ),
+//           child: ClipRRect(
+//             borderRadius: BorderRadius.circular(12),
+//             child: imageUrl.isNotEmpty
+//                 ? CachedNetworkImage(
+//                     imageUrl: imageUrl,
+//                     fit: BoxFit.cover,
+//                     placeholder: (context, url) => const Center(
+//                       child: CircularProgressIndicator(
+//                         color: AppColors.orange,
+//                       ),
+//                     ),
+//                     errorWidget: (context, url, error) => Center(
+//                       child: Text(
+//                         item.tag?.title ?? 'Untitled',
+//                         style: h5.copyWith(color: AppColors.grey),
+//                         textAlign: TextAlign.center,
+//                       ),
+//                     ),
+//                   )
+//                 : Center(
+//                     child: Text(
+//                       item.tag?.title ?? 'Untitled',
+//                       style: h5.copyWith(color: AppColors.grey),
+//                       textAlign: TextAlign.center,
+//                     ),
+//                   ),
+//           ),
+//         );
+//       },
+//     );
+//   });
+// }
 }

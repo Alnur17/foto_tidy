@@ -205,7 +205,7 @@ class _SubscriptionViewState extends State<SubscriptionView> {
           padding: EdgeInsets.only(left: 12.w),
           child: CustomCircularContainer(
             imagePath: AppImages.back,
-            onTap: () => Get.back(),
+            onTap: () => Navigator.pop(context),
             padding: 2,
           ),
         ),

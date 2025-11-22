@@ -395,7 +395,8 @@ class _GalleryViewState extends State<GalleryView> {
 
             /// ---------- GALLERY SECTION ----------
             Expanded(
-              child: profileController.profileData.value?.data?.isGalleryLock == true
+              child: profileController.profileData.value?.data?.isGalleryLock ==
+                      true
                   ? _buildLockedGallery()
                   : _buildGalleryGrid(),
             ),
@@ -409,51 +410,50 @@ class _GalleryViewState extends State<GalleryView> {
   Widget _buildLockedGallery() {
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 20.w),
-      child: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            sh116,
-            Image.asset(AppImages.changePassPro, scale: 4),
-            sh12,
-            Text('Enter PIN to Unlock',
-                style: h2.copyWith(fontWeight: FontWeight.w700)),
-            sh12,
-            Text('Please enter your 4-digit PIN to continue', style: h4),
-            const SizedBox(height: 30),
-            PinCodeTextField(
-              controller: galleryController.pinTEController,
-              length: 4,
-              keyboardType: TextInputType.number,
-              animationType: AnimationType.fade,
-              pinTheme: PinTheme(
-                shape: PinCodeFieldShape.underline,
-                borderRadius: BorderRadius.circular(8),
-                fieldHeight: 60,
-                fieldWidth: 50,
-                activeColor: AppColors.white,
-                inactiveColor: AppColors.borderColor,
-                selectedColor: AppColors.blue,
-              ),
-              animationDuration: const Duration(milliseconds: 300),
-              backgroundColor: AppColors.transparent,
-              cursorColor: AppColors.blue,
-              enablePinAutofill: true,
-              enableActiveFill: true,
-              onCompleted: (v) => log("PIN entered: $v"),
-              onChanged: (_) {},
-              appContext: context,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          sh116,
+          Image.asset(AppImages.changePassPro, scale: 4),
+          sh12,
+          Text('Enter PIN to Unlock',
+              style: h2.copyWith(fontWeight: FontWeight.w700)),
+          sh12,
+          Text('Please enter your 4-digit PIN to continue', style: h4),
+          const SizedBox(height: 30),
+          PinCodeTextField(
+            controller: galleryController.pinTEController,
+            length: 4,
+            keyboardType: TextInputType.number,
+            animationType: AnimationType.fade,
+            pinTheme: PinTheme(
+              shape: PinCodeFieldShape.underline,
+              borderRadius: BorderRadius.circular(8),
+              fieldHeight: 60,
+              fieldWidth: 50,
+              activeColor: AppColors.white,
+              inactiveColor: AppColors.borderColor,
+              selectedColor: AppColors.blue,
             ),
-            sh20,
-            CustomButton(
-              text: 'Submit',
-              onPressed: () {
-                galleryController.setGalleryLockAPI(galleryController.pinTEController.text.toString().trim());
-              },
-              gradientColors: AppColors.buttonColor,
-            ),
-          ],
-        ),
+            animationDuration: const Duration(milliseconds: 300),
+            backgroundColor: AppColors.transparent,
+            cursorColor: AppColors.blue,
+            enablePinAutofill: true,
+            enableActiveFill: true,
+            onCompleted: (v) => log("PIN entered: $v"),
+            onChanged: (_) {},
+            appContext: context,
+          ),
+          sh20,
+          CustomButton(
+            text: 'Submit',
+            onPressed: () {
+              galleryController.setGalleryLockAPI(
+                  galleryController.pinTEController.text.toString().trim());
+            },
+            gradientColors: AppColors.buttonColor,
+          ),
+        ],
       ),
     );
   }
@@ -462,9 +462,9 @@ class _GalleryViewState extends State<GalleryView> {
   Widget _buildGalleryGrid() {
     final gallery = galleryController.galleryList;
 
-    final isProUser = profileController
-        .profileData.value?.data?.isActiveSubscription ??
-        false;
+    final isProUser =
+        profileController.profileData.value?.data?.isActiveSubscription ??
+            false;
 
     if (gallery.isEmpty) {
       return Center(

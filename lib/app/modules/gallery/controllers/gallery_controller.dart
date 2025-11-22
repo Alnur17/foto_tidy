@@ -22,7 +22,8 @@ class GalleryController extends GetxController {
   var isGalleryLocked = false.obs;
 
 
-  TextEditingController pinTEController = TextEditingController();
+  final TextEditingController pinTEController = TextEditingController();
+
 
   @override
   void onInit() {

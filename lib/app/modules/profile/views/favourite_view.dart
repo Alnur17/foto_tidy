@@ -40,7 +40,7 @@ class _FavouriteViewState extends State<FavouriteView> {
         backgroundColor: AppColors.mainColor,
         title: Text('Favorite', style: appBarStyle),
         leading: GestureDetector(
-          onTap: () => Get.back(),
+          onTap: () => Navigator.pop(context),
           child: Image.asset(AppImages.back, scale: 4),
         ),
       ),

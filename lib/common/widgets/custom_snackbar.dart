@@ -20,8 +20,26 @@ import 'package:get/get.dart';
 // }
 
 
-void kSnackBar({required String message, required Color bgColor}) {
-  if (Get.isSnackbarOpen) Get.closeCurrentSnackbar();
+// void kSnackBar({required String message, required Color bgColor}) {
+//   if (Get.isSnackbarOpen) Get.closeCurrentSnackbar();
+//   Get.snackbar(
+//     '',
+//     message,
+//     backgroundColor: bgColor,
+//     colorText: Colors.white,
+//     snackPosition: SnackPosition.BOTTOM,
+//     duration: const Duration(seconds: 2),
+//     margin: const EdgeInsets.all(12),
+//     borderRadius: 8,
+//   );
+// }
+
+void kSnackBar({required String message, required Color bgColor}) async {
+  if (Get.isSnackbarOpen) {
+    await Future.delayed(const Duration(milliseconds: 100));
+    Get.closeCurrentSnackbar();
+  }
+
   Get.snackbar(
     '',
     message,
@@ -33,3 +51,4 @@ void kSnackBar({required String message, required Color bgColor}) {
     borderRadius: 8,
   );
 }
+

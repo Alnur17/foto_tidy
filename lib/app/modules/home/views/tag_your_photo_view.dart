@@ -2,7 +2,6 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:foto_tidy/app/modules/home/views/photo_saved_successfully_view.dart';
 import 'package:foto_tidy/app/modules/tags/controllers/tags_controller.dart';
 
 import 'package:get/get.dart';
@@ -65,34 +64,58 @@ class _TagYourPhotoViewState extends State<TagYourPhotoView> {
               spacing: 10.w,
               runSpacing: 10.h,
               children: tagsController.allTagsList.map((category) {
-                return Obx(
-                      () => CustomFilterChip(
-                    text: category.title?? '',
-                    isSelected:
-                    galleryController.selectedCategory.value == category.title,
+                return Obx(() {
+                  final isSelected =
+                      galleryController.selectedCategory.value ==
+                          (category.title ?? '');
+
+                  return CustomFilterChip(
+                    text: category.title ?? '',
+                    isSelected: isSelected,
                     onTap: () {
                       galleryController.selectCategory(
-                          category.title ?? '',category.id.toString());
+                        category.id.toString(),
+                        category.title ?? '',
+                      );
                     },
-                  ),
-                );
+                  );
+                });
               }).toList(),
             ),
             sh20,
             // Save button
             CustomButton(
               text: 'Save All Photos',
-              onPressed: () {
-                if (galleryController.selectedCategory.value != null) {
-                  Get.to(() =>
-                      PhotoSavedSuccessfullyView());
-                } else {
+              onPressed: () async {
+                if (galleryController.selectedCategory.value.isEmpty) {
                   Get.snackbar('No Category', 'Please select a category');
+                  return;
                 }
+
+                final selectedTagId =
+                tagsController.getTagIdByTitle(galleryController.selectedCategory.value);
+
+                if (selectedTagId == null) {
+                  Get.snackbar('Error', 'Invalid tag selected');
+                  return;
+                }
+
+                /// 💥 Build dynamic payload
+                // final payload = uploadedFiles.map((file) {
+                //   return {
+                //     "tag": selectedTagId,
+                //     "image": file["url"],
+                //     "fileSize": file["size"] ?? 0.0,
+                //   };
+                // }).toList();
+
+                /// 💥 Upload now
+              //  await galleryController.uploadBatchPhotos(payload, context);
+
               },
               gradientColors: AppColors.buttonColor,
               borderRadius: 12,
-              height: 40,
+              height: 40.h,
             ),
           ],
         ),

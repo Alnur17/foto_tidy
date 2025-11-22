@@ -52,6 +52,9 @@ dependencies:
   http_parser: ^4.0.2
   flutter_html: ^3.0.0-beta.2
   webview_flutter: ^4.13.0
+  firebase_core: ^4.2.1
+  firebase_messaging: ^16.0.4
+  flutter_local_notifications: ^19.5.0
 
 dev_dependencies:
   flutter_test:

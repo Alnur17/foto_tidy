@@ -135,7 +135,7 @@ class BrowsePhotosView extends StatelessWidget {
             : CustomButton(
                 text: 'Next',
                 onPressed: () {
-                  homeController.uploadPhotos(context: context);
+                  homeController.uploadMultiplePhoto(context: context);
                 },
                 gradientColors: AppColors.buttonColor,
                 borderRadius: 12,
@@ -190,7 +190,7 @@ class BrowsePhotosView extends StatelessWidget {
               : CustomButton(
                   text: 'Next',
                   onPressed: () {
-                    homeController.uploadPhotos(context: context);
+                    homeController.uploadMultiplePhoto(context: context);
                   },
                   gradientColors: AppColors.buttonColor,
                   borderRadius: 12,

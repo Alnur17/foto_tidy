@@ -48,7 +48,7 @@ class _EditProfileViewState extends State<EditProfileView> {
         leading: Padding(
           padding: const EdgeInsets.all(12),
           child: GestureDetector(
-            onTap: () => Get.back(),
+            onTap: () => Navigator.pop(context),
             child: Image.asset(AppImages.back, scale: 4),
           ),
         ),

@@ -86,7 +86,7 @@ class HomeController extends GetxController {
     }
   }
 
-  Future<void> uploadPhotos({required BuildContext context}) async {
+  Future<void> uploadMultiplePhoto({required BuildContext context}) async {
     if (selectedImages.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text("Please select some images first.")),

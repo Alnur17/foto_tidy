@@ -1,6 +1,7 @@
 class Api {
   /// base url
-  static const baseUrl = "http://74.118.168.203:5014/api/v1";
+  //static const baseUrl = "http://74.118.168.203:5014/api/v1";
+  static const baseUrl = "https://48c15380570c.ngrok-free.app/api/v1";
 
   ///auth api
   static const register = "$baseUrl/users/register"; //done
@@ -30,6 +31,7 @@ class Api {
   static const createPayment = "$baseUrl/payments/checkout"; //done
 
   /// Upload Photos
+  static const uploadFromCameraPhotos = "$baseUrl/uploads/multiple"; //done
   static const uploadPhotos = "$baseUrl/uploads/multiple"; //done
   static const uploadBadgePhotos = "$baseUrl/upload-photos/batch-upload"; //done
 
@@ -40,5 +42,6 @@ class Api {
   static const unlockGallery = "$baseUrl/gallery-lock/access-journal"; //
   static const changeGalleryLock = "$baseUrl/gallery-lock/change-key"; //
   static const deleteGalleryLock = "$baseUrl/gallery-lock/delete-key"; //
+  static const notification = "$baseUrl/notification"; //
 
 }
