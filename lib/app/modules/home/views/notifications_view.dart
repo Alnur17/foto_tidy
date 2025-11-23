@@ -34,10 +34,13 @@ class NotificationsView extends StatelessWidget {
           ),
         ),
       ),
-
       body: Obx(() {
         if (controller.isLoading.value) {
-          return const Center(child: CircularProgressIndicator());
+          return const Center(
+            child: CircularProgressIndicator(
+              color: AppColors.orange,
+            ),
+          );
         }
 
         if (controller.notificationsList.isEmpty) {

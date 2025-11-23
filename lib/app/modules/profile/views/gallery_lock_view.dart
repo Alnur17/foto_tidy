@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:foto_tidy/app/modules/profile/controllers/gallery_lock_controller.dart';
 import 'package:foto_tidy/app/modules/profile/controllers/profile_controller.dart';
 import 'package:foto_tidy/app/modules/profile/views/create_lock_view.dart';
 import 'package:foto_tidy/app/modules/profile/views/reset_pin_view.dart';
@@ -7,6 +8,7 @@ import 'package:foto_tidy/common/app_color/app_colors.dart';
 import 'package:foto_tidy/common/app_images/app_images.dart';
 import 'package:foto_tidy/common/app_text_style/styles.dart';
 import 'package:foto_tidy/common/widgets/custom_button.dart';
+import 'package:foto_tidy/common/widgets/custom_loader.dart';
 
 import 'package:get/get.dart';
 
@@ -18,6 +20,8 @@ class GalleryLockView extends GetView {
   GalleryLockView({super.key});
 
   final ProfileController profileController = Get.find();
+  final GalleryLockController galleryLockController =
+      Get.put(GalleryLockController());
 
   @override
   Widget build(BuildContext context) {
@@ -62,7 +66,7 @@ class GalleryLockView extends GetView {
                   CustomButton(
                     text: 'Create Lock (First-Time Setup)',
                     onPressed: () {
-                      Get.to(()=> CreateLockView());
+                      Get.to(() => CreateLockView());
                     },
                     gradientColors: AppColors.buttonColor,
                     borderRadius: 12,
@@ -90,29 +94,36 @@ class GalleryLockView extends GetView {
                     centerImageWithText: true,
                     imageAssetPath: AppImages.lock,
                     onPressed: () {
-                      Get.to(()=> ResetPinView());
+                      Get.to(() => ResetPinView());
                     },
                     gradientColors: AppColors.buttonColor,
                     borderRadius: 12,
                   ),
                   sh12,
-                  CustomButton(
-                    text: 'Delete',
-                    centerImageWithText: true,
-                    imageAssetPath: AppImages.delete,
-                    onPressed: () {
-                      PopupHelper.showConfirmationDialog(
-                        title: "Remove Lock?",
-                        description:
-                            "Your device will no longer be protected with a lock",
-                        confirmText: "Confirm",
-                        icon: AppImages.logoutBig,
-                        onConfirm: () {},
-                      );
-                    },
-                    backgroundColor: Colors.red[50],
-                    borderRadius: 12,
-                    textColor: AppColors.red,
+                  Obx(
+                    () => galleryLockController.isLoading.value
+                        ? CustomLoader(color: AppColors.white)
+                        : CustomButton(
+                            text: 'Delete',
+                            centerImageWithText: true,
+                            imageAssetPath: AppImages.delete,
+                            onPressed: () {
+                              PopupHelper.showConfirmationDialog(
+                                title: "Remove Lock?",
+                                description:
+                                    "Your device will no longer be protected with a lock",
+                                confirmText: "Confirm",
+                                icon: AppImages.logoutBig,
+                                onConfirm: () {
+                                  galleryLockController
+                                      .deleteGalleryLockKey(context);
+                                },
+                              );
+                            },
+                            backgroundColor: Colors.red[50],
+                            borderRadius: 12,
+                            textColor: AppColors.red,
+                          ),
                   ),
                 ],
               ),

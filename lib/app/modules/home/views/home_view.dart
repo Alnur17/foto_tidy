@@ -16,8 +16,10 @@ import '../../../../common/app_text_style/styles.dart';
 import '../../../../common/helper/custom_filter_chip.dart';
 import '../../../../common/helper/gallery_item.dart';
 import '../../../../common/size_box/custom_sizebox.dart';
+import '../../../../common/widgets/custom_loader.dart';
 import '../../gallery/controllers/gallery_controller.dart';
 import '../../profile/controllers/favorite_controller.dart';
+import '../../profile/controllers/gallery_lock_controller.dart';
 
 class HomeView extends StatefulWidget {
   const HomeView({super.key});
@@ -29,6 +31,7 @@ class HomeView extends StatefulWidget {
 class _HomeViewState extends State<HomeView> {
   final homeController = Get.put(HomeController());
   final galleryController = Get.put(GalleryController());
+  final galleryLockController = Get.put(GalleryLockController());
   final profileController = Get.put(ProfileController());
   final tagsController = Get.put(TagsController());
   final favoriteController = Get.put(FavoriteController());
@@ -37,7 +40,6 @@ class _HomeViewState extends State<HomeView> {
   void initState() {
     super.initState();
     _loadInitialData();
-
   }
 
   Future<void> _loadInitialData() async {
@@ -50,6 +52,7 @@ class _HomeViewState extends State<HomeView> {
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(
+        scrolledUnderElevation: 0,
         backgroundColor: AppColors.background,
         title: Image.asset(
           AppImages.logo,
@@ -290,6 +293,7 @@ class _HomeViewState extends State<HomeView> {
             ),
             sh12,
             PinCodeTextField(
+              controller: galleryLockController.submitPinTEController,
               length: 4,
               obscureText: false,
               keyboardType: TextInputType.number,
@@ -320,10 +324,19 @@ class _HomeViewState extends State<HomeView> {
               appContext: context,
             ),
             sh20,
-            CustomButton(
-              text: 'Submit',
-              onPressed: () {},
-              gradientColors: AppColors.buttonColor,
+            Obx(
+              () => galleryLockController.isLoading.value
+                  ? CustomLoader(color: AppColors.white)
+                  : CustomButton(
+                      text: 'Submit',
+                      onPressed: () {
+                        galleryLockController.unlockGalleryLockKey(
+                          galleryLockController.submitPinTEController.text,
+                          context,
+                        );
+                      },
+                      gradientColors: AppColors.buttonColor,
+                    ),
             ),
           ],
         ),

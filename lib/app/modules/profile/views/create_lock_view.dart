@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:foto_tidy/app/modules/profile/views/success_view.dart';
+import 'package:foto_tidy/common/widgets/custom_loader.dart';
 
 import 'package:get/get.dart';
 
@@ -11,9 +11,17 @@ import '../../../../common/size_box/custom_sizebox.dart';
 import '../../../../common/widgets/custom_button.dart';
 import '../../../../common/widgets/custom_circular_container.dart';
 import '../../../../common/widgets/custom_textfield.dart';
+import '../controllers/gallery_lock_controller.dart';
 
-class CreateLockView extends GetView {
+class CreateLockView extends StatefulWidget {
   const CreateLockView({super.key});
+
+  @override
+  State<CreateLockView> createState() => _CreateLockViewState();
+}
+
+class _CreateLockViewState extends State<CreateLockView> {
+  final galleryLockController = Get.put(GalleryLockController());
 
   @override
   Widget build(BuildContext context) {
@@ -51,7 +59,7 @@ class CreateLockView extends GetView {
             Align(
               alignment: Alignment.center,
               child: Text(
-                'Please enter your 6-digit PIN to continue',
+                'Please enter your 4-digit PIN to continue',
                 style: h5,
               ),
             ),
@@ -62,6 +70,7 @@ class CreateLockView extends GetView {
             ),
             sh8,
             CustomTextField(
+              controller: galleryLockController.setPinTEController,
               borderRadius: 12,
               hintText: '*********',
               sufIcon: Image.asset(
@@ -70,13 +79,18 @@ class CreateLockView extends GetView {
               ),
             ),
             sh30,
-            CustomButton(
-              borderRadius: 12,
-              text: 'Submit',
-              onPressed: () {
-                Get.to(()=> SuccessView());
-              },
-              gradientColors: AppColors.buttonColor,
+            Obx(
+              () => galleryLockController.isLoading.value
+                  ? CustomLoader(color: AppColors.white)
+                  : CustomButton(
+                borderRadius: 12,
+                text: 'Submit',
+                onPressed: () {
+                  galleryLockController.setGalleryLockKey(
+                      galleryLockController.setPinTEController.text, context);
+                },
+                gradientColors: AppColors.buttonColor,
+              ),
             ),
           ],
         ),

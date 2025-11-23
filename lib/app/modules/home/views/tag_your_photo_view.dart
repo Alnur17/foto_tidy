@@ -68,7 +68,6 @@ class _TagYourPhotoViewState extends State<TagYourPhotoView> {
                   final isSelected =
                       galleryController.selectedCategory.value ==
                           (category.title ?? '');
-
                   return CustomFilterChip(
                     text: category.title ?? '',
                     isSelected: isSelected,

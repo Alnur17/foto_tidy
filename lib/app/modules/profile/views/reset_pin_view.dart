@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:foto_tidy/app/modules/profile/views/success_view.dart';
+import 'package:foto_tidy/common/widgets/custom_loader.dart';
 
 import 'package:get/get.dart';
 
@@ -10,9 +10,18 @@ import '../../../../common/size_box/custom_sizebox.dart';
 import '../../../../common/widgets/custom_background_color.dart';
 import '../../../../common/widgets/custom_button.dart';
 import '../../../../common/widgets/custom_textfield.dart';
+import '../controllers/gallery_lock_controller.dart';
 
-class ResetPinView extends GetView {
+class ResetPinView extends StatefulWidget {
   const ResetPinView({super.key});
+
+  @override
+  State<ResetPinView> createState() => _ResetPinViewState();
+}
+
+class _ResetPinViewState extends State<ResetPinView> {
+  final galleryLockController = Get.put(GalleryLockController());
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -43,7 +52,11 @@ class ResetPinView extends GetView {
                 //   style: h5.copyWith(color: AppColors.grey),
                 // ),
                 // sh16,
-                Center(child: Image.asset(AppImages.changePassPro,scale: 4,)),
+                Center(
+                    child: Image.asset(
+                  AppImages.changePassPro,
+                  scale: 4,
+                )),
                 sh16,
                 Text(
                   'Old Pin',
@@ -51,6 +64,7 @@ class ResetPinView extends GetView {
                 ),
                 sh12,
                 CustomTextField(
+                  controller: galleryLockController.oldPinTEController,
                   hintText: '**********',
                   sufIcon: Image.asset(
                     AppImages.eyeClose,
@@ -64,6 +78,7 @@ class ResetPinView extends GetView {
                 ),
                 sh12,
                 CustomTextField(
+                  controller: galleryLockController.newPinTEController,
                   sufIcon: Image.asset(
                     AppImages.eyeClose,
                     scale: 4,
@@ -71,13 +86,17 @@ class ResetPinView extends GetView {
                   hintText: '**********',
                 ),
                 sh16,
-                CustomButton(
-                  text: 'Save changes',
-                  onPressed: () {
-                    Get.offAll(() => SuccessView());
-                  },
-                  imageAssetPath: AppImages.arrowRightNormal,
-                  gradientColors: AppColors.buttonColor,
+                Obx(
+                  () => galleryLockController.isLoading.value
+                      ? CustomLoader(color: AppColors.white)
+                      : CustomButton(
+                          text: 'Save changes',
+                          onPressed: () {
+                            galleryLockController.changeGalleryLockKey(context);
+                          },
+                          imageAssetPath: AppImages.arrowRightNormal,
+                          gradientColors: AppColors.buttonColor,
+                        ),
                 ),
               ],
             ),

@@ -10,14 +10,19 @@ import '../../../../common/app_text_style/styles.dart';
 import '../../../../common/size_box/custom_sizebox.dart';
 import '../controllers/home_controller.dart';
 
-class BrowsePhotosView extends StatelessWidget {
+class BrowsePhotosView extends StatefulWidget {
   const BrowsePhotosView({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    // Initialize the HomeController
-    final HomeController homeController = Get.put(HomeController());
+  State<BrowsePhotosView> createState() => _BrowsePhotosViewState();
+}
 
+class _BrowsePhotosViewState extends State<BrowsePhotosView> {
+  // Initialize the HomeController
+  final HomeController homeController = Get.put(HomeController());
+
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.white,
       appBar: AppBar(

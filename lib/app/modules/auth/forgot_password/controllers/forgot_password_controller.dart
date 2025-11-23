@@ -7,7 +7,6 @@ import 'package:get/get.dart';
 import '../../../../../common/app_color/app_colors.dart';
 import '../../../../../common/app_constant/app_constant.dart';
 import '../../../../../common/helper/local_store.dart';
-import '../../../../../common/widgets/custom_snackbar.dart';
 import '../../../../data/api.dart';
 import '../../../../data/base_client.dart';
 import '../../login/views/login_view.dart';
@@ -83,7 +82,11 @@ class ForgotPasswordController extends GetxController {
 
       if (responseBody != null) {
         String message = responseBody['message'].toString();
-        kSnackBar(message: message, bgColor: AppColors.green);
+        Get.snackbar(
+          'Message',
+          message,
+          backgroundColor: AppColors.green,
+        );
 
         String verifyToken = responseBody['data']['verifyToken'].toString();
         LocalStorage.saveData(key: AppConstant.verifyToken, data: verifyToken);
@@ -96,7 +99,11 @@ class ForgotPasswordController extends GetxController {
       }
     } catch (e) {
       debugPrint("Catch Error:::::: $e");
-      kSnackBar(message: e.toString(), bgColor: AppColors.orange);
+      Get.snackbar(
+        'Catch Error',
+        e.toString(),
+        backgroundColor: AppColors.orange,
+      );
     } finally {
       isLoading(false);
     }
@@ -150,7 +157,12 @@ class ForgotPasswordController extends GetxController {
 
       // Safely extract the message, provide a fallback if null
       final String message = responseBody['message']?.toString() ?? 'Unknown error';
-      kSnackBar(message: message, bgColor: AppColors.green);
+
+      Get.snackbar(
+        'Message',
+        message,
+        backgroundColor: AppColors.green,
+      );
 
       // Ensure 'data' and 'accessToken' are available, and handle null values gracefully
       if (responseBody != null) {
@@ -162,10 +174,18 @@ class ForgotPasswordController extends GetxController {
           Get.to(() => isSignupVerify ? const LoginView() : SetNewPasswordView());
           otpTEController.clear();
         } else {
-          kSnackBar(message: 'Access token missing', bgColor: AppColors.orange);
+          Get.snackbar(
+            'Token',
+            'Access token missing',
+            backgroundColor: AppColors.orange,
+          );
         }
       } else {
-        kSnackBar(message: 'Data or access token missing in response', bgColor: AppColors.orange);
+        Get.snackbar(
+          'Error',
+          'Data or access token missing in response',
+          backgroundColor: AppColors.orange,
+        );
       }
 
       isLoading(false);
@@ -173,7 +193,11 @@ class ForgotPasswordController extends GetxController {
       // Log the error to console for debugging
       debugPrint("Error during OTP verification: $e");
       // Show an error message in a snackbar
-      kSnackBar(message: 'Error: ${e.toString()}', bgColor: AppColors.orange);
+      Get.snackbar(
+        'Catch Error',
+        e.toString(),
+        backgroundColor: AppColors.orange,
+      );
     } finally {
       isLoading(false);
     }
@@ -196,7 +220,11 @@ class ForgotPasswordController extends GetxController {
 
       if (responseBody != null) {
         String message = responseBody['message'].toString();
-        kSnackBar(message: message, bgColor: AppColors.green);
+        Get.snackbar(
+          'Message',
+          message,
+          backgroundColor: AppColors.green,
+        );
 
         String otpToken = responseBody['data']['token'].toString();
         LocalStorage.saveData(key: AppConstant.otpToken, data: otpToken);
@@ -213,7 +241,11 @@ class ForgotPasswordController extends GetxController {
   Future resetPass({required String email}) async {
     if (newPasswordTEController.text.trim() !=
         confirmNewPasswordTEController.text.trim()) {
-     kSnackBar(message: 'Passwords do not match', bgColor: AppColors.orange);
+      Get.snackbar(
+        'Error',
+        'Passwords do not match',
+        backgroundColor: AppColors.green,
+      );
       return;
     }
     try {
@@ -240,8 +272,11 @@ class ForgotPasswordController extends GetxController {
 
       if (responseBody != null) {
         String message = responseBody['message'].toString();
-        kSnackBar(message: message, bgColor: AppColors.green);
-
+        Get.snackbar(
+          'Message',
+          message,
+          backgroundColor: AppColors.green,
+        );
         Get.offAll(() => ResetSuccessView());
       } else {
         throw 'Failed to reset password';

@@ -12,7 +12,6 @@ import '../../../../common/app_color/app_colors.dart';
 import '../../../../common/app_constant/app_constant.dart';
 import '../../../../common/app_images/app_images.dart';
 import '../../../../common/helper/local_store.dart';
-import '../../../../common/widgets/custom_snackbar.dart';
 import '../../../data/api.dart';
 import '../../../data/base_client.dart';
 import '../model/profile_model.dart';
@@ -24,9 +23,7 @@ class ProfileController extends GetxController {
   Rx<ProfileModel?> profileData = Rx<ProfileModel?>(null);
   RxString profileImageUrl = AppImages.profileImage.obs;
 
-
   final ImagePicker _picker = ImagePicker();
-
 
   final TextEditingController nameTEController = TextEditingController();
   final TextEditingController emailTEController = TextEditingController();
@@ -55,7 +52,8 @@ class ProfileController extends GetxController {
     try {
       isLoading.value = true;
 
-      final token = LocalStorage.getData(key: AppConstant.accessToken)?.toString() ?? "";
+      final token =
+          LocalStorage.getData(key: AppConstant.accessToken)?.toString() ?? "";
       if (token.isEmpty) {
         print("❌ No token found");
         return;
@@ -88,13 +86,17 @@ class ProfileController extends GetxController {
     }
   }
 
-  Future<void> updateProfile()
-  async {
+  Future<void> updateProfile() async {
     try {
       isLoading.value = true;
-      String accessToken = LocalStorage.getData(key: AppConstant.accessToken)?.toString() ?? "";
+      String accessToken =
+          LocalStorage.getData(key: AppConstant.accessToken)?.toString() ?? "";
       if (accessToken.isEmpty) {
-       kSnackBar(message: "User not authenticated", bgColor: AppColors.orange);
+        Get.snackbar(
+          'Empty',
+          "User not authenticated",
+          backgroundColor: AppColors.orange,
+        );
         return;
       }
 
@@ -135,9 +137,11 @@ class ProfileController extends GetxController {
         var decodedResponse = json.decode(responseData);
 
         if (response.statusCode == 200) {
-          kSnackBar(
-              message: "Profile updated successfully",
-              bgColor: AppColors.green);
+          Get.snackbar(
+            'Success',
+            "Profile updated successfully",
+            backgroundColor: AppColors.green,
+          );
 
           await fetchProfile();
           update();
@@ -145,21 +149,28 @@ class ProfileController extends GetxController {
             Navigator.pop(Get.context!);
           }
         } else {
-          kSnackBar(
-            message: decodedResponse['message'] ?? "Failed to update profile",
-            bgColor: AppColors.orange,
+          Get.snackbar(
+            'Error',
+            decodedResponse['message'] ?? "Failed to update profile",
+            backgroundColor: AppColors.orange,
           );
         }
       } catch (decodeError) {
-        kSnackBar(
-            message: "Invalid response format", bgColor: AppColors.orange);
+        Get.snackbar(
+          'Error',
+          "Invalid response format",
+          backgroundColor: AppColors.orange,
+        );
         debugPrint("Response Error: $decodeError");
       }
     } catch (e) {
-      kSnackBar(
-          message: "Error updating profile: $e", bgColor: AppColors.orange);
+      Get.snackbar(
+        'Error',
+        "Error updating profile: $e",
+        backgroundColor: AppColors.orange,
+      );
       debugPrint("Update Error: $e");
-    }finally {
+    } finally {
       isLoading.value = false;
     }
   }

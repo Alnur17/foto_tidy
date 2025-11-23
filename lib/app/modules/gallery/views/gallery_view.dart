@@ -239,6 +239,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:foto_tidy/app/modules/profile/controllers/profile_controller.dart';
 import 'package:foto_tidy/app/modules/tags/controllers/tags_controller.dart';
+import 'package:foto_tidy/common/widgets/custom_loader.dart';
 import 'package:get/get.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
 import '../../../../common/app_color/app_colors.dart';
@@ -249,6 +250,7 @@ import '../../../../common/helper/gallery_item.dart';
 import '../../../../common/size_box/custom_sizebox.dart';
 import '../../../../common/widgets/custom_button.dart';
 import '../../profile/controllers/favorite_controller.dart';
+import '../../profile/controllers/gallery_lock_controller.dart';
 import '../controllers/gallery_controller.dart';
 
 class GalleryView extends StatefulWidget {
@@ -262,6 +264,7 @@ class _GalleryViewState extends State<GalleryView> {
   final profileController = Get.put(ProfileController());
   final tagsController = Get.find<TagsController>();
   final galleryController = Get.put(GalleryController());
+  final galleryLockController = Get.put(GalleryLockController());
   final favoriteController = Get.put(FavoriteController());
 
   @override
@@ -269,24 +272,25 @@ class _GalleryViewState extends State<GalleryView> {
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(
+        scrolledUnderElevation: 0,
         elevation: 0,
         backgroundColor: AppColors.background,
         title: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text('Gallery', style: appBarStyle),
-            CustomButton(
-              text: 'Filter Photos',
-              onPressed: () {},
-              backgroundColor: AppColors.white,
-              borderRadius: 8,
-              borderColor: AppColors.borderColor,
-              width: 125.w,
-              height: 30.h,
-              textStyle: h5,
-              padding: const EdgeInsets.symmetric(horizontal: 8),
-              imageAssetPath: AppImages.filter,
-            ),
+            // CustomButton(
+            //   text: 'Filter Photos',
+            //   onPressed: () {},
+            //   backgroundColor: AppColors.white,
+            //   borderRadius: 8,
+            //   borderColor: AppColors.borderColor,
+            //   width: 125.w,
+            //   height: 30.h,
+            //   textStyle: h5,
+            //   padding: const EdgeInsets.symmetric(horizontal: 8),
+            //   imageAssetPath: AppImages.filter,
+            // ),
           ],
         ),
       ),
@@ -422,7 +426,7 @@ class _GalleryViewState extends State<GalleryView> {
           Text('Please enter your 4-digit PIN to continue', style: h4),
           const SizedBox(height: 30),
           PinCodeTextField(
-            controller: galleryController.pinTEController,
+            controller: galleryLockController.submitPinTEController,
             length: 4,
             keyboardType: TextInputType.number,
             animationType: AnimationType.fade,
@@ -445,13 +449,19 @@ class _GalleryViewState extends State<GalleryView> {
             appContext: context,
           ),
           sh20,
-          CustomButton(
-            text: 'Submit',
-            onPressed: () {
-              galleryController.setGalleryLockAPI(
-                  galleryController.pinTEController.text.toString().trim());
-            },
-            gradientColors: AppColors.buttonColor,
+          Obx(
+            () => galleryLockController.isLoading.value
+                ? CustomLoader(color: AppColors.white)
+                : CustomButton(
+                    text: 'Submit',
+                    onPressed: () {
+                      galleryLockController.unlockGalleryLockKey(
+                        galleryLockController.submitPinTEController.text,
+                        context,
+                      );
+                    },
+                    gradientColors: AppColors.buttonColor,
+                  ),
           ),
         ],
       ),

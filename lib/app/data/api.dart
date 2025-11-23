@@ -38,10 +38,10 @@ class Api {
   ///Gallery and Home
   static const myGallery = "$baseUrl/upload-photos/my-photos"; //done
   static getPhotoByTagId(String tagId) => "$baseUrl/upload-photos/tags/$tagId"; //done
-  static const setGalleryLock = "$baseUrl/gallery-lock/add-key"; //
+  static const setGalleryLock = "$baseUrl/gallery-lock/add-key"; //done
   static const unlockGallery = "$baseUrl/gallery-lock/access-journal"; //
-  static const changeGalleryLock = "$baseUrl/gallery-lock/change-key"; //
-  static const deleteGalleryLock = "$baseUrl/gallery-lock/delete-key"; //
+  static const changeGalleryLock = "$baseUrl/gallery-lock/change-key"; //done
+  static const deleteGalleryLock = "$baseUrl/gallery-lock/delete-key"; //done
   static const notification = "$baseUrl/notification"; //
 
 }

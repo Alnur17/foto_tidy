@@ -194,7 +194,6 @@ class _SubscriptionViewState extends State<SubscriptionView> {
 
   @override
   Widget build(BuildContext context) {
-    Get.put(SubscriptionController());
 
     return Scaffold(
       backgroundColor: AppColors.background,

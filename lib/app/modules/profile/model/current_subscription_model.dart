@@ -93,7 +93,7 @@ class Package {
   final String? type;
   final String? billingCycle;
   final List<String> description;
-  final double? price;
+  final int? price;
   final int? popularity;
   final bool? isDeleted;
   final DateTime? createdAt;

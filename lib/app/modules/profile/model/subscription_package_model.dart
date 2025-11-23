@@ -57,7 +57,11 @@ class SubsPackageDatum {
       type: json["type"],
       billingCycle: json["billingCycle"],
       description: json["description"] == null ? [] : List<String>.from(json["description"]!.map((x) => x)),
-      price: json["price"],
+      price: json["price"] == null
+          ? null
+          : (json["price"] is int
+          ? (json["price"] as int).toDouble()
+          : json["price"] as double),
       popularity: json["popularity"],
       isDeleted: json["isDeleted"],
       createdAt: DateTime.tryParse(json["createdAt"] ?? ""),
