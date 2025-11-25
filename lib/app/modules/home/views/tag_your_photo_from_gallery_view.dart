@@ -162,17 +162,20 @@
 //   }
 // }
 
-
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:foto_tidy/common/app_text_style/styles.dart';
+import 'package:foto_tidy/common/widgets/custom_loader.dart';
 import 'package:get/get.dart';
 
 import '../../../../common/app_color/app_colors.dart';
+import '../../../../common/app_images/app_images.dart';
 import '../../../../common/helper/custom_filter_chip.dart';
 import '../../../../common/size_box/custom_sizebox.dart';
 import '../../../../common/widgets/custom_button.dart';
 import '../../gallery/controllers/gallery_controller.dart';
+import '../../services/auth_service.dart';
+import '../../services/drive_service.dart';
 import '../../tags/controllers/tags_controller.dart';
 
 class TagYourPhotoFromGalleryView extends StatelessWidget {
@@ -188,6 +191,7 @@ class TagYourPhotoFromGalleryView extends StatelessWidget {
 
   /// Reactive index for selected image preview
   final RxInt selectedIndex = 0.obs;
+  final RxBool uploadToGoogleDrive = false.obs;
 
   @override
   Widget build(BuildContext context) {
@@ -282,9 +286,8 @@ class TagYourPhotoFromGalleryView extends StatelessWidget {
               runSpacing: 10.h,
               children: tagsController.allTagsList.map((category) {
                 return Obx(() {
-                  final isSelected =
-                      galleryController.selectedCategory.value ==
-                          (category.title ?? '');
+                  final isSelected = galleryController.selectedCategory.value ==
+                      (category.title ?? '');
 
                   return CustomFilterChip(
                     text: category.title ?? '',
@@ -312,44 +315,121 @@ class TagYourPhotoFromGalleryView extends StatelessWidget {
             //     Image.asset(AppImages.toggle, scale: 4),
             //   ],
             // ),
+            Obx(() {
+              return Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Row(
+                    children: [
+                      Checkbox(
+                        value: uploadToGoogleDrive.value,
+                        onChanged: (value) =>
+                            uploadToGoogleDrive.value = value ?? false,
+                      ),
+                      sw8,
+                      const Text('Upload to Google Drive'),
+                    ],
+                  ),
+                  sw5,
+                  Image.asset(AppImages.drive, scale: 5),
+                ],
+              );
+            }),
 
             sh20,
 
             /// --------------------------
             /// SAVE BUTTON
             /// --------------------------
-            CustomButton(
-              text: 'Save All Photos',
-              onPressed: () async {
-                if (galleryController.selectedCategory.value.isEmpty) {
-                  Get.snackbar('No Category', 'Please select a category');
-                  return;
-                }
+            Obx(
+              () => galleryController.isLoading.value
+                  ? CustomLoader(color: AppColors.white)
+                  : CustomButton(
+                      text: 'Save All Photos',
+                      onPressed: () async {
+                        if (galleryController.selectedCategory.value.isEmpty) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text(
+                                  'Please select a category before saving photos'),
+                              backgroundColor: AppColors.orange,
+                            ),
+                          );
+                          return;
+                        }
 
-                final selectedTagId =
-                tagsController.getTagIdByTitle(galleryController.selectedCategory.value);
+                        final selectedTagId = tagsController.getTagIdByTitle(
+                            galleryController.selectedCategory.value);
 
-                if (selectedTagId == null) {
-                  Get.snackbar('Error', 'Invalid tag selected');
-                  return;
-                }
+                        if (selectedTagId == null) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text(
+                                  'Invalid tag selected. Please select a valid tag.'),
+                              backgroundColor: AppColors.red,
+                            ),
+                          );
+                          return;
+                        }
 
-                /// 💥 Build dynamic payload
-                final payload = uploadedFiles.map((file) {
-                  return {
-                    "tag": selectedTagId,
-                    "image": file["url"],
-                    "fileSize": file["size"] ?? 0.0,
-                  };
-                }).toList();
+                        /// 💥 Build dynamic payload
+                        final payload = uploadedFiles.map((file) {
+                          return {
+                            "tag": selectedTagId,
+                            "image": file["url"],
+                            "fileSize": file["size"] ?? 0.0,
+                          };
+                        }).toList();
 
-                /// 💥 Upload now
-                await galleryController.uploadBatchPhotos(payload, context);
+                        /// 💥 Upload now
+                        await galleryController.uploadBatchPhotos(
+                            payload, context);
 
-              },
-              gradientColors: AppColors.buttonColor,
-              borderRadius: 12,
-              height: 40.h,
+                        /// 💥 Optional Google Drive upload
+                        if (uploadToGoogleDrive.value) {
+                          try {
+                            final AuthService auth = AuthService();
+                            final driveService = DriveService();
+
+                            /// Sign in if not already
+                            await auth.signIn();
+
+                            for (var file in uploadedFiles) {
+                              final fileUrl = file["url"] as String;
+
+                              /// Download the file temporarily
+                              final tempFile =
+                                  await galleryController.downloadFile(fileUrl);
+
+                              /// Upload to Google Drive
+                              final uploaded =
+                                  await driveService.uploadFile(tempFile);
+
+                              print("Uploaded to Drive: ${uploaded.id}");
+                            }
+
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text(
+                                    'Photos uploaded to Google Drive successfully'),
+                                backgroundColor: AppColors.green,
+                              ),
+                            );
+                          } catch (e) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text(
+                                    'Failed to upload to Google Drive: $e'),
+                                backgroundColor: AppColors.red,
+                              ),
+                            );
+                          }
+                        }
+                      },
+                      gradientColors: AppColors.buttonColor,
+                      borderRadius: 12,
+                      height: 40.h,
+                    ),
             ),
           ],
         ),

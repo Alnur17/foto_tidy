@@ -1,7 +1,10 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:http/http.dart' as http;
+import 'package:path_provider/path_provider.dart';
 import '../../../../common/app_color/app_colors.dart';
 import '../../../../common/app_constant/app_constant.dart';
 import '../../../../common/helper/local_store.dart';
@@ -84,7 +87,8 @@ class GalleryController extends GetxController {
   }
 
   Future<void> uploadBatchPhotos(
-      List<Map<String, dynamic>> payload, context) async {
+      List<Map<String, dynamic>> payload, context)
+  async {
     try {
       isLoading(true);
 
@@ -158,4 +162,14 @@ class GalleryController extends GetxController {
       await fetchPhotosByTagId(tagId);
     }
   }
+
+
+  Future<File> downloadFile(String url) async {
+    final response = await http.get(Uri.parse(url));
+    final tempDir = await getTemporaryDirectory();
+    final file = File('${tempDir.path}/${DateTime.now().millisecondsSinceEpoch}.jpg');
+    await file.writeAsBytes(response.bodyBytes);
+    return file;
+  }
+
 }

@@ -64,6 +64,7 @@ class AppImages {
   static const camera = "assets/icons/camera.png";
   static const toggle = "assets/icons/tooogle.png";
   static const transferFile = "assets/icons/transfer file.png";
+  static const drive = "assets/icons/drive.png";
 
 
   //================ Images ==================>
