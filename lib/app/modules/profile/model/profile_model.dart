@@ -34,6 +34,7 @@ class Data {
     required this.freeStorage,
     required this.dataId,
     required this.createdAt,
+    required this.isActiveLock,
     required this.storageLimit,
     required this.isActiveSubscription,
     required this.type,
@@ -44,12 +45,13 @@ class Data {
   final String? name;
   final String? email;
   final String? photoUrl;
-  final String? contractNumber;
-  final String? galleryKey;
+  final dynamic contractNumber;
+  final dynamic galleryKey;
   final String? status;
   final double? freeStorage;
   final String? dataId;
   final DateTime? createdAt;
+  final bool? isActiveLock;
   final int? storageLimit;
   final bool? isActiveSubscription;
   final String? type;
@@ -71,6 +73,7 @@ class Data {
           : json["freeStorage"] as double),
       dataId: json["id"],
       createdAt: DateTime.tryParse(json["createdAt"] ?? ""),
+      isActiveLock: json["isActiveLock"],
       storageLimit: json["storageLimit"],
       isActiveSubscription: json["isActiveSubscription"],
       type: json["type"],

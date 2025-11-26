@@ -20,38 +20,97 @@ class GalleryController extends GetxController {
   var galleryList = <GalleryDatum>[].obs;
 
 
+  /// FILTERS
+  var selectedDate = Rx<DateTime?>(null);
+  var selectedSort = "Newest First".obs;
+
+  /// Formatted date
+  String get formattedSelectedDate {
+    final date = selectedDate.value;
+    if (date == null) return '';
+    return "${date.day.toString().padLeft(2, '0')}/${date.month.toString().padLeft(2, '0')}/${date.year}";
+  }
+
+  /// Reset filters
+  void resetFilters() {
+    selectedDate.value = null;
+    selectedSort.value = "Newest First";
+    fetchMyGallery();
+  }
+
+  /// Apply filters
+  void applyFilters() {
+    fetchMyGallery(
+      date: selectedDate.value,
+      sort: selectedSort.value,
+    );
+  }
+
   @override
   void onInit() {
     super.onInit();
     fetchMyGallery();
   }
 
-  /// Fetch user's full gallery
-  Future<void> fetchMyGallery() async {
-    await _fetchGallery(apiUrl: Api.myGallery);
+  /// Public fetch: includes optional filter params
+  Future<void> fetchMyGallery({
+    DateTime? date,
+    String? sort,
+  }) async {
+    await _fetchGallery(
+      apiUrl: Api.myGallery,
+      date: date,
+      sort: sort,
+    );
   }
 
-  /// Fetch gallery by tag ID (from API)
+  /// Fetch images by Tag ID
   Future<void> fetchPhotosByTagId(String tagId) async {
     await _fetchGallery(apiUrl: Api.getPhotoByTagId(tagId));
   }
 
-  /// Shared internal fetch method
-  Future<void> _fetchGallery({required String apiUrl}) async {
+  /// Main internal fetch with optional parameters
+  Future<void> _fetchGallery({
+    required String apiUrl,
+    DateTime? date,
+    String? sort,
+  }) async {
     try {
       isLoading(true);
+
       final accessToken =
           LocalStorage.getData(key: AppConstant.accessToken)?.toString() ?? "";
 
       if (accessToken.isEmpty) {
-        Get.snackbar(
-          'Empty',
-          "User not authenticated",
-          backgroundColor: AppColors.orange,
-        );
+        Get.snackbar('Error', "User not authenticated",
+            backgroundColor: AppColors.orange);
         return;
       }
 
+      // -----------------------------------------
+      // BUILD QUERY PARAMS
+      // -----------------------------------------
+      Map<String, String> queryParams = {};
+
+      if (date != null) {
+        queryParams['date'] =
+        "${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}";
+      }
+
+      if (sort != null && sort.isNotEmpty) {
+        queryParams['sort'] =
+        sort == "Newest First" ? "-createdAt" : "createdAt";
+      }
+
+      // Append params only when needed
+      if (queryParams.isNotEmpty) {
+        final qp = Uri(queryParameters: queryParams).query;
+        apiUrl = "$apiUrl?$qp";
+      }
+
+      // -----------------------------------------
+      // SEND REQUEST
+      // -----------------------------------------
       final response = await BaseClient.getRequest(
         api: apiUrl,
         headers: {
@@ -67,24 +126,90 @@ class GalleryController extends GetxController {
         galleryList.assignAll(model.data);
       } else {
         galleryList.clear();
-        Get.snackbar(
-          'Failed',
-          data?['message'] ?? 'Failed to load gallery images',
-          backgroundColor: AppColors.orange,
-        );
-
+        Get.snackbar('Failed',
+            data?['message'] ?? 'Failed to load gallery images',
+            backgroundColor: AppColors.orange);
       }
     } catch (e) {
       galleryList.clear();
-      Get.snackbar(
-        'Error',
-        e.toString(),
-        backgroundColor: AppColors.orange,
+      Get.snackbar('Error', e.toString(), backgroundColor: AppColors.orange);
+    } finally {
+      isLoading(false);
+    }
+  }
+
+  Future<void> uploadSinglePhoto({
+    required String tag,
+    required String imageUrl,
+    required double fileSize,
+    required BuildContext context,
+  }) async {
+    try {
+      isLoading(true);
+
+      final accessToken =
+          LocalStorage.getData(key: AppConstant.accessToken)?.toString() ?? "";
+
+      if (accessToken.isEmpty) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('User not authenticated'),
+            backgroundColor: AppColors.orange,
+          ),
+        );
+        return;
+      }
+
+      /// Prepare request body
+      final rawBody = jsonEncode({
+        "tag": tag,
+        "image": imageUrl,
+        "fileSize": fileSize,
+      });
+
+      final response = await BaseClient.postRequest(
+        api: Api.uploadSinglePhotos,
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': accessToken,
+        },
+        body: rawBody,
+      );
+
+      final data = await BaseClient.handleResponse(response);
+
+      if (data != null && data['success'] == true) {
+        Get.to(() => PhotoSavedSuccessfullyView());
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('${data['message']}'),
+            backgroundColor: AppColors.green,
+          ),
+        );
+
+        fetchMyGallery(); // reload gallery
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('${data?['message'] ?? 'Failed to upload photo'}'),
+            backgroundColor: AppColors.orange,
+          ),
+        );
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(e.toString()),
+          backgroundColor: AppColors.orange,
+        ),
       );
     } finally {
       isLoading(false);
     }
   }
+
+
 
   Future<void> uploadBatchPhotos(
       List<Map<String, dynamic>> payload, context)

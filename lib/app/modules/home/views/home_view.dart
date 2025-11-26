@@ -135,7 +135,9 @@ class _HomeViewState extends State<HomeView> {
                 sh12,
                 CustomButton(
                   text: 'Take Photo',
-                  onPressed: homeController.takePhoto,
+                  onPressed: (){
+                    homeController.takePhoto(context: context);
+                  },
                   gradientColors: AppColors.buttonColor,
                   borderRadius: 12,
                   height: 40,

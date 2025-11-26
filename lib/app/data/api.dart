@@ -31,7 +31,8 @@ class Api {
   static const createPayment = "$baseUrl/payments/checkout"; //done
 
   /// Upload Photos
-  static const uploadFromCameraPhotos = "$baseUrl/uploads/multiple"; //done
+  static const uploadFromCameraPhotos = "$baseUrl/uploads/single"; //done
+  static const uploadSinglePhotos = "$baseUrl/upload-photos"; //
   static const uploadPhotos = "$baseUrl/uploads/multiple"; //done
   static const uploadBadgePhotos = "$baseUrl/upload-photos/batch-upload"; //done
 
@@ -39,9 +40,9 @@ class Api {
   static const myGallery = "$baseUrl/upload-photos/my-photos"; //done
   static getPhotoByTagId(String tagId) => "$baseUrl/upload-photos/tags/$tagId"; //done
   static const setGalleryLock = "$baseUrl/gallery-lock/add-key"; //done
-  static const unlockGallery = "$baseUrl/gallery-lock/access-journal"; //
+  static const unlockGallery = "$baseUrl/gallery-lock/access-journal"; //done
   static const changeGalleryLock = "$baseUrl/gallery-lock/change-key"; //done
   static const deleteGalleryLock = "$baseUrl/gallery-lock/delete-key"; //done
-  static const notification = "$baseUrl/notification"; //
+  static const notification = "$baseUrl/notification"; //done
 
 }
