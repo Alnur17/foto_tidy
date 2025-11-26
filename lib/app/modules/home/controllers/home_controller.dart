@@ -85,14 +85,12 @@ class HomeController extends GetxController {
       if (image != null) {
         Get.to(() => UploadImageView(imagePath: image.path));
       } else {
-
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text("No photo was taken"),
             backgroundColor: AppColors.orange,
           ),
         );
-        Get.snackbar('No Photo', 'No photo was taken');
       }
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
