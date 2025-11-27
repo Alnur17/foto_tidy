@@ -259,12 +259,19 @@ class _HomeViewState extends State<HomeView> {
 
           sh12,
           Expanded(
-            child: Obx(
-              () => profileController.profileData.value?.data?.isGalleryLock ==
-                      true
+            child: Obx(() {
+              final data = profileController.profileData.value?.data;
+
+              final isGalleryLock = data?.isGalleryLock ?? false;
+              //final isActiveLock = data?.isActiveLock ?? false;
+
+              // Conditions for showing PIN screen
+              //final shouldAskPin = isGalleryLock && isActiveLock;
+
+              return isGalleryLock
                   ? _buildLockedGallery()
-                  : _buildGalleryGrid(),
-            ),
+                  : _buildGalleryGrid();
+            }),
           ),
         ],
       ),
@@ -295,22 +302,26 @@ class _HomeViewState extends State<HomeView> {
             ),
             sh12,
             PinCodeTextField(
+              appContext: context,
+              mainAxisAlignment: MainAxisAlignment.center,
+              separatorBuilder: (context, index) => sw12,
               controller: galleryLockController.submitPinTEController,
               length: 4,
               obscureText: false,
               keyboardType: TextInputType.number,
               animationType: AnimationType.fade,
               pinTheme: PinTheme(
-                shape: PinCodeFieldShape.underline,
+                shape: PinCodeFieldShape.circle,
                 borderRadius: BorderRadius.circular(8),
-                fieldHeight: 40,
-                fieldWidth: 40,
+                fieldHeight: 50,
+                fieldWidth: 50,
                 activeColor: AppColors.white,
                 activeFillColor: AppColors.white,
                 inactiveColor: AppColors.borderColor,
                 inactiveFillColor: AppColors.white,
                 selectedColor: AppColors.blue,
                 selectedFillColor: AppColors.white,
+
               ),
               animationDuration: const Duration(milliseconds: 300),
               backgroundColor: AppColors.transparent,
@@ -323,7 +334,6 @@ class _HomeViewState extends State<HomeView> {
                 log("Allowing to paste $text");
                 return true;
               },
-              appContext: context,
             ),
             sh20,
             Obx(
@@ -433,79 +443,4 @@ class _HomeViewState extends State<HomeView> {
       );
     });
   }
-
-// Widget _buildGalleryGrid() {
-//   return Obx(() {
-//     if (galleryController.isLoading.value) {
-//       return const Center(
-//         child: CircularProgressIndicator(color: AppColors.orange),
-//       );
-//     }
-//
-//     if (galleryController.galleryList.isEmpty) {
-//       return Center(
-//         child: Text(
-//           "No gallery items found",
-//           style: h4.copyWith(color: AppColors.grey),
-//         ),
-//       );
-//     }
-//
-//     return GridView.builder(
-//       padding: EdgeInsets.only(left: 20.w, right: 20.w, bottom: 116.h),
-//       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-//         crossAxisCount: 2,
-//         crossAxisSpacing: 10.w,
-//         mainAxisSpacing: 10.h,
-//         childAspectRatio: 1,
-//       ),
-//       itemCount: galleryController.galleryList.length,
-//       itemBuilder: (context, index) {
-//         final item = galleryController.galleryList[index];
-//         final imageUrl = item.image ?? '';
-//
-//         return Container(
-//           decoration: BoxDecoration(
-//             borderRadius: BorderRadius.circular(12),
-//             color: AppColors.white,
-//             boxShadow: [
-//               BoxShadow(
-//                 color: AppColors.grey.withOpacity(0.2),
-//                 blurRadius: 4,
-//                 offset: const Offset(0, 2),
-//               ),
-//             ],
-//           ),
-//           child: ClipRRect(
-//             borderRadius: BorderRadius.circular(12),
-//             child: imageUrl.isNotEmpty
-//                 ? CachedNetworkImage(
-//                     imageUrl: imageUrl,
-//                     fit: BoxFit.cover,
-//                     placeholder: (context, url) => const Center(
-//                       child: CircularProgressIndicator(
-//                         color: AppColors.orange,
-//                       ),
-//                     ),
-//                     errorWidget: (context, url, error) => Center(
-//                       child: Text(
-//                         item.tag?.title ?? 'Untitled',
-//                         style: h5.copyWith(color: AppColors.grey),
-//                         textAlign: TextAlign.center,
-//                       ),
-//                     ),
-//                   )
-//                 : Center(
-//                     child: Text(
-//                       item.tag?.title ?? 'Untitled',
-//                       style: h5.copyWith(color: AppColors.grey),
-//                       textAlign: TextAlign.center,
-//                     ),
-//                   ),
-//           ),
-//         );
-//       },
-//     );
-//   });
-// }
 }

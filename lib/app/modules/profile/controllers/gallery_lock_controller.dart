@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:foto_tidy/app/modules/dashboard/views/dashboard_view.dart';
+import 'package:foto_tidy/app/modules/profile/controllers/profile_controller.dart';
 import 'package:get/get.dart';
 import '../../../../common/app_color/app_colors.dart';
 import '../../../../common/app_constant/app_constant.dart';
@@ -17,6 +18,10 @@ class GalleryLockController extends GetxController {
   final TextEditingController submitPinTEController = TextEditingController();
   final TextEditingController oldPinTEController = TextEditingController();
   final TextEditingController newPinTEController = TextEditingController();
+
+  final ProfileController profileController = Get.find();
+
+
 
   Future<void> setGalleryLockKey(String key, BuildContext context) async {
     try {
@@ -116,12 +121,25 @@ class GalleryLockController extends GetxController {
       var data = await BaseClient.handleResponse(response);
 
       if (data != null && data["success"] == true) {
+        final currentProfile = profileController.profileData.value;
+
+        if (currentProfile != null && currentProfile.data != null) {
+          final updatedData = currentProfile.data!.copyWith(
+            isGalleryLock: false,
+          );
+          final updatedProfile = currentProfile.copyWith(
+            data: updatedData,
+          );
+          profileController.profileData.value = updatedProfile;
+        }
+
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(data["message"] ?? "Unlock successfully"),
+            content: Text(data["message"] ?? "Gallery unlocked successfully"),
             backgroundColor: AppColors.green,
           ),
         );
+        submitPinTEController.clear();
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(

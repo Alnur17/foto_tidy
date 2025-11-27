@@ -20,7 +20,7 @@ class ResetPinView extends StatefulWidget {
 }
 
 class _ResetPinViewState extends State<ResetPinView> {
-  final galleryLockController = Get.put(GalleryLockController());
+  final galleryLockController = Get.find<GalleryLockController>();
 
   @override
   Widget build(BuildContext context) {
@@ -42,16 +42,6 @@ class _ResetPinViewState extends State<ResetPinView> {
                       scale: 4,
                     )),
                 sh12,
-                // Text(
-                //   'Enter Previous PIN',
-                //   style: h2.copyWith(fontWeight: FontWeight.w700),
-                // ),
-                // sh12,
-                // Text(
-                //   'Enter your new password and make sure you remember it',
-                //   style: h5.copyWith(color: AppColors.grey),
-                // ),
-                // sh16,
                 Center(
                     child: Image.asset(
                   AppImages.changePassPro,

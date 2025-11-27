@@ -21,7 +21,7 @@ class CreateLockView extends StatefulWidget {
 }
 
 class _CreateLockViewState extends State<CreateLockView> {
-  final galleryLockController = Get.put(GalleryLockController());
+  final galleryLockController = Get.find<GalleryLockController>();
 
   @override
   Widget build(BuildContext context) {

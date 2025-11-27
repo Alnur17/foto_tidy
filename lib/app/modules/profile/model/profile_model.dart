@@ -11,15 +11,29 @@ class ProfileModel {
   final String? message;
   final Data? data;
 
-  factory ProfileModel.fromJson(Map<String, dynamic> json){
+  // THIS WAS MISSING — ADD THIS!
+  ProfileModel copyWith({
+    bool? success,
+    int? statusCode,
+    String? message,
+    Data? data,
+  }) {
+    return ProfileModel(
+      success: success ?? this.success,
+      statusCode: statusCode ?? this.statusCode,
+      message: message ?? this.message,
+      data: data ?? this.data,
+    );
+  }
+
+  factory ProfileModel.fromJson(Map<String, dynamic> json) {
     return ProfileModel(
       success: json["success"],
       statusCode: json["statusCode"],
       message: json["message"],
-      data: json["data"] == null ? null : Data.fromJson(json["data"]),
+      data: json["data"] == null ? null : Data.fromJson(json["data"] as Map<String, dynamic>),
     );
   }
-
 }
 
 class Data {
@@ -57,28 +71,64 @@ class Data {
   final String? type;
   final bool? isGalleryLock;
 
-  factory Data.fromJson(Map<String, dynamic> json){
+  // You already added this — perfect!
+  Data copyWith({
+    String? id,
+    String? name,
+    String? email,
+    String? photoUrl,
+    dynamic contractNumber,
+    dynamic galleryKey,
+    String? status,
+    double? freeStorage,
+    String? dataId,
+    DateTime? createdAt,
+    bool? isActiveLock,
+    int? storageLimit,
+    bool? isActiveSubscription,
+    String? type,
+    bool? isGalleryLock,
+  }) {
     return Data(
-      id: json["_id"],
-      name: json["name"],
-      email: json["email"],
-      photoUrl: json["photoUrl"],
+      id: id ?? this.id,
+      name: name ?? this.name,
+      email: email ?? this.email,
+      photoUrl: photoUrl ?? this.photoUrl,
+      contractNumber: contractNumber ?? this.contractNumber,
+      galleryKey: galleryKey ?? this.galleryKey,
+      status: status ?? this.status,
+      freeStorage: freeStorage ?? this.freeStorage,
+      dataId: dataId ?? this.dataId,
+      createdAt: createdAt ?? this.createdAt,
+      isActiveLock: isActiveLock ?? this.isActiveLock,
+      storageLimit: storageLimit ?? this.storageLimit,
+      isActiveSubscription: isActiveSubscription ?? this.isActiveSubscription,
+      type: type ?? this.type,
+      isGalleryLock: isGalleryLock ?? this.isGalleryLock,
+    );
+  }
+
+  factory Data.fromJson(Map<String, dynamic> json) {
+    return Data(
+      id: json["_id"] as String?,
+      name: json["name"] as String?,
+      email: json["email"] as String?,
+      photoUrl: json["photoUrl"] as String?,
       contractNumber: json["contractNumber"],
       galleryKey: json["galleryKey"],
-      status: json["status"],
+      status: json["status"] as String?,
       freeStorage: json["freeStorage"] == null
           ? null
           : (json["freeStorage"] is int
           ? (json["freeStorage"] as int).toDouble()
           : json["freeStorage"] as double),
-      dataId: json["id"],
-      createdAt: DateTime.tryParse(json["createdAt"] ?? ""),
-      isActiveLock: json["isActiveLock"],
-      storageLimit: json["storageLimit"],
-      isActiveSubscription: json["isActiveSubscription"],
-      type: json["type"],
-      isGalleryLock: json["isGalleryLock"],
+      dataId: json["id"] as String?,
+      createdAt: json["createdAt"] == null ? null : DateTime.tryParse(json["createdAt"] as String),
+      isActiveLock: json["isActiveLock"] as bool?,
+      storageLimit: json["storageLimit"] as int?,
+      isActiveSubscription: json["isActiveSubscription"] as bool?,
+      type: json["type"] as String?,
+      isGalleryLock: json["isGalleryLock"] as bool?,
     );
   }
-
 }

@@ -380,29 +380,62 @@ class _TagsViewState extends State<TagsView> {
                           height: 44.h,
                         ),
                       ),
-                      SizedBox(width: 12.w),
+                      SizedBox(width: 8.w),
                       Expanded(
                         child: CustomButton(
-                          text: "Confirmed",
-                          onPressed: () {
+                          text: tagsController.isLoading.value ? "Loading..." : "Confirmed",
+                          onPressed: () async {
                             if (selectedTag.value.isEmpty) {
                               ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(
-                                  content:
-                                  Text("Please select a tag to transfer"),
+                                const SnackBar(
+                                  content: Text("Please select a tag to transfer"),
                                   backgroundColor: AppColors.orange,
                                 ),
                               );
                               return;
                             }
-                            Navigator.pop(context);
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                content: Text(
-                                    "Photos transferred to ${selectedTag.value} successfully"),
-                                backgroundColor: AppColors.green,
-                              ),
+
+                            // Find the current tag being deleted/transferred from
+                            final currentTagTitle = currentTag;
+                            final fromTag = tagsController.allTagsList.firstWhere(
+                                  (t) => t.title == currentTagTitle,
+                              orElse: () => throw Exception("Tag not found"),
                             );
+
+                            // Find the destination tag
+                            final toTag = tagsController.allTagsList.firstWhere(
+                                  (t) => t.title == selectedTag.value,
+                              orElse: () => throw Exception("Destination tag not found"),
+                            );
+
+                            // Prevent transferring to the same tag
+                            if (fromTag.id == toTag.id) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text("Cannot transfer photos to the same tag"),
+                                  backgroundColor: AppColors.orange,
+                                ),
+                              );
+                              return;
+                            }
+
+                            // Close the dialog
+                           // Navigator.pop(context);
+
+                            // Show loading state
+                            tagsController.isLoading(true);
+
+                            // Call the actual transfer API
+                            await tagsController.transferPhotoFormTag(
+                              formTagId: fromTag.id.toString(),
+                              toTagId: toTag.id.toString(),
+                              context: context,
+                            );
+
+                            tagsController.deleteTag(tagId: fromTag.id.toString(), context: context);
+
+                            Navigator.pop(context);
+
                           },
                           borderRadius: 12,
                           backgroundColor: AppColors.green,

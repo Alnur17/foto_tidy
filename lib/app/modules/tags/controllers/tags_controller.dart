@@ -25,7 +25,7 @@ class TagsController extends GetxController {
   void onInit() {
     super.onInit();
 
-      fetchAllTags();
+    fetchAllTags();
   }
 
   bool addTag(String tagName, {BuildContext? context}) {
@@ -35,14 +35,12 @@ class TagsController extends GetxController {
           PopupHelper.showCustomPopup(
             title: 'Unlock Unlimited Tags',
             description:
-            'Go Pro to add more than 5 tag. Organize your photos better with unlimited tags. Upgrade to Pro for advanced features!',
+                'Go Pro to add more than 5 tag. Organize your photos better with unlimited tags. Upgrade to Pro for advanced features!',
             iconPath: AppImages.crownCircle,
             onPrimaryPressed: () {
               Navigator.pop(context);
-              Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => SubscriptionView()));
+              Navigator.push(context,
+                  MaterialPageRoute(builder: (context) => SubscriptionView()));
             },
             primaryButtonText: 'Upgrade to Pro',
             onSecondaryPressed: () {
@@ -129,7 +127,8 @@ class TagsController extends GetxController {
     }
   }
 
-  Future<bool> addTags({required String title, required BuildContext context}) async {
+  Future<bool> addTags(
+      {required String title, required BuildContext context}) async {
     try {
       isLoading(true);
 
@@ -187,8 +186,7 @@ class TagsController extends GetxController {
     required String tagId,
     required String title,
     required BuildContext context,
-  })
-  async {
+  }) async {
     try {
       isLoading(true);
 
@@ -243,11 +241,67 @@ class TagsController extends GetxController {
     }
   }
 
-  Future<bool> deleteTag({
-    required String tagId,
+  Future<void> transferPhotoFormTag({
+    required String formTagId,
+    required String toTagId,
     required BuildContext context,
   })
   async {
+    try {
+      isLoading(true);
+
+      String token =
+          LocalStorage.getData(key: AppConstant.accessToken)?.toString() ?? '';
+
+      var map = {"tag": toTagId};
+
+      var headers = {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+        'Authorization': token,
+      };
+
+      var response = await BaseClient.patchRequest(
+        api: Api.transferPhotoFormTag(formTagId),
+        body: jsonEncode(map),
+        headers: headers,
+      );
+
+      dynamic responseBody = await BaseClient.handleResponse(response);
+      if (responseBody != null && responseBody['success'] == true) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content:
+                Text(responseBody['message'] ?? "Photo transfer successfully"),
+            backgroundColor: Colors.green,
+          ),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content:
+                Text(responseBody['message'] ?? "Failed to transfer photo"),
+            backgroundColor: Colors.orange,
+          ),
+        );
+      }
+    } catch (e) {
+      debugPrint("Catch Error:::::: $e");
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(e.toString()),
+          backgroundColor: Colors.orange,
+        ),
+      );
+    } finally {
+      isLoading(false);
+    }
+  }
+
+  Future<bool> deleteTag({
+    required String tagId,
+    required BuildContext context,
+  }) async {
     try {
       isLoading(true);
 
@@ -299,4 +353,3 @@ class TagsController extends GetxController {
     }
   }
 }
-

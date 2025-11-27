@@ -25,10 +25,10 @@ class GalleryView extends StatefulWidget {
 }
 
 class _GalleryViewState extends State<GalleryView> {
-  final profileController = Get.put(ProfileController());
+  final ProfileController profileController = Get.find();
   final tagsController = Get.find<TagsController>();
   final galleryController = Get.put(GalleryController());
-  final galleryLockController = Get.put(GalleryLockController());
+  final galleryLockController = Get.find<GalleryLockController>();
   final favoriteController = Get.put(FavoriteController());
 
   @override
@@ -163,11 +163,16 @@ class _GalleryViewState extends State<GalleryView> {
 
             /// ---------- GALLERY SECTION ----------
             Expanded(
-              child: profileController.profileData.value?.data?.isGalleryLock ==
-                      true
-                  ? _buildLockedGallery()
-                  : _buildGalleryGrid(),
+              child: Obx(() {
+                final data = profileController.profileData.value?.data;
+
+                final isGalleryLock = data?.isGalleryLock ?? false;
+                return isGalleryLock
+                    ? _buildLockedGallery()
+                    : _buildGalleryGrid();
+              }),
             ),
+
           ],
         );
       }),
@@ -190,27 +195,38 @@ class _GalleryViewState extends State<GalleryView> {
           Text('Please enter your 4-digit PIN to continue', style: h4),
           const SizedBox(height: 30),
           PinCodeTextField(
+            appContext: context,
+            mainAxisAlignment: MainAxisAlignment.center,
+            separatorBuilder: (context, index) => sw12,
             controller: galleryLockController.submitPinTEController,
             length: 4,
+            obscureText: false,
             keyboardType: TextInputType.number,
             animationType: AnimationType.fade,
             pinTheme: PinTheme(
-              shape: PinCodeFieldShape.underline,
+              shape: PinCodeFieldShape.circle,
               borderRadius: BorderRadius.circular(8),
-              fieldHeight: 60,
-              fieldWidth: 50,
+              fieldHeight: 55,
+              fieldWidth: 55,
               activeColor: AppColors.white,
+              activeFillColor: AppColors.white,
               inactiveColor: AppColors.borderColor,
+              inactiveFillColor: AppColors.white,
               selectedColor: AppColors.blue,
+              selectedFillColor: AppColors.white,
+
             ),
             animationDuration: const Duration(milliseconds: 300),
             backgroundColor: AppColors.transparent,
             cursorColor: AppColors.blue,
             enablePinAutofill: true,
             enableActiveFill: true,
-            onCompleted: (v) => log("PIN entered: $v"),
-            onChanged: (_) {},
-            appContext: context,
+            onCompleted: (pin) {},
+            onChanged: (value) {},
+            beforeTextPaste: (text) {
+              log("Allowing to paste $text");
+              return true;
+            },
           ),
           sh20,
           Obx(

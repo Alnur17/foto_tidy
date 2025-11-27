@@ -11,7 +11,7 @@ class ProfileBinding extends Bindings {
   @override
   void dependencies() {
     Get.lazyPut<GalleryLockController>(
-      () => GalleryLockController(),
+      () => GalleryLockController(), fenix: true
     );
     Get.lazyPut<FavoriteController>(
       () => FavoriteController(),

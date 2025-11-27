@@ -20,8 +20,7 @@ class GalleryLockView extends GetView {
   GalleryLockView({super.key});
 
   final ProfileController profileController = Get.find();
-  final GalleryLockController galleryLockController =
-      Get.put(GalleryLockController());
+  final galleryLockController = Get.find<GalleryLockController>();
 
   @override
   Widget build(BuildContext context) {

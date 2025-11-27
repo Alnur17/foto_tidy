@@ -1,6 +1,7 @@
 class Api {
   /// base url
-  static const baseUrl = "http://74.118.168.203:5014/api/v1";
+  static const baseUrl = "http://138.68.242.180:5001/api/v1";
+  //static const baseUrl = "http://74.118.168.203:5014/api/v1";
   //static const baseUrl = "https://48c15380570c.ngrok-free.app/api/v1";
 
   ///auth api
@@ -19,6 +20,7 @@ class Api {
   static const addTags = "$baseUrl/tags"; //done
   static editTag(String tagId) => "$baseUrl/tags/$tagId"; //done
   static deleteTag(String tagId) => "$baseUrl/tags/$tagId"; //
+  static transferPhotoFormTag(String formTagId) => "$baseUrl/tags/transfer-photos/$formTagId"; //done
   static const settings = "$baseUrl/contents"; //done
   static const favorite = "$baseUrl/favorite/my-favorite"; //done
   static const addFavorite = "$baseUrl/favorite"; //done
