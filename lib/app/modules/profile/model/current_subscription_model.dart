@@ -60,7 +60,7 @@ class Data {
       type: json["type"],
       package: json["package"] == null ? null : Package.fromJson(json["package"]),
       transactionId: json["transactionId"],
-      amount: json["amount"],
+      amount: (json["amount"] as num?)?.toDouble(),
       paymentStatus: json["paymentStatus"],
       status: json["status"],
       expiredAt: DateTime.tryParse(json["expiredAt"] ?? ""),
@@ -93,8 +93,8 @@ class Package {
   final String? type;
   final String? billingCycle;
   final List<String> description;
-  final int? price;
-  final int? popularity;
+  final double? price;
+  final double? popularity;
   final bool? isDeleted;
   final DateTime? createdAt;
   final DateTime? updatedAt;
@@ -107,8 +107,8 @@ class Package {
       type: json["type"],
       billingCycle: json["billingCycle"],
       description: json["description"] == null ? [] : List<String>.from(json["description"]!.map((x) => x)),
-      price: json["price"],
-      popularity: json["popularity"],
+      price: (json["price"] as num?)?.toDouble(),
+      popularity: (json["popularity"] as num?)?.toDouble(),
       isDeleted: json["isDeleted"],
       createdAt: DateTime.tryParse(json["createdAt"] ?? ""),
       updatedAt: DateTime.tryParse(json["updatedAt"] ?? ""),
