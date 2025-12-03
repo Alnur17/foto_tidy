@@ -11,72 +11,75 @@ class GalleryItem extends StatelessWidget {
   final bool isFavorite;
   final bool isProUser;
   final VoidCallback onFavoriteToggle;
+  final VoidCallback onImageTap;
 
   const GalleryItem({
     super.key,
     required this.imageUrl,
     this.isFavorite = false,
     this.isProUser = false,
-    required this.onFavoriteToggle,
+    required this.onFavoriteToggle, required this.onImageTap,
 
   });
 
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      children: [
-        // The image
-        Container(
-          decoration: BoxDecoration(
-            color: AppColors.grey,
-            borderRadius: BorderRadius.circular(12.r),
-          ),
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(12.r),
-            child: CachedNetworkImage(
-              imageUrl: imageUrl,
-              fit: BoxFit.cover,
-              width: Get.width,
-              height: Get.height,
-              placeholder: (context, url) => Center(
-                child: CircularProgressIndicator(
-                  strokeWidth: 2,
-                  color: AppColors.orange,
-                ),
-              ),
-              errorWidget: (context, url, error) => Icon(
-                Icons.error,
-                color: AppColors.red,
-              ),
+    return GestureDetector(
+      onTap: onImageTap,
+      child: Stack(
+        children: [
+          Container(
+            decoration: BoxDecoration(
+              color: AppColors.grey,
+              borderRadius: BorderRadius.circular(12.r),
             ),
-          ),
-        ),
-        // Show favorite button only if the user is Pro
-        if (isProUser)
-          Positioned(
-            top: 8.h, // Adjust the top positioning
-            right: 8.w, // Adjust the right positioning
-            child: GestureDetector(
-              onTap: onFavoriteToggle,
-              child: Container(
-                padding: EdgeInsets.only(
-                  top: 6.h,
-                  bottom: 4.h,
-                  left: 4.w,
-                  right: 4.w,
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(12.r),
+              child: CachedNetworkImage(
+                imageUrl: imageUrl,
+                fit: BoxFit.cover,
+                width: Get.width,
+                height: Get.height,
+                placeholder: (context, url) => Center(
+                  child: CircularProgressIndicator(
+                    strokeWidth: 2,
+                    color: AppColors.orange,
+                  ),
                 ),
-                decoration: ShapeDecoration(
-                  shape: CircleBorder(),
-                  color: Colors.black87,
-                ),
-                child: Image.asset(
-                  isFavorite ? AppImages.favoriteFilled : AppImages.favorite,
-                  scale: 4,
+                errorWidget: (context, url, error) => Icon(
+                  Icons.error,
+                  color: AppColors.red,
                 ),
               ),
             ),
           ),
-      ],
+          // Show favorite button only if the user is Pro
+          if (isProUser)
+            Positioned(
+              top: 8.h, // Adjust the top positioning
+              right: 8.w, // Adjust the right positioning
+              child: GestureDetector(
+                onTap: onFavoriteToggle,
+                child: Container(
+                  padding: EdgeInsets.only(
+                    top: 6.h,
+                    bottom: 4.h,
+                    left: 4.w,
+                    right: 4.w,
+                  ),
+                  decoration: ShapeDecoration(
+                    shape: CircleBorder(),
+                    color: Colors.black87,
+                  ),
+                  child: Image.asset(
+                    isFavorite ? AppImages.favoriteFilled : AppImages.favorite,
+                    scale: 4,
+                  ),
+                ),
+              ),
+            ),
+        ],
+      ),
     );
   }
 }

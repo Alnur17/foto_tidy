@@ -29,8 +29,7 @@ class _SubscriptionViewState extends State<SubscriptionView> {
     required Color accentColor,
     required Color backgroundColor,
     required Color toggleBgColor,
-  })
-  {
+  }) {
     final monthlyPkg = subscriptionController.getPackage(planKey, true);
     final yearlyPkg = subscriptionController.getPackage(planKey, false);
 
@@ -194,7 +193,6 @@ class _SubscriptionViewState extends State<SubscriptionView> {
 
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(
@@ -236,7 +234,8 @@ class _SubscriptionViewState extends State<SubscriptionView> {
                     );
                   }
 
-                  final planName = sub.package?.title?.toUpperCase() ?? 'Unknown';
+                  final planName =
+                      sub.package?.title?.toUpperCase() ?? 'Unknown';
                   final daysLeft = subscriptionController.getRemainingDays();
 
                   return SubscriptionCard(
@@ -246,7 +245,31 @@ class _SubscriptionViewState extends State<SubscriptionView> {
                     daysLeft: '$daysLeft Days Left',
                   );
                 }),
-
+                sh20,
+                Container(
+                    padding: EdgeInsets.all(16).r,
+                    decoration: BoxDecoration(
+                      color: AppColors.white,
+                      borderRadius: BorderRadius.circular(12.r),
+                    ),
+                    child: Column(
+                      children: [
+                        Text(
+                          'Start Your 7-Day Free Trial',
+                          style: h2,
+                          textAlign: TextAlign.center,
+                        ),
+                        sh5,
+                        Text('Experience all features for free for 7 days.',
+                            style: h5),
+                        sh20,
+                        CustomButton(
+                          text: 'Star Free Trial',
+                          onPressed: () {},
+                          gradientColors: AppColors.buttonColor,
+                        ),
+                      ],
+                    )),
                 sh20,
                 Center(child: Image.asset(AppImages.crown, scale: 4)),
                 sh20,
@@ -280,7 +303,10 @@ class _SubscriptionViewState extends State<SubscriptionView> {
 
                 // LOADING
                 if (subscriptionController.isLoading.value)
-                  const Center(child: CircularProgressIndicator( color: AppColors.orange,))
+                  const Center(
+                      child: CircularProgressIndicator(
+                    color: AppColors.orange,
+                  ))
                 else ...[
                   // PRO BASIC
                   if (hasBasic)

@@ -210,6 +210,66 @@ class GalleryController extends GetxController {
   }
 
 
+  Future<void> deleteSinglePhoto({
+    required String photoId,
+    required BuildContext context,
+  }) async {
+    try {
+      isLoading(true);
+
+      final accessToken =
+          LocalStorage.getData(key: AppConstant.accessToken)?.toString() ?? "";
+
+      if (accessToken.isEmpty) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('User not authenticated'),
+            backgroundColor: AppColors.orange,
+          ),
+        );
+        return;
+      }
+
+      final response = await BaseClient.deleteRequest(
+        api: Api.deletePhoto(photoId),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': accessToken,
+        },
+      );
+
+      final data = await BaseClient.handleResponse(response);
+
+      if (data != null && data['success'] == true) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('${data['message']}'),
+            backgroundColor: AppColors.green,
+          ),
+        );
+        fetchMyGallery();
+        Get.back();
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('${data?['message'] ?? 'Failed to upload photo'}'),
+            backgroundColor: AppColors.orange,
+          ),
+        );
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(e.toString()),
+          backgroundColor: AppColors.orange,
+        ),
+      );
+    } finally {
+      isLoading(false);
+    }
+  }
+
+
 
   Future<void> uploadBatchPhotos(
       List<Map<String, dynamic>> payload, context)

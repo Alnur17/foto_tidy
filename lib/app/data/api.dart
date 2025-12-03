@@ -19,7 +19,7 @@ class Api {
   static const allTags = "$baseUrl/tags"; //done
   static const addTags = "$baseUrl/tags"; //done
   static editTag(String tagId) => "$baseUrl/tags/$tagId"; //done
-  static deleteTag(String tagId) => "$baseUrl/tags/$tagId"; //
+  static deleteTag(String tagId) => "$baseUrl/tags/$tagId"; //done
   static transferPhotoFormTag(String formTagId) => "$baseUrl/tags/transfer-photos/$formTagId"; //done
   static const settings = "$baseUrl/contents"; //done
   static const favorite = "$baseUrl/favorite/my-favorite"; //done
@@ -34,9 +34,10 @@ class Api {
 
   /// Upload Photos
   static const uploadFromCameraPhotos = "$baseUrl/uploads/single"; //done
-  static const uploadSinglePhotos = "$baseUrl/upload-photos"; //
+  static const uploadSinglePhotos = "$baseUrl/upload-photos"; //done
   static const uploadPhotos = "$baseUrl/uploads/multiple"; //done
   static const uploadBadgePhotos = "$baseUrl/upload-photos/batch-upload"; //done
+  static deletePhoto(String photoId) => "$baseUrl/upload-photos/$photoId"; //
 
   ///Gallery and Home
   static const myGallery = "$baseUrl/upload-photos/my-photos"; //done

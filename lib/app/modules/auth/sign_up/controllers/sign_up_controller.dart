@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
+import '../../../../../common/app_color/app_colors.dart';
 import '../../../../../common/app_constant/app_constant.dart';
 import '../../../../../common/helper/local_store.dart';
 import '../../../../data/api.dart';
@@ -29,14 +30,24 @@ class SignUpController extends GetxController {
 
       // Validate password length
       if (passwordTEController.text.trim().length < 6) {
-        Get.snackbar('Error', 'Password must be at least 6 characters');
+        ScaffoldMessenger.of(Get.context!).showSnackBar(
+          SnackBar(
+            content: Text('Password must be at least 6 characters'),
+            backgroundColor: AppColors.orange,
+          ),
+        );
         return;
       }
 
       // Check if passwords match
       if (passwordTEController.text.trim() !=
           confirmPassTEController.text.trim()) {
-        Get.snackbar('Error', 'Passwords do not match');
+        ScaffoldMessenger.of(Get.context!).showSnackBar(
+          SnackBar(
+            content: Text('Passwords do not match'),
+            backgroundColor: AppColors.orange,
+          ),
+        );
         return;
       }
 
@@ -71,12 +82,22 @@ class SignUpController extends GetxController {
           ),
         );
       } else {
-        Get.snackbar('Error', data?['message'] ?? 'Failed to signup');
+        ScaffoldMessenger.of(Get.context!).showSnackBar(
+          SnackBar(
+            content: Text(data?['message'] ?? 'Failed to signup'),
+            backgroundColor: AppColors.red,
+          ),
+        );
       }
     } catch (e) {
       // Log the error and display the error message
       debugPrint("Signup error: $e");
-      Get.snackbar('Error', 'An error occurred during signup: $e');
+      ScaffoldMessenger.of(Get.context!).showSnackBar(
+        SnackBar(
+          content: Text('An error occurred during signup: $e'),
+          backgroundColor: AppColors.red,
+        ),
+      );
     } finally {
       isLoading(false);
     }

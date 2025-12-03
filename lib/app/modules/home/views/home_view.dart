@@ -1,6 +1,7 @@
 import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:foto_tidy/app/modules/gallery/views/full_image_view.dart';
 import 'package:foto_tidy/app/modules/gallery/views/gallery_view.dart';
 import 'package:foto_tidy/app/modules/home/controllers/home_controller.dart';
 import 'package:foto_tidy/app/modules/home/views/browse_photos_view.dart';
@@ -135,7 +136,7 @@ class _HomeViewState extends State<HomeView> {
                 sh12,
                 CustomButton(
                   text: 'Take Photo',
-                  onPressed: (){
+                  onPressed: () {
                     homeController.takePhoto(context: context);
                   },
                   gradientColors: AppColors.buttonColor,
@@ -321,7 +322,6 @@ class _HomeViewState extends State<HomeView> {
                 inactiveFillColor: AppColors.white,
                 selectedColor: AppColors.blue,
                 selectedFillColor: AppColors.white,
-
               ),
               animationDuration: const Duration(milliseconds: 300),
               backgroundColor: AppColors.transparent,
@@ -392,26 +392,15 @@ class _HomeViewState extends State<HomeView> {
           final item = gallery[index];
           final isFav = RxBool(item.isFavorite ?? false);
           return GalleryItem(
+            onImageTap: () {
+              Get.to(() => FullImageView(
+                    imageUrl: item.image ?? '',
+                    photoId: item.id ?? '',
+                  ));
+            },
             isProUser: isProUser,
             imageUrl: item.image ?? '',
             isFavorite: item.isFavorite ?? false,
-            // onFavoriteToggle: () async {
-            //   final userId = profileController.profileData.value?.data?.id ?? "";
-            //   final photoId = item.id ?? "";
-            //
-            //   if (userId.isEmpty || photoId.isEmpty) {
-            //     print("❌ Missing userId or photoId");
-            //     return;
-            //   }
-            //
-            //   await favoriteController.addFavorite(
-            //     userId: userId,
-            //     photoId: photoId,
-            //   );
-            //
-            //   // Refresh gallery to update favorite icon
-            //   await galleryController.fetchMyGallery();
-            // },
             onFavoriteToggle: () async {
               final userId =
                   profileController.profileData.value?.data?.id ?? "";

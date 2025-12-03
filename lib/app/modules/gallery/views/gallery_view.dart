@@ -16,6 +16,7 @@ import '../../../../common/widgets/custom_button.dart';
 import '../../profile/controllers/favorite_controller.dart';
 import '../../profile/controllers/gallery_lock_controller.dart';
 import '../controllers/gallery_controller.dart';
+import 'full_image_view.dart';
 
 class GalleryView extends StatefulWidget {
   const GalleryView({super.key});
@@ -172,7 +173,6 @@ class _GalleryViewState extends State<GalleryView> {
                     : _buildGalleryGrid();
               }),
             ),
-
           ],
         );
       }),
@@ -214,7 +214,6 @@ class _GalleryViewState extends State<GalleryView> {
               inactiveFillColor: AppColors.white,
               selectedColor: AppColors.blue,
               selectedFillColor: AppColors.white,
-
             ),
             animationDuration: const Duration(milliseconds: 300),
             backgroundColor: AppColors.transparent,
@@ -278,6 +277,12 @@ class _GalleryViewState extends State<GalleryView> {
         final item = gallery[index];
         final isFav = RxBool(item.isFavorite ?? false);
         return GalleryItem(
+          onImageTap: () {
+            Get.to(() => FullImageView(
+                  imageUrl: item.image ?? '',
+                  photoId: item.id ?? '',
+                ));
+          },
           isProUser: isProUser,
           imageUrl: item.image ?? '',
           isFavorite: item.isFavorite ?? false,
@@ -316,9 +321,14 @@ class _GalleryViewState extends State<GalleryView> {
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.white,
-      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
+      shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
       builder: (_) => Padding(
-        padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom, left: 20, right: 20, top: 20),
+        padding: EdgeInsets.only(
+            bottom: MediaQuery.of(context).viewInsets.bottom,
+            left: 20,
+            right: 20,
+            top: 20),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -330,42 +340,58 @@ class _GalleryViewState extends State<GalleryView> {
             Text("Date", style: h4),
             const SizedBox(height: 8),
             Obx(() => TextField(
-              readOnly: true,
-              decoration: InputDecoration(
-                hintText: "Select Date",
-                hintStyle: TextStyle(color: Colors.grey[600]),
-                suffixIcon: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    if (galleryController.selectedDate.value != null)
-                      IconButton(
-                        icon: const Icon(Icons.clear, size: 20),
-                        onPressed: () => galleryController.selectedDate.value = null,
-                      ),
-                    const Icon(Icons.calendar_today, color: AppColors.orange),
-                  ],
-                ),
-                border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
-                enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(8), borderSide: BorderSide(color: AppColors.borderColor)),
-                focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(8), borderSide: BorderSide(color: AppColors.blue, width: 2)),
-                filled: true,
-                fillColor: AppColors.white,
-              ),
-              controller: TextEditingController(text: galleryController.formattedSelectedDate)..selection = TextSelection.fromPosition(TextPosition(offset: galleryController.formattedSelectedDate.length)),
-              onTap: () async {
-                final picked = await showDatePicker(
-                  context: context,
-                  initialDate: galleryController.selectedDate.value ?? DateTime.now(),
-                  firstDate: DateTime(2020),
-                  lastDate: DateTime(2030),
-                  builder: (context, child) => Theme(
-                    data: Theme.of(context).copyWith(colorScheme: const ColorScheme.light(primary: AppColors.orange)),
-                    child: child!,
+                  readOnly: true,
+                  decoration: InputDecoration(
+                    hintText: "Select Date",
+                    hintStyle: TextStyle(color: Colors.grey[600]),
+                    suffixIcon: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        if (galleryController.selectedDate.value != null)
+                          IconButton(
+                            icon: const Icon(Icons.clear, size: 20),
+                            onPressed: () =>
+                                galleryController.selectedDate.value = null,
+                          ),
+                        const Icon(Icons.calendar_today,
+                            color: AppColors.orange),
+                      ],
+                    ),
+                    border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8)),
+                    enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8),
+                        borderSide: BorderSide(color: AppColors.borderColor)),
+                    focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8),
+                        borderSide:
+                            BorderSide(color: AppColors.blue, width: 2)),
+                    filled: true,
+                    fillColor: AppColors.white,
                   ),
-                );
-                if (picked != null) galleryController.selectedDate.value = picked;
-              },
-            )),
+                  controller: TextEditingController(
+                      text: galleryController.formattedSelectedDate)
+                    ..selection = TextSelection.fromPosition(TextPosition(
+                        offset:
+                            galleryController.formattedSelectedDate.length)),
+                  onTap: () async {
+                    final picked = await showDatePicker(
+                      context: context,
+                      initialDate: galleryController.selectedDate.value ??
+                          DateTime.now(),
+                      firstDate: DateTime(2020),
+                      lastDate: DateTime(2030),
+                      builder: (context, child) => Theme(
+                        data: Theme.of(context).copyWith(
+                            colorScheme: const ColorScheme.light(
+                                primary: AppColors.orange)),
+                        child: child!,
+                      ),
+                    );
+                    if (picked != null)
+                      galleryController.selectedDate.value = picked;
+                  },
+                )),
 
             const SizedBox(height: 20),
 
@@ -373,13 +399,15 @@ class _GalleryViewState extends State<GalleryView> {
             Text("Sort by", style: h4),
             const SizedBox(height: 8),
             Obx(() => DropdownButtonFormField<String>(
-              value: galleryController.selectedSort.value,
-              decoration: const InputDecoration(border: OutlineInputBorder()),
-              items: ["Newest First", "Oldest First"]
-                  .map((e) => DropdownMenuItem(value: e, child: Text(e)))
-                  .toList(),
-              onChanged: (val) => galleryController.selectedSort.value = val!,
-            )),
+                  value: galleryController.selectedSort.value,
+                  decoration:
+                      const InputDecoration(border: OutlineInputBorder()),
+                  items: ["Newest First", "Oldest First"]
+                      .map((e) => DropdownMenuItem(value: e, child: Text(e)))
+                      .toList(),
+                  onChanged: (val) =>
+                      galleryController.selectedSort.value = val!,
+                )),
 
             const SizedBox(height: 30),
 
