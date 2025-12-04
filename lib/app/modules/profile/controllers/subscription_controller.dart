@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:foto_tidy/app/data/api.dart';
 import 'package:foto_tidy/app/modules/dashboard/views/dashboard_view.dart';
 import 'package:foto_tidy/app/modules/profile/controllers/profile_controller.dart';
@@ -19,7 +20,6 @@ class SubscriptionController extends GetxController {
   var isLoading = false.obs;
   var subscriptionPackageList = <SubsPackageDatum>[].obs;
   var mySubscription = Rxn<MySubscriptionModel>();
-
 
   // Selected package ID (for purchase flow)
   var selectedPackageId = RxnString();
@@ -84,7 +84,6 @@ class SubscriptionController extends GetxController {
     }
   }
 
-
   Future<void> fetchSubscriptionPackages() async {
     try {
       isLoading(true);
@@ -92,7 +91,8 @@ class SubscriptionController extends GetxController {
           LocalStorage.getData(key: AppConstant.accessToken)?.toString() ?? "";
 
       if (accessToken.isEmpty) {
-        Get.snackbar("Error",  "User not authenticated",backgroundColor: AppColors.orange);
+        Get.snackbar("Error", "User not authenticated",
+            backgroundColor: AppColors.orange);
         return;
       }
 
@@ -158,6 +158,49 @@ class SubscriptionController extends GetxController {
     }
   }
 
+  Future<void> freeTrialSubscription() async {
+    try {
+      isLoading(true);
+      String token =
+          LocalStorage.getData(key: AppConstant.accessToken)?.toString() ?? "";
+
+      var headers = {
+        'Authorization': token,
+        'Content-Type': 'application/json',
+      };
+
+      dynamic responseBody = await BaseClient.handleResponse(
+        await BaseClient.patchRequest(
+            api: Api.freeTrial, headers: headers),
+      );
+
+      if (responseBody['success'] == true) {
+        final String message = responseBody['message'].toString();
+        // createPaymentSession(subscriptionId: subscriptionId, userId: userId);
+        ScaffoldMessenger.of(Get.context!).showSnackBar(
+          SnackBar(
+            content: Text(message),
+            backgroundColor: AppColors.green,
+          ),
+        );
+        fetchMySubscription();
+        profileController.fetchProfile();
+        isLoading.value = false;
+      } else {
+        ScaffoldMessenger.of(Get.context!).showSnackBar(
+          SnackBar(
+            content: Text(responseBody['message'].toString()),
+            backgroundColor: AppColors.red,
+          ),
+        );
+      }
+    } catch (e) {
+      debugPrint("Catch Error:::::: $e");
+    } finally {
+      isLoading(false);
+    }
+  }
+
   Future<void> createPaymentSession({
     required String userId,
     required String subscriptionId,
@@ -208,7 +251,7 @@ class SubscriptionController extends GetxController {
         // LocalStorage.saveData(key: AppConstant.paymentId, data: paymentId);
         // String id = LocalStorage.getData(key: AppConstant.paymentId);
         // debugPrint('::::::::::::::::: $id :::::::::::::::::');
-        Get.offAll(() => DashboardView(),routeName: '/dashboard');
+        Get.offAll(() => DashboardView(), routeName: '/dashboard');
       } else {
         debugPrint("Error on Payment Result: $responseBody['message'] ");
       }
@@ -219,7 +262,6 @@ class SubscriptionController extends GetxController {
         "Error on Payment Result: $e",
         backgroundColor: AppColors.orange,
       );
-
     } finally {
       isLoading.value = false;
     }
@@ -232,5 +274,4 @@ class SubscriptionController extends GetxController {
     final now = DateTime.now();
     return exp.difference(now).inDays;
   }
-
 }

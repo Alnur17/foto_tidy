@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:foto_tidy/app/modules/profile/controllers/profile_controller.dart';
 import 'package:foto_tidy/common/app_images/app_images.dart';
+import 'package:foto_tidy/common/widgets/custom_loader.dart';
 import 'package:get/get.dart';
 
 import '../../../../common/app_color/app_colors.dart';
@@ -22,6 +24,7 @@ class SubscriptionView extends StatefulWidget {
 class _SubscriptionViewState extends State<SubscriptionView> {
   final SubscriptionController subscriptionController =
       Get.put(SubscriptionController());
+  final ProfileController profileController = Get.find();
 
   Widget _buildPlanCard({
     required String planKey,
@@ -246,31 +249,46 @@ class _SubscriptionViewState extends State<SubscriptionView> {
                   );
                 }),
                 sh20,
-                Container(
-                    padding: EdgeInsets.all(16).r,
-                    decoration: BoxDecoration(
-                      color: AppColors.white,
-                      borderRadius: BorderRadius.circular(12.r),
-                    ),
-                    child: Column(
-                      children: [
-                        Text(
-                          'Start Your 7-Day Free Trial',
-                          style: h2,
-                          textAlign: TextAlign.center,
-                        ),
-                        sh5,
-                        Text('Experience all features for free for 7 days.',
-                            style: h5),
-                        sh20,
-                        CustomButton(
-                          text: 'Star Free Trial',
-                          onPressed: () {},
-                          gradientColors: AppColors.buttonColor,
-                        ),
-                      ],
-                    )),
-                sh20,
+                Obx(() {
+                  return profileController
+                              .profileData.value?.data?.isEnabledFreeTrial ==
+                          true
+                      ? SizedBox.shrink()
+                      : Container(
+                          padding: EdgeInsets.all(16).r,
+                          decoration: BoxDecoration(
+                            color: AppColors.white,
+                            borderRadius: BorderRadius.circular(12.r),
+                          ),
+                          child: Column(
+                            children: [
+                              Text(
+                                'Start Your 7-Day Free Trial',
+                                style: h2,
+                                textAlign: TextAlign.center,
+                              ),
+                              sh5,
+                              Text(
+                                  'Experience all features for free for 7 days.',
+                                  style: h5),
+                              sh20,
+                              subscriptionController.isLoading.value == true
+                                  ? CustomLoader(color: AppColors.white)
+                                  : CustomButton(
+                                      text: 'Star Free Trial',
+                                      onPressed: () {
+                                        subscriptionController
+                                            .freeTrialSubscription();
+                                      },
+                                      gradientColors: AppColors.buttonColor,
+                                    ),
+                            ],
+                          ));
+                }),
+                profileController.profileData.value?.data?.isEnabledFreeTrial ==
+                        true
+                    ? SizedBox.shrink()
+                    : sh30,
                 Center(child: Image.asset(AppImages.crown, scale: 4)),
                 sh20,
                 Center(

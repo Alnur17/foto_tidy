@@ -11,7 +11,6 @@ class ProfileModel {
   final String? message;
   final Data? data;
 
-  // THIS WAS MISSING — ADD THIS!
   ProfileModel copyWith({
     bool? success,
     int? statusCode,
@@ -26,14 +25,15 @@ class ProfileModel {
     );
   }
 
-  factory ProfileModel.fromJson(Map<String, dynamic> json) {
+  factory ProfileModel.fromJson(Map<String, dynamic> json){
     return ProfileModel(
       success: json["success"],
       statusCode: json["statusCode"],
       message: json["message"],
-      data: json["data"] == null ? null : Data.fromJson(json["data"] as Map<String, dynamic>),
+      data: json["data"] == null ? null : Data.fromJson(json["data"]),
     );
   }
+
 }
 
 class Data {
@@ -43,16 +43,19 @@ class Data {
     required this.email,
     required this.photoUrl,
     required this.contractNumber,
-    required this.galleryKey,
     required this.status,
     required this.freeStorage,
     required this.dataId,
     required this.createdAt,
     required this.isActiveLock,
+    required this.galleryKey,
+    required this.freeTrialExpiry,
+    required this.isEnabledFreeTrial,
     required this.storageLimit,
     required this.isActiveSubscription,
     required this.type,
     required this.isGalleryLock,
+    required this.isActiveFreeTrial,
   });
 
   final String? id;
@@ -60,34 +63,39 @@ class Data {
   final String? email;
   final String? photoUrl;
   final dynamic contractNumber;
-  final dynamic galleryKey;
   final String? status;
   final double? freeStorage;
   final String? dataId;
   final DateTime? createdAt;
   final bool? isActiveLock;
+  final String? galleryKey;
+  final DateTime? freeTrialExpiry;
+  final bool? isEnabledFreeTrial;
   final int? storageLimit;
   final bool? isActiveSubscription;
   final String? type;
   final bool? isGalleryLock;
+  final bool? isActiveFreeTrial;
 
-  // You already added this — perfect!
   Data copyWith({
     String? id,
     String? name,
     String? email,
     String? photoUrl,
-    dynamic contractNumber,
-    dynamic galleryKey,
+    dynamic? contractNumber,
     String? status,
     double? freeStorage,
     String? dataId,
     DateTime? createdAt,
     bool? isActiveLock,
+    String? galleryKey,
+    DateTime? freeTrialExpiry,
+    bool? isEnabledFreeTrial,
     int? storageLimit,
     bool? isActiveSubscription,
     String? type,
     bool? isGalleryLock,
+    bool? isActiveFreeTrial,
   }) {
     return Data(
       id: id ?? this.id,
@@ -95,40 +103,47 @@ class Data {
       email: email ?? this.email,
       photoUrl: photoUrl ?? this.photoUrl,
       contractNumber: contractNumber ?? this.contractNumber,
-      galleryKey: galleryKey ?? this.galleryKey,
       status: status ?? this.status,
       freeStorage: freeStorage ?? this.freeStorage,
       dataId: dataId ?? this.dataId,
       createdAt: createdAt ?? this.createdAt,
       isActiveLock: isActiveLock ?? this.isActiveLock,
+      galleryKey: galleryKey ?? this.galleryKey,
+      freeTrialExpiry: freeTrialExpiry ?? this.freeTrialExpiry,
+      isEnabledFreeTrial: isEnabledFreeTrial ?? this.isEnabledFreeTrial,
       storageLimit: storageLimit ?? this.storageLimit,
       isActiveSubscription: isActiveSubscription ?? this.isActiveSubscription,
       type: type ?? this.type,
       isGalleryLock: isGalleryLock ?? this.isGalleryLock,
+      isActiveFreeTrial: isActiveFreeTrial ?? this.isActiveFreeTrial,
     );
   }
 
-  factory Data.fromJson(Map<String, dynamic> json) {
+  factory Data.fromJson(Map<String, dynamic> json){
     return Data(
-      id: json["_id"] as String?,
-      name: json["name"] as String?,
-      email: json["email"] as String?,
-      photoUrl: json["photoUrl"] as String?,
+      id: json["_id"],
+      name: json["name"],
+      email: json["email"],
+      photoUrl: json["photoUrl"],
       contractNumber: json["contractNumber"],
-      galleryKey: json["galleryKey"],
-      status: json["status"] as String?,
+      status: json["status"],
       freeStorage: json["freeStorage"] == null
           ? null
           : (json["freeStorage"] is int
           ? (json["freeStorage"] as int).toDouble()
           : json["freeStorage"] as double),
-      dataId: json["id"] as String?,
-      createdAt: json["createdAt"] == null ? null : DateTime.tryParse(json["createdAt"] as String),
-      isActiveLock: json["isActiveLock"] as bool?,
-      storageLimit: json["storageLimit"] as int?,
-      isActiveSubscription: json["isActiveSubscription"] as bool?,
-      type: json["type"] as String?,
-      isGalleryLock: json["isGalleryLock"] as bool?,
+      dataId: json["id"],
+      createdAt: DateTime.tryParse(json["createdAt"] ?? ""),
+      isActiveLock: json["isActiveLock"],
+      galleryKey: json["galleryKey"],
+      freeTrialExpiry: DateTime.tryParse(json["freeTrialExpiry"] ?? ""),
+      isEnabledFreeTrial: json["isEnabledFreeTrial"],
+      storageLimit: json["storageLimit"],
+      isActiveSubscription: json["isActiveSubscription"],
+      type: json["type"],
+      isGalleryLock: json["isGalleryLock"],
+      isActiveFreeTrial: json["isActiveFreeTrial"],
     );
   }
+
 }

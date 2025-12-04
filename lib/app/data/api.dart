@@ -31,6 +31,7 @@ class Api {
   static const subscriptionPackages = "$baseUrl/packages"; //done
   static const buySubscription = "$baseUrl/subscriptions"; //done
   static const createPayment = "$baseUrl/payments/checkout"; //done
+  static const freeTrial = "$baseUrl/users/enabled-free-tier"; //
 
   /// Upload Photos
   static const uploadFromCameraPhotos = "$baseUrl/uploads/single"; //done
