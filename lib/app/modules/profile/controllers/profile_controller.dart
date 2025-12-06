@@ -86,16 +86,17 @@ class ProfileController extends GetxController {
     }
   }
 
-  Future<void> updateProfile() async {
+  Future<void> updateProfile(BuildContext context) async {
     try {
       isLoading.value = true;
       String accessToken =
           LocalStorage.getData(key: AppConstant.accessToken)?.toString() ?? "";
       if (accessToken.isEmpty) {
-        Get.snackbar(
-          'Empty',
-          "User not authenticated",
-          backgroundColor: AppColors.orange,
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text("User not authenticated"),
+            backgroundColor: AppColors.orange,
+          ),
         );
         return;
       }
@@ -137,10 +138,11 @@ class ProfileController extends GetxController {
         var decodedResponse = json.decode(responseData);
 
         if (response.statusCode == 200) {
-          Get.snackbar(
-            'Success',
-            "Profile updated successfully",
-            backgroundColor: AppColors.green,
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text("Profile updated successfully"),
+              backgroundColor: AppColors.green,
+            ),
           );
 
           await fetchProfile();
@@ -149,29 +151,40 @@ class ProfileController extends GetxController {
             Navigator.pop(Get.context!);
           }
         } else {
-          Get.snackbar(
-            'Error',
-            decodedResponse['message'] ?? "Failed to update profile",
-            backgroundColor: AppColors.orange,
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(decodedResponse['message'] ?? "Failed to update profile"),
+              backgroundColor: AppColors.orange,
+            ),
           );
         }
       } catch (decodeError) {
-        Get.snackbar(
-          'Error',
-          "Invalid response format",
-          backgroundColor: AppColors.orange,
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text("Catch Error: $decodeError"),
+            backgroundColor: AppColors.orange,
+          ),
         );
         debugPrint("Response Error: $decodeError");
       }
     } catch (e) {
-      Get.snackbar(
-        'Error',
-        "Error updating profile: $e",
-        backgroundColor: AppColors.orange,
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text("Error updating profile: $e"),
+          backgroundColor: AppColors.orange,
+        ),
       );
       debugPrint("Update Error: $e");
     } finally {
       isLoading.value = false;
     }
+  }
+
+  int getTrialRemainingDays() {
+    final exp = profileData.value?.data?.freeTrialExpiry;
+    if (exp == null) return 0;
+
+    final now = DateTime.now();
+    return exp.difference(now).inDays;
   }
 }

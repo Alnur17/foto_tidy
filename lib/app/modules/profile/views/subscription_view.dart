@@ -32,7 +32,8 @@ class _SubscriptionViewState extends State<SubscriptionView> {
     required Color accentColor,
     required Color backgroundColor,
     required Color toggleBgColor,
-  }) {
+  })
+  {
     final monthlyPkg = subscriptionController.getPackage(planKey, true);
     final yearlyPkg = subscriptionController.getPackage(planKey, false);
 
@@ -182,7 +183,6 @@ class _SubscriptionViewState extends State<SubscriptionView> {
             onPressed: () {
               subscriptionController.createSubscription(
                   packageId: currentPkg.id ?? '');
-              Get.snackbar('Upgrade', 'Selected: ${currentPkg.id}');
             },
             backgroundColor: AppColors.orange,
             textColor: AppColors.white,
@@ -224,7 +224,7 @@ class _SubscriptionViewState extends State<SubscriptionView> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                sh20,
+                sh12,
                 Obx(() {
                   final sub = subscriptionController.mySubscription.value?.data;
 
@@ -248,8 +248,21 @@ class _SubscriptionViewState extends State<SubscriptionView> {
                     daysLeft: '$daysLeft Days Left',
                   );
                 }),
-                sh20,
+                sh8,
+
                 Obx(() {
+                  final trial = profileController.profileData.value?.data?.isEnabledFreeTrial;
+                  final trialDaysLeft = profileController.getTrialRemainingDays();
+
+                  if (trial == true) {
+                    return SubscriptionCard(
+                      title: '7 Days Free Trial',
+                      planName: 'Trial Plan',
+                      deadlineText: 'Trial Deadline',
+                      daysLeft: '$trialDaysLeft Days',
+                    );
+                  }
+
                   return profileController
                               .profileData.value?.data?.isEnabledFreeTrial ==
                           true
@@ -285,10 +298,7 @@ class _SubscriptionViewState extends State<SubscriptionView> {
                             ],
                           ));
                 }),
-                profileController.profileData.value?.data?.isEnabledFreeTrial ==
-                        true
-                    ? SizedBox.shrink()
-                    : sh30,
+               sh20,
                 Center(child: Image.asset(AppImages.crown, scale: 4)),
                 sh20,
                 Center(

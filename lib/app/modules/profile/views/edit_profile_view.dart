@@ -165,7 +165,7 @@ class _EditProfileViewState extends State<EditProfileView> {
                         text: 'Save Changes',
                         onPressed: () {
                           profileController
-                              .updateProfile();
+                              .updateProfile(context);
                         },
                         gradientColors: AppColors.buttonColor,
                       ),

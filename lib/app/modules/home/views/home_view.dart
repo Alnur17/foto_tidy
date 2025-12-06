@@ -243,7 +243,7 @@ class _HomeViewState extends State<HomeView> {
           Obx(() {
             final data = profileController.profileData.value?.data;
             if (data == null) return SizedBox();
-            if (data.isActiveSubscription == true) {
+            if (data.isActiveSubscription == true || data.isEnabledFreeTrial == true) {
               return const SizedBox.shrink();
             }
             return Padding(
@@ -264,10 +264,6 @@ class _HomeViewState extends State<HomeView> {
               final data = profileController.profileData.value?.data;
 
               final isGalleryLock = data?.isGalleryLock ?? false;
-              //final isActiveLock = data?.isActiveLock ?? false;
-
-              // Conditions for showing PIN screen
-              //final shouldAskPin = isGalleryLock && isActiveLock;
 
               return isGalleryLock
                   ? _buildLockedGallery()
@@ -369,6 +365,9 @@ class _HomeViewState extends State<HomeView> {
       final isProUser =
           profileController.profileData.value?.data?.isActiveSubscription ??
               false;
+      final isTrial =
+          profileController.profileData.value?.data?.isEnabledFreeTrial ??
+              false;
 
       if (gallery.isEmpty) {
         return Center(
@@ -398,7 +397,7 @@ class _HomeViewState extends State<HomeView> {
                     photoId: item.id ?? '',
                   ));
             },
-            isProUser: isProUser,
+            isProUser: isProUser || isTrial,
             imageUrl: item.image ?? '',
             isFavorite: item.isFavorite ?? false,
             onFavoriteToggle: () async {

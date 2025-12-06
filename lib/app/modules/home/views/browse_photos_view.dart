@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:foto_tidy/app/modules/profile/controllers/profile_controller.dart';
 import 'package:foto_tidy/app/modules/profile/views/subscription_view.dart';
 import 'package:foto_tidy/common/app_color/app_colors.dart';
 import 'package:foto_tidy/common/app_images/app_images.dart';
@@ -20,6 +21,7 @@ class BrowsePhotosView extends StatefulWidget {
 class _BrowsePhotosViewState extends State<BrowsePhotosView> {
   // Initialize the HomeController
   final HomeController homeController = Get.put(HomeController());
+  final ProfileController profileController = Get.find();
 
   @override
   Widget build(BuildContext context) {
@@ -153,7 +155,7 @@ class _BrowsePhotosViewState extends State<BrowsePhotosView> {
   Widget _buildLimitReachedView(homeController, BuildContext context) {
     return Column(
       children: [
-        homeController.isSubscribed.value == true
+        homeController.isSubscribed.value == true || profileController.profileData.value?.data?.isEnabledFreeTrial == true
             ? _buildInitialUploadView(homeController, context)
             : Container(
                 width: Get.width.w,

@@ -29,7 +29,7 @@ class GalleryLockView extends GetView {
       appBar: AppBar(
         backgroundColor: AppColors.mainColor,
         title: Text(
-          'Gallery Lock',
+          'Gallery Privacy',
           style: appBarStyle,
         ),
         leading: Padding(

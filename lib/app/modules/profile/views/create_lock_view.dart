@@ -69,13 +69,22 @@ class _CreateLockViewState extends State<CreateLockView> {
               style: h3,
             ),
             sh8,
-            CustomTextField(
-              controller: galleryLockController.setPinTEController,
-              borderRadius: 12,
-              hintText: '*********',
-              sufIcon: Image.asset(
-                AppImages.eyeClose,
-                scale: 4,
+            Obx(
+              () => CustomTextField(
+                controller: galleryLockController.setPinTEController,
+                borderRadius: 12,
+                hintText: '*********',
+                sufIcon: GestureDetector(
+                  onTap: () =>
+                      galleryLockController.togglePinPasswordVisibility(),
+                  child: Image.asset(
+                    galleryLockController.isPinPasswordVisible.value
+                        ? AppImages.eyeOpen
+                        : AppImages.eyeClose,
+                    scale: 4,
+                  ),
+                ),
+                obscureText: !galleryLockController.isPinPasswordVisible.value,
               ),
             ),
             sh30,
@@ -83,14 +92,15 @@ class _CreateLockViewState extends State<CreateLockView> {
               () => galleryLockController.isLoading.value
                   ? CustomLoader(color: AppColors.white)
                   : CustomButton(
-                borderRadius: 12,
-                text: 'Submit',
-                onPressed: () {
-                  galleryLockController.setGalleryLockKey(
-                      galleryLockController.setPinTEController.text, context);
-                },
-                gradientColors: AppColors.buttonColor,
-              ),
+                      borderRadius: 12,
+                      text: 'Submit',
+                      onPressed: () {
+                        galleryLockController.setGalleryLockKey(
+                            galleryLockController.setPinTEController.text,
+                            context);
+                      },
+                      gradientColors: AppColors.buttonColor,
+                    ),
             ),
           ],
         ),

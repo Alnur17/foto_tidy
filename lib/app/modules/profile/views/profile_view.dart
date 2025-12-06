@@ -25,7 +25,6 @@ import 'edit_profile_view.dart';
 import 'favourite_view.dart';
 
 class ProfileView extends GetView<ProfileController> {
-
   ProfileView({super.key});
 
   final ProfileController profileController = Get.put(ProfileController());
@@ -149,7 +148,12 @@ class ProfileView extends GetView<ProfileController> {
                     CustomListTile(
                       onTap: () {
                         Get.to(() => FavouriteView(
-                              isPro: profileController.profileData.value?.data?.isActiveSubscription ?? false,
+                              isPro: profileController.profileData.value?.data
+                                      ?.isActiveSubscription ??
+                                  false,
+                          isTrial: profileController.profileData.value?.data
+                              ?.isEnabledFreeTrial ??
+                              false,
                             ));
                       },
                       leadingImage: AppImages.favoriteFilled,
@@ -158,7 +162,12 @@ class ProfileView extends GetView<ProfileController> {
                     ),
                     CustomListTile(
                       onTap: () {
-                        profileController.profileData.value?.data?.isActiveSubscription == true
+                        profileController.profileData.value?.data
+                                        ?.isActiveSubscription ==
+                                    true ||
+                                profileController.profileData.value?.data
+                                        ?.isEnabledFreeTrial ==
+                                    true
                             ? Get.to(() => GalleryLockView())
                             : PopupHelper.showCustomPopup(
                                 title: 'Keep Your Gallery Private ',
@@ -172,7 +181,7 @@ class ProfileView extends GetView<ProfileController> {
                                 secondaryButtonText: 'Maybe Later');
                       },
                       leadingImage: AppImages.lockPro,
-                      title: 'Gallery Lock',
+                      title: 'Gallery Privacy',
                       trailingImage: AppImages.arrowRight,
                     ),
                   ],
@@ -227,7 +236,7 @@ class ProfileView extends GetView<ProfileController> {
                         LocalStorage.removeData(key: AppConstant.accessToken);
                         Get.offAll(() => LoginView());
                       },
-                      onCancel: (){
+                      onCancel: () {
                         Get.back();
                       },
                     );

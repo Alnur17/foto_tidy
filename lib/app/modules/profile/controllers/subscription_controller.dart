@@ -123,7 +123,8 @@ class SubscriptionController extends GetxController {
 
   Future createSubscription({
     required String packageId,
-  }) async {
+  }) async
+  {
     try {
       isLoading(true);
       String token =

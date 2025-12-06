@@ -46,7 +46,22 @@ class _GalleryViewState extends State<GalleryView> {
             Text('Gallery', style: appBarStyle),
             CustomButton(
               text: 'Filter Photos',
-              onPressed: _showFilterSheet,
+              onPressed: () {
+                if (profileController
+                            .profileData.value?.data?.isActiveSubscription ==
+                        true ||
+                    profileController
+                            .profileData.value?.data?.isEnabledFreeTrial ==
+                        true) {
+                  return _showFilterSheet();
+                } else {
+                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                    content: Text(
+                        "This feature is available for Pro users only."),
+                    backgroundColor: AppColors.orange,
+                  ));
+                }
+              },
               backgroundColor: AppColors.white,
               borderRadius: 8,
               borderColor: AppColors.borderColor,
@@ -116,23 +131,6 @@ class _GalleryViewState extends State<GalleryView> {
                       child: CustomFilterChip(
                         text: tagName,
                         isSelected: isSelected,
-                        // onTap: () {
-                        //   final matchedPhoto = galleryController.galleryList.firstWhereOrNull(
-                        //         (item) => item.tag?.title?.toLowerCase().trim() ==
-                        //         tagName.toLowerCase().trim(),
-                        //   );
-                        //
-                        //   final galleryTagId = matchedPhoto?.tag?.id?.toString();
-                        //
-                        //   if (galleryTagId != null) {
-                        //     galleryController.selectCategory(galleryTagId, tagName);
-                        //   } else {
-                        //     kSnackBar(
-                        //       message: 'No photos found for this tag',
-                        //       bgColor: AppColors.orange,
-                        //     );
-                        //   }
-                        // },
                         onTap: () {
                           galleryController.selectCategory(tagId, tagName);
                         },
@@ -147,7 +145,10 @@ class _GalleryViewState extends State<GalleryView> {
 
             /// ---------- STORAGE INFO (Only for Free Users) ----------
             profileController.profileData.value?.data?.isActiveSubscription ==
-                    true
+                        true ||
+                    profileController
+                            .profileData.value?.data?.isEnabledFreeTrial ==
+                        true
                 ? const SizedBox.shrink()
                 : Padding(
                     padding: EdgeInsets.symmetric(horizontal: 20.w),
@@ -255,6 +256,9 @@ class _GalleryViewState extends State<GalleryView> {
         profileController.profileData.value?.data?.isActiveSubscription ??
             false;
 
+    final isTrial =
+        profileController.profileData.value?.data?.isEnabledFreeTrial ?? false;
+
     if (gallery.isEmpty) {
       return Center(
         child: Text(
@@ -283,7 +287,7 @@ class _GalleryViewState extends State<GalleryView> {
                   photoId: item.id ?? '',
                 ));
           },
-          isProUser: isProUser,
+          isProUser: isProUser || isTrial,
           imageUrl: item.image ?? '',
           isFavorite: item.isFavorite ?? false,
           onFavoriteToggle: () async {
@@ -388,8 +392,9 @@ class _GalleryViewState extends State<GalleryView> {
                         child: child!,
                       ),
                     );
-                    if (picked != null)
+                    if (picked != null) {
                       galleryController.selectedDate.value = picked;
+                    }
                   },
                 )),
 

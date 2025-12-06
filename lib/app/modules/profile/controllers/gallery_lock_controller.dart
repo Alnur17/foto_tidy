@@ -13,6 +13,9 @@ import '../views/success_view.dart';
 
 class GalleryLockController extends GetxController {
   var isLoading = false.obs;
+  var isPinPasswordVisible = false.obs;
+  var isOldPinPasswordVisible = false.obs;
+  var isNewPinPasswordVisible = false.obs;
 
   final TextEditingController setPinTEController = TextEditingController();
   final TextEditingController submitPinTEController = TextEditingController();
@@ -21,7 +24,17 @@ class GalleryLockController extends GetxController {
 
   final ProfileController profileController = Get.find();
 
+  void togglePinPasswordVisibility() {
+    isPinPasswordVisible.toggle();
+  }
 
+  void toggleOldPinPasswordVisibility() {
+    isOldPinPasswordVisible.toggle();
+  }
+
+  void toggleNewPinPasswordVisibility() {
+    isNewPinPasswordVisible.toggle();
+  }
 
   Future<void> setGalleryLockKey(String key, BuildContext context) async {
     try {
@@ -58,7 +71,7 @@ class GalleryLockController extends GetxController {
       var data = await BaseClient.handleResponse(response);
 
       if (data != null && data["success"] == true) {
-        Get.off(()=> SuccessView());
+        Get.off(() => SuccessView());
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(data["message"] ?? "Lock set successfully"),

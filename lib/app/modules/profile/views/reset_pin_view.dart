@@ -53,12 +53,22 @@ class _ResetPinViewState extends State<ResetPinView> {
                   style: h4,
                 ),
                 sh12,
-                CustomTextField(
-                  controller: galleryLockController.oldPinTEController,
-                  hintText: '**********',
-                  sufIcon: Image.asset(
-                    AppImages.eyeClose,
-                    scale: 4,
+                Obx(
+                  () => CustomTextField(
+                    controller: galleryLockController.oldPinTEController,
+                    hintText: '**********',
+                    sufIcon: GestureDetector(
+                      onTap: () => galleryLockController
+                          .toggleOldPinPasswordVisibility(),
+                      child: Image.asset(
+                        galleryLockController.isOldPinPasswordVisible.value
+                            ? AppImages.eyeOpen
+                            : AppImages.eyeClose,
+                        scale: 4,
+                      ),
+                    ),
+                    obscureText:
+                        !galleryLockController.isOldPinPasswordVisible.value,
                   ),
                 ),
                 sh16,
@@ -67,13 +77,23 @@ class _ResetPinViewState extends State<ResetPinView> {
                   style: h4,
                 ),
                 sh12,
-                CustomTextField(
-                  controller: galleryLockController.newPinTEController,
-                  sufIcon: Image.asset(
-                    AppImages.eyeClose,
-                    scale: 4,
+                Obx(
+                  () => CustomTextField(
+                    controller: galleryLockController.newPinTEController,
+                    sufIcon: GestureDetector(
+                      onTap: () => galleryLockController
+                          .toggleNewPinPasswordVisibility(),
+                      child: Image.asset(
+                        galleryLockController.isNewPinPasswordVisible.value
+                            ? AppImages.eyeOpen
+                            : AppImages.eyeClose,
+                        scale: 4,
+                      ),
+                    ),
+                    obscureText:
+                        !galleryLockController.isNewPinPasswordVisible.value,
+                    hintText: '**********',
                   ),
-                  hintText: '**********',
                 ),
                 sh16,
                 Obx(

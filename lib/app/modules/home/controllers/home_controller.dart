@@ -10,6 +10,7 @@ import 'package:http/http.dart' as http;
 
 import '../../../data/api.dart';
 import '../../../data/base_client.dart';
+import '../../profile/controllers/profile_controller.dart';
 import '../views/tag_your_photo_view.dart';
 import '../views/upload_image_view.dart';
 
@@ -20,14 +21,18 @@ class HomeController extends GetxController {
   RxBool isSubscribed = false.obs;
   RxBool isLoading = false.obs;
 
+
+
   // Function to pick multiple images
   Future<void> pickImages({
     required BuildContext context,
   }) async {
     final List<XFile> pickedFiles = await _picker.pickMultiImage();
+    bool hasUnlimitedAccess = isSubscribed.value ||
+        Get.find<ProfileController>().profileData.value?.data?.isEnabledFreeTrial == true;
 
     // If user is subscribed → no limit at all
-    if (isSubscribed.value) {
+    if (hasUnlimitedAccess) {
       selectedImages.addAll(pickedFiles);
       return;
     }

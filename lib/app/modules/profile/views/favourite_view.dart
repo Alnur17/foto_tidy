@@ -13,8 +13,9 @@ import '../../gallery/controllers/gallery_controller.dart';
 
 class FavouriteView extends StatefulWidget {
   final bool isPro;
+  final bool isTrial;
 
-  const FavouriteView({super.key, required this.isPro});
+  const FavouriteView({super.key, required this.isPro, required this.isTrial});
 
   @override
   State<FavouriteView> createState() => _FavouriteViewState();
@@ -27,7 +28,7 @@ class _FavouriteViewState extends State<FavouriteView> {
   @override
   void initState() {
     super.initState();
-    if (widget.isPro) {
+    if (widget.isPro|| widget.isTrial) {
       favoriteController.fetchFavorites();
     }
   }
@@ -44,7 +45,7 @@ class _FavouriteViewState extends State<FavouriteView> {
           child: Image.asset(AppImages.back, scale: 4),
         ),
       ),
-      body: widget.isPro
+      body: widget.isPro || widget.isTrial
           ? Obx(() {
               if (favoriteController.isFavoriteLoading.value) {
                 return const Center(
