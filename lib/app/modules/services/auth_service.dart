@@ -1,7 +1,6 @@
 import 'package:google_sign_in/google_sign_in.dart';
 
 class AuthService {
-  // single instance
   static final AuthService _instance = AuthService._internal();
   factory AuthService() => _instance;
   AuthService._internal();
@@ -9,7 +8,7 @@ class AuthService {
   final GoogleSignIn _googleSignIn = GoogleSignIn(
     scopes: [
       'email',
-      'https://www.googleapis.com/auth/drive.file', // minimal Drive access
+      'https://www.googleapis.com/auth/drive.file',
     ],
   );
 
@@ -26,7 +25,6 @@ class AuthService {
 
   GoogleSignInAccount? get currentUser => _googleSignIn.currentUser;
 
-  /// Returns map of authorization headers: { 'Authorization': 'Bearer ...' }
   Future<Map<String, String>> getAuthHeaders() async {
     final user = _googleSignIn.currentUser ?? await _googleSignIn.signInSilently();
     if (user == null) throw Exception('User not signed in');

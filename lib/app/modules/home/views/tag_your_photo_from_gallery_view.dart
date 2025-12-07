@@ -169,10 +169,8 @@ class TagYourPhotoFromGalleryView extends StatelessWidget {
                         value: uploadToGoogleDrive.value,
                         onChanged: (value) {
                           if (isProUser) {
-                            // Allow changing value
                             uploadToGoogleDrive.value = value ?? false;
                           } else {
-                            // Free user — show snackbar, DO NOT change checkbox
                             ScaffoldMessenger.of(context).showSnackBar(
                               SnackBar(
                                 content: Text(
@@ -230,7 +228,7 @@ class TagYourPhotoFromGalleryView extends StatelessWidget {
                           return;
                         }
 
-                        /// 💥 Build dynamic payload
+                        /// Build dynamic payload
                         final payload = uploadedFiles.map((file) {
                           return {
                             "tag": selectedTagId,
@@ -239,11 +237,11 @@ class TagYourPhotoFromGalleryView extends StatelessWidget {
                           };
                         }).toList();
 
-                        /// 💥 Upload now
+                        /// Upload now
                         await galleryController.uploadBatchPhotos(
                             payload, context);
 
-                        /// 💥 Optional Google Drive upload
+                        /// Optional Google Drive upload
                         if (uploadToGoogleDrive.value) {
                           try {
                             final AuthService auth = AuthService();

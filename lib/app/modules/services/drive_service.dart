@@ -9,7 +9,7 @@ class DriveService {
 
   /// Uploads a file to Drive. Optionally pass [parentFolderId] to place in a folder.
   Future<drive.File> uploadFile(File file, {String? parentFolderId}) async {
-    final headers = await _auth.getAuthHeaders(); // includes Authorization Bearer
+    final headers = await _auth.getAuthHeaders();
     final client = GoogleHttpClient(headers);
     final driveApi = drive.DriveApi(client);
 

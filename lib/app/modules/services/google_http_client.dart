@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'package:http/http.dart' as http;
 
-/// Attaches the Google OAuth headers to every request
 class GoogleHttpClient extends http.BaseClient {
   final Map<String, String> _headers;
   final http.Client _inner = http.Client();

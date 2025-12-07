@@ -107,10 +107,8 @@ class _TagYourPhotoViewState extends State<TagYourPhotoView> {
                         value: uploadToGoogleDrive.value,
                         onChanged: (value) {
                           if (isProUser) {
-                            // Allow changing value
                             uploadToGoogleDrive.value = value ?? false;
                           } else {
-                            // Free user — show snackbar, DO NOT change checkbox
                             ScaffoldMessenger.of(context).showSnackBar(
                               SnackBar(
                                 content: Text(
@@ -152,7 +150,7 @@ class _TagYourPhotoViewState extends State<TagYourPhotoView> {
                   return;
                 }
 
-                /// 💥 Upload now
+                /// Upload now
                 await galleryController.uploadSinglePhoto(
                   tag: selectedTagId,
                   imageUrl: widget.imagePath['url'],
@@ -160,7 +158,7 @@ class _TagYourPhotoViewState extends State<TagYourPhotoView> {
                   context: context,
                 );
 
-                /// 💥 Optional Google Drive upload
+                ///Optional Google Drive upload
                 if (uploadToGoogleDrive.value) {
                   try {
                     final AuthService auth = AuthService();
