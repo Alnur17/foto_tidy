@@ -103,6 +103,7 @@ class _TagYourPhotoViewState extends State<TagYourPhotoView> {
                   Row(
                     children: [
                       Checkbox(
+                        activeColor: AppColors.orange,
                         value: uploadToGoogleDrive.value,
                         onChanged: (value) {
                           if (isProUser) {
