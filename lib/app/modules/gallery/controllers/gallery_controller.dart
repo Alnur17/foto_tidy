@@ -188,7 +188,7 @@ class GalleryController extends GetxController {
           ),
         );
 
-        fetchMyGallery(); // reload gallery
+        fetchMyGallery();
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
