@@ -75,8 +75,7 @@ class _CreateLockViewState extends State<CreateLockView> {
                 borderRadius: 12,
                 hintText: '*********',
                 sufIcon: GestureDetector(
-                  onTap: () =>
-                      galleryLockController.togglePinPasswordVisibility(),
+                  onTap: () => galleryLockController.togglePinPasswordVisibility(),
                   child: Image.asset(
                     galleryLockController.isPinPasswordVisible.value
                         ? AppImages.eyeOpen

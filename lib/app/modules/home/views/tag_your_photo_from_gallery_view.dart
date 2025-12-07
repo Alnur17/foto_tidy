@@ -165,6 +165,7 @@ class TagYourPhotoFromGalleryView extends StatelessWidget {
                   Row(
                     children: [
                       Checkbox(
+                        activeColor: AppColors.orange,
                         value: uploadToGoogleDrive.value,
                         onChanged: (value) {
                           if (isProUser) {
