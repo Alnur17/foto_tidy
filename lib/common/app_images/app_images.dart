@@ -3,9 +3,11 @@ class AppImages {
   static const logoMain = "assets/icons/main logo.png";
   static const logo = "assets/icons/logo.png";
   static const add = "assets/icons/add.png";
-  static const lock = "assets/icons/lock pro.png";
+  static const lockPro = "assets/icons/lock pro.png";
+  static const lock = "assets/icons/lock.png";
   static const subscription = "assets/icons/subscription.png";
   static const editCircle = "assets/icons/edit circle.png";
+  static const delete = "assets/icons/delete.png";
   static const deleteCircle = "assets/icons/delete circle.png";
   static const arrowRight = "assets/icons/arrow right.png";
   static const arrowRightBig = "assets/icons/arrow right big.png";
@@ -21,6 +23,7 @@ class AppImages {
   static const accountInfo = "assets/icons/account info.png";
   static const activityLog = "assets/icons/activity log.png";
   static const activityLogFilled = "assets/icons/activity log filled.png";
+  static const browsePhotos = "assets/icons/browse photos.png";
   static const gallery = "assets/icons/gallery.png";
   static const galleryFilled = "assets/icons/gallery filled.png";
   static const home = "assets/icons/home.png";
@@ -39,6 +42,7 @@ class AppImages {
   static const changePassBig = "assets/icons/change password big.png";
   static const logoutBig = "assets/icons/log out big.png";
   static const notification = "assets/icons/Notification.png";
+  static const notificationTwo = "assets/icons/notification two.png";
   static const search = "assets/icons/search.png";
   static const faq = "assets/icons/faq.png";
   static const feedback = "assets/icons/feedback.png";
@@ -55,6 +59,12 @@ class AppImages {
   static const rightChecked = "assets/icons/right checked.png";
   static const crown = "assets/icons/crown.png";
   static const crownCircle = "assets/icons/crown circle.png";
+  static const uploadImage = "assets/icons/upload image.png";
+  static const cameraCircle = "assets/icons/camera circle.png";
+  static const camera = "assets/icons/camera.png";
+  static const toggle = "assets/icons/tooogle.png";
+  static const transferFile = "assets/icons/transfer file.png";
+  static const drive = "assets/icons/drive.png";
 
 
   //================ Images ==================>
@@ -63,6 +73,7 @@ class AppImages {
   static const onboardingImageTwo = "assets/images/onboarding 2.png";
   static const onboardingBackImage = "assets/images/onboarding back.png";
   static const verifySuccess = "assets/images/verify success.png";
+  static const success = "assets/images/success.png";
   static const offerImage = "assets/images/nike.png";
 
 

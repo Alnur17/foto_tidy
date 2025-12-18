@@ -1,21 +1,26 @@
 import 'dart:developer';
-
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:foto_tidy/app/modules/gallery/views/full_image_view.dart';
+import 'package:foto_tidy/app/modules/gallery/views/gallery_view.dart';
+import 'package:foto_tidy/app/modules/home/controllers/home_controller.dart';
+import 'package:foto_tidy/app/modules/home/views/browse_photos_view.dart';
+import 'package:foto_tidy/app/modules/home/views/notifications_view.dart';
+import 'package:foto_tidy/app/modules/profile/controllers/profile_controller.dart';
+import 'package:foto_tidy/app/modules/tags/controllers/tags_controller.dart';
 import 'package:foto_tidy/common/app_color/app_colors.dart';
 import 'package:foto_tidy/common/app_images/app_images.dart';
 import 'package:foto_tidy/common/widgets/custom_button.dart';
-
 import 'package:get/get.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
-
 import '../../../../common/app_text_style/styles.dart';
 import '../../../../common/helper/custom_filter_chip.dart';
 import '../../../../common/helper/gallery_item.dart';
 import '../../../../common/size_box/custom_sizebox.dart';
+import '../../../../common/widgets/custom_loader.dart';
 import '../../gallery/controllers/gallery_controller.dart';
-import 'camera_view.dart';
+import '../../profile/controllers/favorite_controller.dart';
+import '../../profile/controllers/gallery_lock_controller.dart';
 
 class HomeView extends StatefulWidget {
   const HomeView({super.key});
@@ -25,13 +30,30 @@ class HomeView extends StatefulWidget {
 }
 
 class _HomeViewState extends State<HomeView> {
+  final homeController = Get.put(HomeController());
   final galleryController = Get.put(GalleryController());
+  final galleryLockController = Get.put(GalleryLockController());
+  final profileController = Get.put(ProfileController());
+  final tagsController = Get.put(TagsController());
+  final favoriteController = Get.put(FavoriteController());
+
+  @override
+  void initState() {
+    super.initState();
+    _loadInitialData();
+  }
+
+  Future<void> _loadInitialData() async {
+    await profileController.fetchProfile();
+    await galleryController.fetchMyGallery();
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(
+        scrolledUnderElevation: 0,
         backgroundColor: AppColors.background,
         title: Image.asset(
           AppImages.logo,
@@ -41,18 +63,60 @@ class _HomeViewState extends State<HomeView> {
         ),
         actions: [
           GestureDetector(
-            onTap: () {},
-            child: CircleAvatar(
-              radius: 20,
-              backgroundImage:
-                  CachedNetworkImageProvider(AppImages.profileImage),
+            onTap: () {
+              Get.to(() => NotificationsView());
+            },
+            child: Image.asset(
+              AppImages.notification,
+              scale: 4,
+              color: AppColors.black,
             ),
           ),
+          // GestureDetector(
+          //   onTap: () {
+          //     Get.to(() => ProfileView(
+          //       showBackButton: true,
+          //     ));
+          //   },
+          //   child: Obx(() {
+          //     final imagePath = profileController.profileImageUrl.value;
+          //     return CircleAvatar(
+          //       radius: 20,
+          //       backgroundColor: AppColors.whiteDark,
+          //       child: ClipRRect(
+          //         borderRadius: BorderRadius.circular(20),
+          //         child: imagePath.startsWith("http")
+          //             ? CachedNetworkImage(
+          //           imageUrl: imagePath,
+          //           height: Get.height.h,
+          //           width: Get.width.w,
+          //           fit: BoxFit.cover,
+          //           placeholder: (context, url) => const Center(
+          //             child: CircularProgressIndicator(
+          //               color: AppColors.orange,
+          //             ),
+          //           ),
+          //           errorWidget: (context, url, error) => const Icon(
+          //             Icons.error,
+          //             color: Colors.red,
+          //           ),
+          //         )
+          //             : Image.file(
+          //           File(imagePath),
+          //           height: Get.height.h,
+          //           width: Get.width.w,
+          //           fit: BoxFit.cover,
+          //         ),
+          //       ),
+          //     );
+          //   }),
+          // ),
           sw20,
         ],
       ),
       body: Column(
         mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           sh12,
           Padding(
@@ -72,26 +136,27 @@ class _HomeViewState extends State<HomeView> {
                 sh12,
                 CustomButton(
                   text: 'Take Photo',
-                  onPressed: () async {
-                    final photoFile = await Get.to(() => const CameraView());
-                    if (photoFile != null) {
-                      print("Photo path: ${photoFile.path}");
-                      // Use the file (show, save, etc.)
-                    }
+                  onPressed: () {
+                    homeController.takePhoto(context: context);
                   },
-
                   gradientColors: AppColors.buttonColor,
                   borderRadius: 12,
                   height: 40,
+                  centerImageWithText: true,
+                  imageAssetPath: AppImages.camera,
                 ),
                 sh8,
                 CustomButton(
                   text: 'Browse Photos',
-                  onPressed: () {},
+                  onPressed: () {
+                    Get.to(() => BrowsePhotosView());
+                  },
                   borderColor: AppColors.borderColor,
                   borderRadius: 12,
                   textColor: AppColors.black,
                   height: 40,
+                  centerImageWithText: true,
+                  imageAssetPath: AppImages.browsePhotos,
                 ),
               ],
             ),
@@ -107,7 +172,9 @@ class _HomeViewState extends State<HomeView> {
                   style: h3,
                 ),
                 GestureDetector(
-                  onTap: () {},
+                  onTap: () {
+                    Get.to(() => GalleryView());
+                  },
                   child: Text(
                     'View All',
                     style: h5.copyWith(color: AppColors.blue),
@@ -119,27 +186,90 @@ class _HomeViewState extends State<HomeView> {
           sh12,
           SizedBox(
             height: 35.h,
-            child: ListView.builder(
-              scrollDirection: Axis.horizontal,
-              padding: EdgeInsets.symmetric(horizontal: 20.w),
-              itemCount: galleryController.categories.length,
-              itemBuilder: (context, index) {
-                final category = galleryController.categories[index];
-                return Obx(() => CustomFilterChip(
-                      text: category,
-                      isSelected:
-                          galleryController.selectedCategory.value == category,
-                      onTap: () => galleryController.selectCategory(category),
-                    ));
-              },
-            ),
+            child: Obx(() {
+              final tags = tagsController.allTagsList;
+              final selected = galleryController.selectedCategory.value;
+              final isLoading = tagsController.isLoading.value;
+
+              if (isLoading) {
+                return Center(
+                  child: SizedBox(
+                    width: 24.w,
+                    height: 24.w,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2,
+                      color: AppColors.orange,
+                    ),
+                  ),
+                );
+              }
+
+              if (tags.isEmpty) {
+                return Center(
+                  child: Text(
+                    "No tags available",
+                    style: h5.copyWith(color: AppColors.grey),
+                  ),
+                );
+              }
+
+              return ListView.builder(
+                scrollDirection: Axis.horizontal,
+                padding: EdgeInsets.symmetric(horizontal: 20.w),
+                itemCount: tags.length,
+                itemBuilder: (context, index) {
+                  final tag = tags[index];
+                  final tagName = tag.title ?? '';
+                  final tagId = tag.id?.toString() ?? '';
+                  final isSelected = selected == tagName;
+
+                  return Padding(
+                    padding: EdgeInsets.only(right: 8.w),
+                    child: CustomFilterChip(
+                      text: tagName,
+                      isSelected: isSelected,
+                      onTap: () {
+                        galleryController.selectCategory(tagId, tagName);
+                      },
+                    ),
+                  );
+                },
+              );
+            }),
           ),
           sh12,
+
+          /// ---------- STORAGE INFO (Only for Free Users) ----------
+          Obx(() {
+            final data = profileController.profileData.value?.data;
+            if (data == null) return SizedBox();
+            if (data.isActiveSubscription == true || data.isEnabledFreeTrial == true) {
+              return const SizedBox.shrink();
+            }
+            return Padding(
+              padding: EdgeInsets.symmetric(horizontal: 20.w),
+              child: Text(
+                "Storage Used: ${data.freeStorage ?? 0} MB / ${data.storageLimit ?? 0} MB",
+                style: h5.copyWith(
+                  color: AppColors.black,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            );
+          }),
+
+          sh12,
           Expanded(
-            child: galleryController.isGalleryLocked.value
-                ? _buildLockedGallery()
-                : _buildGalleryGrid(),
-          )
+            child: Obx(() {
+              final data = profileController.profileData.value?.data;
+
+              final isGalleryLock = data?.isGalleryLock ?? false;
+
+              return isGalleryLock
+                  ? _buildLockedGallery()
+                  : _buildGalleryGrid();
+            }),
+          ),
         ],
       ),
     );
@@ -164,21 +294,24 @@ class _HomeViewState extends State<HomeView> {
             ),
             sh12,
             Text(
-              'Please enter your 6-digit PIN to continue',
+              'Please enter your 4-digit PIN to continue',
               style: h4,
             ),
             sh12,
             PinCodeTextField(
-              length: 6,
+              appContext: context,
+              mainAxisAlignment: MainAxisAlignment.center,
+              separatorBuilder: (context, index) => sw12,
+              controller: galleryLockController.submitPinTEController,
+              length: 4,
               obscureText: false,
               keyboardType: TextInputType.number,
               animationType: AnimationType.fade,
               pinTheme: PinTheme(
-                shape: PinCodeFieldShape.underline,
+                shape: PinCodeFieldShape.circle,
                 borderRadius: BorderRadius.circular(8),
-                fieldHeight: 40,
-                fieldWidth: 40,
-                // Reduce the width slightly for the gap
+                fieldHeight: 50,
+                fieldWidth: 50,
                 activeColor: AppColors.white,
                 activeFillColor: AppColors.white,
                 inactiveColor: AppColors.borderColor,
@@ -191,19 +324,27 @@ class _HomeViewState extends State<HomeView> {
               cursorColor: AppColors.blue,
               enablePinAutofill: true,
               enableActiveFill: true,
-              onCompleted: (v) {},
+              onCompleted: (pin) {},
               onChanged: (value) {},
               beforeTextPaste: (text) {
                 log("Allowing to paste $text");
                 return true;
               },
-              appContext: context,
             ),
             sh20,
-            CustomButton(
-              text: 'Submit',
-              onPressed: () {},
-              gradientColors: AppColors.buttonColor,
+            Obx(
+              () => galleryLockController.isLoading.value
+                  ? CustomLoader(color: AppColors.white)
+                  : CustomButton(
+                      text: 'Submit',
+                      onPressed: () {
+                        galleryLockController.unlockGalleryLockKey(
+                          galleryLockController.submitPinTEController.text,
+                          context,
+                        );
+                      },
+                      gradientColors: AppColors.buttonColor,
+                    ),
             ),
           ],
         ),
@@ -211,25 +352,83 @@ class _HomeViewState extends State<HomeView> {
     );
   }
 
-  /// Unlocked gallery grid view
   Widget _buildGalleryGrid() {
-    return GridView.builder(
-      padding: EdgeInsets.only(left: 20.w, right: 20.w, bottom: 116.h),
-      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 2,
-        crossAxisSpacing: 10.w,
-        mainAxisSpacing: 10.h,
-        childAspectRatio: 1,
-      ),
-      itemCount: galleryController.galleryImages.length,
-      itemBuilder: (context, index) {
-        return GalleryItem(
-          imageUrl: galleryController.galleryImages[index],
-          isFavorite: true,
-          isProUser: true,
-          onFavoriteToggle: () {},
+    return Obx(() {
+      if (galleryController.isLoading.value) {
+        return const Center(
+          child: CircularProgressIndicator(color: AppColors.orange),
         );
-      },
-    );
+      }
+
+      final gallery = galleryController.galleryList;
+
+      final isProUser =
+          profileController.profileData.value?.data?.isActiveSubscription ??
+              false;
+      final isTrial =
+          profileController.profileData.value?.data?.isEnabledFreeTrial ??
+              false;
+
+      if (gallery.isEmpty) {
+        return Center(
+          child: Text(
+            "No gallery images found",
+            style: h4.copyWith(color: AppColors.grey),
+          ),
+        );
+      }
+
+      return GridView.builder(
+        padding: EdgeInsets.only(left: 20.w, right: 20.w, bottom: 116.h),
+        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: 2,
+          crossAxisSpacing: 10.w,
+          mainAxisSpacing: 10.h,
+          childAspectRatio: 0.9,
+        ),
+        itemCount: gallery.length,
+        itemBuilder: (context, index) {
+          final item = gallery[index];
+          final isFav = RxBool(item.isFavorite ?? false);
+          return GalleryItem(
+            onImageTap: () {
+              Get.to(() => FullImageView(
+                    imageUrl: item.image ?? '',
+                    photoId: item.id ?? '',
+                  ));
+            },
+            isProUser: isProUser || isTrial,
+            imageUrl: item.image ?? '',
+            isFavorite: item.isFavorite ?? false,
+            onFavoriteToggle: () async {
+              final userId =
+                  profileController.profileData.value?.data?.id ?? "";
+              final photoId = item.id ?? "";
+
+              if (userId.isEmpty || photoId.isEmpty) {
+                print("❌ Missing userId or photoId");
+                return;
+              }
+
+              // -------- INSTANT UI UPDATE --------
+              isFav.value = !isFav.value;
+
+              // -------- API CALL --------
+              if (isFav.value) {
+                await favoriteController.addFavorite(
+                  userId: userId,
+                  photoId: photoId,
+                );
+              } else {
+                await favoriteController.removeFavorite(photoId: photoId);
+              }
+
+              // -------- OPTIONAL REFRESH --------
+              await galleryController.fetchMyGallery();
+            },
+          );
+        },
+      );
+    });
   }
 }

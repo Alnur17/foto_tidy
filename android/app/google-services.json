@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "477745290154",
+    "project_id": "foto-tidy",
+    "storage_bucket": "foto-tidy.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:477745290154:android:9f844634b831f42d69a9d3",
+        "android_client_info": {
+          "package_name": "com.fototidy.foto_tidy"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDEWdOyUZ2J5_APu9DxiJhfPoa_qj8GpFU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -6,8 +6,8 @@ import 'package:foto_tidy/common/size_box/custom_sizebox.dart';
 import 'package:foto_tidy/common/widgets/custom_button.dart';
 import 'package:foto_tidy/common/widgets/custom_textfield.dart';
 import 'package:get/get.dart';
-
 import '../../../../common/app_color/app_colors.dart';
+import '../../../../common/widgets/popup_helper.dart';
 import '../controllers/tags_controller.dart';
 
 class TagsView extends StatefulWidget {
@@ -18,7 +18,7 @@ class TagsView extends StatefulWidget {
 }
 
 class _TagsViewState extends State<TagsView> {
-  final TagsController tagsController = Get.put(TagsController());
+  final TagsController tagsController = Get.find();
 
   @override
   Widget build(BuildContext context) {
@@ -29,10 +29,7 @@ class _TagsViewState extends State<TagsView> {
         title: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text(
-              'Tags',
-              style: appBarStyle,
-            ),
+            Text('Tags', style: appBarStyle),
             CustomButton(
               text: 'Add Tag',
               onPressed: () => _showAddTagDialog(context),
@@ -45,11 +42,24 @@ class _TagsViewState extends State<TagsView> {
         ),
       ),
       body: Obx(() {
+        if (tagsController.isLoading.value) {
+          return const Center(
+              child: CircularProgressIndicator(
+                color: AppColors.orange,
+              ));
+        }
+
+        final tags = tagsController.allTagsList;
+
+        if (tags.isEmpty) {
+          return const Center(child: Text("No tags found"));
+        }
+
         return ListView.builder(
           padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 16.h),
-          itemCount: tagsController.tags.length,
+          itemCount: tags.length,
           itemBuilder: (context, index) {
-            final tag = tagsController.tags[index];
+            final tag = tags[index];
             return Container(
               margin: EdgeInsets.only(bottom: 12.h),
               decoration: BoxDecoration(
@@ -58,16 +68,30 @@ class _TagsViewState extends State<TagsView> {
                 color: AppColors.white,
               ),
               child: ListTile(
-                title: Text(tag),
+                title: Text(tag.title ?? ''),
                 trailing: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     GestureDetector(
-                        onTap: () => _showEditTagDialog(context, tag, index),
-                        child: Image.asset(AppImages.editCircle, scale: 4)),
+                      onTap: () =>
+                          _showEditTagDialog(context, tag.title ?? '', index),
+                      child: Image.asset(AppImages.editCircle, scale: 4),
+                    ),
                     sw16,
                     GestureDetector(
-                      onTap: () => _showDeleteTagDialog(context, tag),
+                      onTap: () => PopupHelper.showConfirmationDialog(
+                        title: 'Where to go?',
+                        description:
+                        'Do you want to transfer photos before delete this tag?',
+                        confirmText: 'Transfer File',
+                        onConfirm: () =>
+                            _showTransferPhotoDialog(context, tag.title ?? ''),
+                        confirmColor: AppColors.green,
+                        cancelText: 'Continue deleting',
+                        onCancel: () =>
+                            _showDeleteTagDialog(context, tag.title ?? ''),
+                        cancelColor: AppColors.red,
+                      ),
                       child: Image.asset(AppImages.deleteCircle, scale: 4),
                     ),
                   ],
@@ -80,6 +104,7 @@ class _TagsViewState extends State<TagsView> {
     );
   }
 
+  /// Dialog to add a tag
   void _showAddTagDialog(BuildContext context) {
     final TextEditingController tagController = TextEditingController();
 
@@ -88,6 +113,7 @@ class _TagsViewState extends State<TagsView> {
       context: context,
       builder: (context) {
         return AlertDialog(
+          backgroundColor: AppColors.white,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
           ),
@@ -95,21 +121,14 @@ class _TagsViewState extends State<TagsView> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text('Add Tag', style: appBarStyle),
-              CloseButton(
-                onPressed: (){
-                  Get.back();
-                },
-              )
+              CloseButton(onPressed: () => Navigator.pop(context)),
             ],
           ),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                'Tag Name',
-                style: h4,
-              ),
+              Text('Tag Name', style: h4),
               sh8,
               CustomTextField(
                 controller: tagController,
@@ -119,85 +138,112 @@ class _TagsViewState extends State<TagsView> {
             ],
           ),
           actions: [
-            CustomButton(
-              text: "Add",
-              onPressed: () {
-                final added = tagsController.addTag(tagController.text);
-                if (added) {
-                  Get.back(); // close only if tag added
-                }
-              },
-              borderRadius: 12,
-              gradientColors: AppColors.buttonColor,
-            ),
+            Obx(() {
+              return CustomButton(
+                text: tagsController.isLoading.value ? "Adding..." : "Add",
+                onPressed: tagsController.isLoading.value
+                    ? () {}
+                    : () async {
+                  final title = tagController.text.trim();
+                  if (title.isEmpty) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text("Please enter a tag name"),
+                        backgroundColor: AppColors.orange,
+                      ),
+                    );
+                    return;
+                  }
+
+                  final success = await tagsController.addTags(
+                      title: title, context: context);
+
+                  if (success) {
+                    Navigator.pop(context);
+                  }
+                },
+                borderRadius: 12,
+                gradientColors: AppColors.buttonColor,
+              );
+            }),
           ],
         );
       },
     );
   }
 
-  void _showDeleteTagDialog(BuildContext context, String tag) {
-    Get.dialog(
-      Dialog(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
-        ),
-        child: Padding(
-          padding: EdgeInsets.all(20.w),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Image.asset(
-                AppImages.deleteCircle,
-                height: 60.h,
-                width: 60.w,
-              ),
-              sh16,
-              Text(
-                'Delete Tag?',
-                style: h3,
-              ),
-              Text(
-                "Are you sure you want to delete this item? This action cannot be undone.",
-                textAlign: TextAlign.center,
-                style: h3.copyWith(fontWeight: FontWeight.w500),
-              ),
-              sh20,
-              CustomButton(
-                text: "Delete",
-                borderRadius: 12,
-                backgroundColor: AppColors.red,
-                textColor: AppColors.white,
-                onPressed: () {
-                  tagsController.tags.remove(tag);
-                  Get.back();
-                },
-              ),
-              sh12,
-              CustomButton(
-                text: "Cancel",
-                borderRadius: 12,
-                backgroundColor: AppColors.silver,
-                textColor: AppColors.black,
-                onPressed: () {
-                  Get.back();
-                },
-              ),
-            ],
+  /// Delete confirmation dialog
+  void _showDeleteTagDialog(BuildContext context, String tagName) {
+    final tag =
+    tagsController.allTagsList.firstWhere((t) => t.title == tagName);
+
+    showDialog(
+      context: context,
+      builder: (context) {
+        return Dialog(
+          backgroundColor: AppColors.white,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
           ),
-        ),
-      ),
+          child: Padding(
+            padding: EdgeInsets.all(20.w),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Image.asset(AppImages.deleteCircle, height: 60.h, width: 60.w),
+                sh16,
+                Text('Delete Tag?', style: h3),
+                Text(
+                  "Are you sure you want to delete the tag '$tagName'? This action cannot be undone.",
+                  textAlign: TextAlign.center,
+                  style: h4.copyWith(fontWeight: FontWeight.w500),
+                ),
+                sh20,
+                Obx(() {
+                  return CustomButton(
+                    text: tagsController.isLoading.value ? "Deleting..." : "Delete",
+                    backgroundColor: AppColors.red,
+                    textColor: AppColors.white,
+                    borderRadius: 12,
+                    onPressed: tagsController.isLoading.value
+                        ? () {}
+                        : () async {
+                      bool success = await tagsController.deleteTag(
+                          tagId: tag.id.toString(), context: context);
+
+                      if (success) {
+                        Navigator.pop(context);
+                      }
+                    },
+                  );
+                }),
+                sh12,
+                CustomButton(
+                  text: "Cancel",
+                  borderRadius: 12,
+                  backgroundColor: AppColors.silver,
+                  textColor: AppColors.black,
+                  onPressed: () => Navigator.pop(context),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
     );
   }
 
+  /// Edit dialog
   void _showEditTagDialog(BuildContext context, String oldTag, int index) {
+    final tag = tagsController.allTagsList[index];
     final TextEditingController tagController =
-        TextEditingController(text: oldTag);
+    TextEditingController(text: oldTag);
 
     showDialog(
       context: context,
       builder: (context) {
         return AlertDialog(
+          backgroundColor: AppColors.white,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
           ),
@@ -216,19 +262,196 @@ class _TagsViewState extends State<TagsView> {
             ],
           ),
           actions: [
-            CustomButton(
-              text: "Update",
-              onPressed: () {
-                tagsController.updateTag(index, tagController.text);
-                Get.back(); // close dialog
-              },
-              borderRadius: 12,
-              gradientColors: AppColors.buttonColor,
-            ),
+            Obx(() {
+              return CustomButton(
+                text: tagsController.isLoading.value ? "Updating..." : "Update",
+                onPressed: tagsController.isLoading.value
+                    ? () {}
+                    : () async {
+                  final newTitle = tagController.text.trim();
+                  if (newTitle.isEmpty) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text("Please enter a tag name"),
+                        backgroundColor: AppColors.orange,
+                      ),
+                    );
+                    return;
+                  }
+
+                  await tagsController.editTag(
+                    tagId: tag.id ?? '',
+                    title: newTitle,
+                    context: context,
+                  );
+
+                  Navigator.pop(context);
+                },
+                borderRadius: 12,
+                gradientColors: AppColors.buttonColor,
+              );
+            }),
           ],
         );
       },
     );
   }
 
+  /// Transfer Photo dialog
+  void _showTransferPhotoDialog(BuildContext context, String currentTag) {
+    final RxString selectedTag = ''.obs;
+    final tags = tagsController.allTagsList.map((e) => e.title ?? '').toList();
+
+    showDialog(
+      barrierDismissible: false,
+      context: context,
+      builder: (context) {
+        return Dialog(
+          backgroundColor: AppColors.white,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20.r),
+          ),
+          child: Padding(
+            padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 20.h),
+            child: Obx(() {
+              return Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Image.asset(
+                    AppImages.transferFile,
+                    height: 60.h,
+                    width: 60.w,
+                  ),
+                  SizedBox(height: 12.h),
+                  Text(
+                    "Transfer photo",
+                    style: h3.copyWith(fontWeight: FontWeight.bold),
+                  ),
+                  SizedBox(height: 8.h),
+                  Text(
+                    "Select tag for transfer this photos",
+                    textAlign: TextAlign.center,
+                    style: h4.copyWith(
+                      color: AppColors.grey,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                  SizedBox(height: 20.h),
+                  Wrap(
+                    spacing: 8.w,
+                    runSpacing: 10.h,
+                    alignment: WrapAlignment.center,
+                    children: tags.map((tag) {
+                      final isSelected = selectedTag.value == tag;
+                      return GestureDetector(
+                        onTap: () => selectedTag.value = tag,
+                        child: Container(
+                          padding: EdgeInsets.symmetric(
+                            horizontal: 14.w,
+                            vertical: 8.h,
+                          ),
+                          decoration: BoxDecoration(
+                            color:
+                            isSelected ? AppColors.orange : AppColors.silver,
+                            borderRadius: BorderRadius.circular(20.r),
+                          ),
+                          child: Text(
+                            tag,
+                            style: TextStyle(
+                              color:
+                              isSelected ? AppColors.white : AppColors.black,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ),
+                      );
+                    }).toList(),
+                  ),
+                  SizedBox(height: 24.h),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: CustomButton(
+                          text: "Cancel",
+                          onPressed: () => Navigator.pop(context),
+                          borderRadius: 12,
+                          backgroundColor: AppColors.silver,
+                          textColor: AppColors.black,
+                          height: 44.h,
+                        ),
+                      ),
+                      SizedBox(width: 8.w),
+                      Expanded(
+                        child: CustomButton(
+                          text: tagsController.isLoading.value ? "Loading..." : "Confirmed",
+                          onPressed: () async {
+                            if (selectedTag.value.isEmpty) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text("Please select a tag to transfer"),
+                                  backgroundColor: AppColors.orange,
+                                ),
+                              );
+                              return;
+                            }
+
+                            // Find the current tag being deleted/transferred from
+                            final currentTagTitle = currentTag;
+                            final fromTag = tagsController.allTagsList.firstWhere(
+                                  (t) => t.title == currentTagTitle,
+                              orElse: () => throw Exception("Tag not found"),
+                            );
+
+                            // Find the destination tag
+                            final toTag = tagsController.allTagsList.firstWhere(
+                                  (t) => t.title == selectedTag.value,
+                              orElse: () => throw Exception("Destination tag not found"),
+                            );
+
+                            // Prevent transferring to the same tag
+                            if (fromTag.id == toTag.id) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text("Cannot transfer photos to the same tag"),
+                                  backgroundColor: AppColors.orange,
+                                ),
+                              );
+                              return;
+                            }
+
+                            // Close the dialog
+                           // Navigator.pop(context);
+
+                            // Show loading state
+                            tagsController.isLoading(true);
+
+                            // Call the actual transfer API
+                            await tagsController.transferPhotoFormTag(
+                              formTagId: fromTag.id.toString(),
+                              toTagId: toTag.id.toString(),
+                              context: context,
+                            );
+
+                            tagsController.deleteTag(tagId: fromTag.id.toString(), context: context);
+
+                            Navigator.pop(context);
+
+                          },
+                          borderRadius: 12,
+                          backgroundColor: AppColors.green,
+                          textColor: AppColors.white,
+                          height: 44.h,
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              );
+            }),
+          ),
+        );
+      },
+    );
+  }
 }
+

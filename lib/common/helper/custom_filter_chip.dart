@@ -8,12 +8,14 @@ class CustomFilterChip extends StatelessWidget {
   final String text;
   final bool isSelected;
   final VoidCallback onTap;
+  final Widget? tagIcon;
 
   const CustomFilterChip({
     super.key,
     required this.text,
     required this.isSelected,
     required this.onTap,
+    this.tagIcon,
   });
 
   @override
@@ -28,11 +30,20 @@ class CustomFilterChip extends StatelessWidget {
           borderRadius: BorderRadius.circular(20.r),
           border: Border.all(color: AppColors.borderColor),
         ),
-        child: Text(
-          text,
-          style: h5.copyWith(
-            color: isSelected ? AppColors.white : AppColors.black,
-          ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            if (tagIcon != null) ...[
+              tagIcon!,
+              SizedBox(width: 6.w),
+            ],
+            Text(
+              text,
+              style: h5.copyWith(
+                color: isSelected ? AppColors.white : AppColors.black,
+              ),
+            ),
+          ],
         ),
       ),
     );

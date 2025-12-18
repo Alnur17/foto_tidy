@@ -9,11 +9,19 @@ import '../../../../../common/app_text_style/styles.dart';
 import '../../../../../common/size_box/custom_sizebox.dart';
 import '../../../../../common/widgets/custom_background_color.dart';
 import '../../../../../common/widgets/custom_button.dart';
+import '../../../../../common/widgets/custom_loader.dart';
 import '../../../../../common/widgets/custom_textfield.dart';
 import '../controllers/sign_up_controller.dart';
 
-class SignUpView extends GetView<SignUpController> {
+class SignUpView extends StatefulWidget {
   const SignUpView({super.key});
+
+  @override
+  State<SignUpView> createState() => _SignUpViewState();
+}
+
+class _SignUpViewState extends State<SignUpView> {
+  final SignUpController signUpController = Get.put(SignUpController());
 
   @override
   Widget build(BuildContext context) {
@@ -43,7 +51,7 @@ class SignUpView extends GetView<SignUpController> {
                 ),
                 sh12,
                 Text(
-                  'It is quick and easy to create you account',
+                  'It is quick and easy to create your account',
                   style: h4,
                 ),
                 sh40,
@@ -53,6 +61,7 @@ class SignUpView extends GetView<SignUpController> {
                     Text('Name', style: h4),
                     sh8,
                     CustomTextField(
+                      controller: signUpController.nameTEController,
                       hintText: 'Enter your name',
                       containerColor: AppColors.white,
                     ),
@@ -60,51 +69,71 @@ class SignUpView extends GetView<SignUpController> {
                     Text('Email', style: h4),
                     sh8,
                     CustomTextField(
+                      controller: signUpController.emailTEController,
                       hintText: 'Your email',
                       containerColor: AppColors.white,
                     ),
                     sh12,
                     Text('Password', style: h4),
                     sh8,
-                    CustomTextField(
-                      sufIcon: Image.asset(
-                        AppImages.eyeClose,
-                        scale: 4,
-                      ),
-                      hintText: '**********',
-                      containerColor: AppColors.white,
-                    ),
+                    Obx(() {
+                      return CustomTextField(
+                        controller: signUpController.passwordTEController,
+                        sufIcon: GestureDetector(
+                          onTap: () {
+                            signUpController.togglePasswordVisibility();
+                          },
+                          child: Image.asset(
+                            signUpController.isPasswordVisible.value
+                                ? AppImages.eyeOpen
+                                : AppImages.eyeClose,
+                            scale: 4,
+                          ),
+                        ),
+                        obscureText: !signUpController.isPasswordVisible.value,
+                        hintText: '**********',
+                        containerColor: AppColors.white,
+                      );
+                    }),
                     sh12,
                     Text('Confirm Password', style: h4),
                     sh8,
-                    CustomTextField(
-                      sufIcon: Image.asset(
-                        AppImages.eyeClose,
-                        scale: 4,
-                      ),
-                      hintText: '**********',
-                      containerColor: AppColors.white,
-                    ),
+                    Obx(() {
+                      return CustomTextField(
+                        controller: signUpController.confirmPassTEController,
+                        sufIcon: GestureDetector(
+                          onTap: () {
+                            signUpController.toggleConfirmPasswordVisibility();
+                          },
+                          child: Image.asset(
+                            signUpController.isConfirmPasswordVisible.value
+                                ? AppImages.eyeOpen
+                                : AppImages.eyeClose,
+                            scale: 4,
+                          ),
+                        ),
+                        obscureText:
+                            !signUpController.isConfirmPasswordVisible.value,
+                        hintText: '**********',
+                        containerColor: AppColors.white,
+                      );
+                    }),
                   ],
                 ),
                 sh24,
-                // Obx(
-                //       () {
-                //     return loginController.isLoading.value == true
-                //         ? CustomLoader(color: AppColors.white)
-                //         :
-                CustomButton(
-                  text: 'Create Account',
-                  onPressed: () {
-                    // loginController.userLogin(
-                    //   email: emailTEController.text,
-                    //   password: passwordTEController.text,
-                    // );
+                Obx(
+                  () {
+                    return signUpController.isLoading.value == true
+                        ? CustomLoader(color: AppColors.white)
+                        : CustomButton(
+                            text: 'Create Account',
+                            onPressed: () {
+                              signUpController.registerUser();
+                            },
+                            imageAssetPath: AppImages.arrowRightNormal,
+                            gradientColors: AppColors.buttonColor,
+                          );
                   },
-                  imageAssetPath: AppImages.arrowRightNormal,
-                  gradientColors: AppColors.buttonColor,
-                  //   );
-                  // },
                 ),
               ],
             ),

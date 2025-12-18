@@ -1,61 +1,67 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import '../app_color/app_colors.dart';
 import '../app_text_style/styles.dart';
-import '../size_box/custom_sizebox.dart';
-import '../widgets/custom_button.dart';
 
 class NotificationCard extends StatelessWidget {
   final String title;
   final String subtitle;
-  final String time;
-  final String image;
+  final String iconPath;
+  final Color? iconBgColor;
 
   const NotificationCard({
     super.key,
     required this.title,
     required this.subtitle,
-    required this.time,
-    required this.image,
+    required this.iconPath,
+    this.iconBgColor,
   });
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(8),
-      margin: const EdgeInsets.symmetric(vertical: 6),
+      margin: const EdgeInsets.only(bottom: 12, left: 12, right: 12),
+      padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        border: Border.all(color: AppColors.silver),
+        color: AppColors.white,
         borderRadius: BorderRadius.circular(12),
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+      child: Row(
         children: [
-          Row(
-            children: [
-              Image.asset(image, scale: 4),
-              sw5,
-              Expanded(
-                child: Text(
+          Container(
+            width: 48,
+            decoration: ShapeDecoration(
+              shape: const CircleBorder(),
+              color: iconBgColor ?? Colors.blue[50],
+            ),
+            child: Image.asset(
+              iconPath,
+              scale: 4,
+            ),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
                   title,
                   style: h3,
                   overflow: TextOverflow.ellipsis,
+                  maxLines: 1,
                 ),
-              ),
-              Text(time, style: h6.copyWith(color: AppColors.greyMedium)),
-            ],
-          ),
-          sh8,
-          Text(subtitle, style: h5.copyWith(color: AppColors.greyMedium)),
-          sh8,
-          CustomButton(
-            text: 'View Offer',
-            onPressed: () {},
-            gradientColors: AppColors.buttonColor,
-            width: 150.w,
-            height: 36.h,
-          ),
+                Text(
+                  subtitle,
+                  style: h4.copyWith(
+                    fontSize: 14,
+                    color: AppColors.grey,
+                  ),
+                  overflow: TextOverflow.ellipsis,
+                  maxLines: 1,
+                ),
+              ],
+            ),
+          )
         ],
       ),
     );

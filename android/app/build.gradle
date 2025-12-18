@@ -1,5 +1,8 @@
 plugins {
     id "com.android.application"
+    // START: FlutterFire Configuration
+    id 'com.google.gms.google-services'
+    // END: FlutterFire Configuration
     id "kotlin-android"
     // The Flutter Gradle Plugin must be applied after the Android and Kotlin Gradle plugins.
     id "dev.flutter.flutter-gradle-plugin"
@@ -7,7 +10,7 @@ plugins {
 
 android {
     namespace = "com.fototidy.foto_tidy"
-    compileSdk = 35
+    compileSdk = 36
     ndkVersion = flutter.ndkVersion
 
     compileOptions {
@@ -17,6 +20,10 @@ android {
 
     kotlinOptions {
         jvmTarget = JavaVersion.VERSION_1_8
+    }
+
+    compileOptions {
+        coreLibraryDesugaringEnabled true
     }
 
     defaultConfig {
@@ -38,6 +45,12 @@ android {
         }
     }
 }
+
+dependencies {
+    // Add this line to enable Java 8 desugaring
+    coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:2.1.4'
+}
+
 
 flutter {
     source = "../.."

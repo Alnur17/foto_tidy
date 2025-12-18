@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:foto_tidy/common/size_box/custom_sizebox.dart';
 import '../app_color/app_colors.dart';
 import '../app_text_style/styles.dart';
 
@@ -16,6 +17,7 @@ class CustomButton extends StatelessWidget {
   final Color? iconColor;
   final List<Color>? gradientColors;
   final EdgeInsetsGeometry? padding;
+  final bool centerImageWithText;
 
   const CustomButton({
     super.key,
@@ -32,6 +34,7 @@ class CustomButton extends StatelessWidget {
     this.iconColor,
     this.gradientColors,
     this.padding = const EdgeInsets.only(left: 16, right: 12),
+    this.centerImageWithText = false,
   });
 
   @override
@@ -50,17 +53,28 @@ class CustomButton extends StatelessWidget {
               : null,
           gradient: gradientColors != null
               ? LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: gradientColors!,
-          )
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: gradientColors!,
+                )
               : null,
         ),
         child: Row(
-          mainAxisAlignment: imageAssetPath == null
-              ? MainAxisAlignment.center // Center text if no image
-              : MainAxisAlignment.spaceBetween, // Spread text & image
+          mainAxisAlignment: centerImageWithText
+              ? MainAxisAlignment.center
+              : (imageAssetPath == null
+                  ? MainAxisAlignment.center
+                  : MainAxisAlignment.spaceBetween),
           children: [
+            //if (imageAssetPath != null && centerImageWithText == true) ...[
+            if (imageAssetPath != null && centerImageWithText) ...[
+              Image.asset(
+                imageAssetPath!,
+                scale: 4,
+                color: iconColor,
+              ),
+              sw12, // <-- only added when image is shown
+            ],
             Text(
               text,
               style: textStyle ??
@@ -69,7 +83,8 @@ class CustomButton extends StatelessWidget {
                     color: textColor ?? AppColors.white,
                   ),
             ),
-            if (imageAssetPath != null)
+            //if (imageAssetPath != null && centerImageWithText != true)
+            if (imageAssetPath != null && !centerImageWithText)
               Image.asset(
                 imageAssetPath!,
                 scale: 4,

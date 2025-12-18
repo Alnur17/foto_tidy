@@ -10,9 +10,14 @@ import '../../../../../common/size_box/custom_sizebox.dart';
 import '../../../../../common/widgets/custom_button.dart';
 import '../../../../../common/widgets/custom_circular_container.dart';
 import '../../../../../common/widgets/custom_textfield.dart';
+import '../../../../common/widgets/custom_loader.dart';
+import '../controllers/change_password_controller.dart';
 
 class ChangePasswordView extends GetView {
-  const ChangePasswordView({super.key});
+  ChangePasswordView({super.key});
+
+  final ChangePasswordController changePasswordController =
+      Get.put(ChangePasswordController());
 
   @override
   Widget build(BuildContext context) {
@@ -34,23 +39,38 @@ class ChangePasswordView extends GetView {
           ),
         ),
       ),
-      body: Padding(
-        padding:  EdgeInsets.symmetric(horizontal: 20.w),
+      body: SingleChildScrollView(
+        padding: EdgeInsets.symmetric(horizontal: 20.w),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Center(child: Image.asset(AppImages.changePassBig,scale: 4,)),
+            Center(
+                child: Image.asset(
+              AppImages.changePassBig,
+              scale: 4,
+            )),
             sh30,
             Text(
               'Current Password',
               style: h5,
             ),
             sh8,
-            CustomTextField(
-              hintText: '***********',
-              sufIcon: Image.asset(
-                AppImages.eyeClose,
-                scale: 4,
+            Obx(
+              () => CustomTextField(
+                controller: changePasswordController.currentPassTEController,
+                hintText: '***********',
+                sufIcon: GestureDetector(
+                  onTap: () => changePasswordController
+                      .toggleCurrentPasswordVisibility(),
+                  child: Image.asset(
+                    changePasswordController.isCurrentPasswordVisible.value
+                        ? AppImages.eyeOpen
+                        : AppImages.eyeClose,
+                    scale: 4,
+                  ),
+                ),
+                obscureText:
+                    !changePasswordController.isCurrentPasswordVisible.value,
               ),
             ),
             sh16,
@@ -59,31 +79,39 @@ class ChangePasswordView extends GetView {
               style: h5,
             ),
             sh8,
-            CustomTextField(
-              hintText: '***********',
-              sufIcon: Image.asset(
-                AppImages.eyeClose,
-                scale: 4,
-              ),
-            ),
-            sh16,
-            Text(
-              'Confirm Password',
-              style: h5,
-            ),
-            sh8,
-            CustomTextField(
-              hintText: '***********',
-              sufIcon: Image.asset(
-                AppImages.eyeClose,
-                scale: 4,
+            Obx(
+              () => CustomTextField(
+                controller: changePasswordController.newPassTEController,
+                hintText: '***********',
+                sufIcon: GestureDetector(
+                  onTap: () =>
+                      changePasswordController.toggleNewPasswordVisibility(),
+                  child: Image.asset(
+                    changePasswordController.isNewPasswordVisible.value
+                        ? AppImages.eyeOpen
+                        : AppImages.eyeClose,
+                    scale: 4,
+                  ),
+                ),
+                obscureText:
+                    !changePasswordController.isNewPasswordVisible.value,
               ),
             ),
             sh30,
-            CustomButton(
-              text: 'Save',
-              onPressed: () {},
-              gradientColors: AppColors.buttonColor,
+            Obx(
+              () => changePasswordController.isLoading.value == true
+                  ? CustomLoader(
+                      color: AppColors.white,
+                    )
+                  : CustomButton(
+                      text: "Save", // Dynamic translation for "Save"
+                      gradientColors: AppColors.buttonColor,
+                      onPressed: () {
+                        changePasswordController.changePassword(
+                          context: context,
+                        );
+                      },
+                    ),
             ),
           ],
         ),

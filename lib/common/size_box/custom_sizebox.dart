@@ -23,6 +23,7 @@ final sh200 = SizedBox(height: 200.h);
 final sh250 = SizedBox(height: 250.h);
 
 // Widths
+final sw0 = SizedBox(width: 0.w);
 final sw5 = SizedBox(width: 5.w);
 final sw8 = SizedBox(width: 8.w);
 final sw10 = SizedBox(width: 10.w);

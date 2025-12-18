@@ -47,7 +47,18 @@ dependencies:
   persistent_bottom_nav_bar: ^6.2.1
   image_picker: ^1.1.2
   smooth_page_indicator: ^1.2.1
-  camerawesome: ^2.5.0
+  permission_handler: ^11.3.1
+  mime: ^2.0.0
+  http_parser: ^4.0.2
+  flutter_html: ^3.0.0-beta.2
+  webview_flutter: ^4.13.0
+  firebase_core: ^4.2.1
+  firebase_messaging: ^16.0.4
+  flutter_local_notifications: ^19.5.0
+  google_sign_in: ^6.0.0
+  googleapis: ^11.0.0
+  path_provider: ^2.0.17
+  gallery_saver_plus: ^3.2.9
 
 dev_dependencies:
   flutter_test:

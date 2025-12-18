@@ -16,6 +16,7 @@ class ResetSuccessView extends GetView {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: AppColors.transparent,
       body: CustomBackgroundColor(
         child: Padding(
           padding: EdgeInsets.symmetric(horizontal: 20.w),
