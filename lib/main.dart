@@ -21,9 +21,6 @@ void main() async {
 
   await GetStorage.init();
 
-  // Initialize LocalizationController before GetMaterialApp
-  // Get.put(LocalizationController());
-
   final NotificationServices notificationServices = NotificationServices();
 
   notificationServices.requestNotificationPermission();

@@ -104,7 +104,7 @@ class _TagsViewState extends State<TagsView> {
     );
   }
 
-  /// Dialog to add a tag
+  // Dialog to add a tag
   void _showAddTagDialog(BuildContext context) {
     final TextEditingController tagController = TextEditingController();
 
@@ -172,7 +172,7 @@ class _TagsViewState extends State<TagsView> {
     );
   }
 
-  /// Delete confirmation dialog
+  // Delete confirmation dialog
   void _showDeleteTagDialog(BuildContext context, String tagName) {
     final tag =
     tagsController.allTagsList.firstWhere((t) => t.title == tagName);
@@ -233,7 +233,7 @@ class _TagsViewState extends State<TagsView> {
     );
   }
 
-  /// Edit dialog
+  // Edit dialog
   void _showEditTagDialog(BuildContext context, String oldTag, int index) {
     final tag = tagsController.allTagsList[index];
     final TextEditingController tagController =
@@ -297,7 +297,7 @@ class _TagsViewState extends State<TagsView> {
     );
   }
 
-  /// Transfer Photo dialog
+  // Transfer Photo dialog
   void _showTransferPhotoDialog(BuildContext context, String currentTag) {
     final RxString selectedTag = ''.obs;
     final tags = tagsController.allTagsList.map((e) => e.title ?? '').toList();

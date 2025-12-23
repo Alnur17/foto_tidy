@@ -19,7 +19,6 @@ class BrowsePhotosView extends StatefulWidget {
 }
 
 class _BrowsePhotosViewState extends State<BrowsePhotosView> {
-  // Initialize the HomeController
   final HomeController homeController = Get.put(HomeController());
   final ProfileController profileController = Get.find();
 
@@ -122,10 +121,10 @@ class _BrowsePhotosViewState extends State<BrowsePhotosView> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text(image.name), // Display image name
+                  Text(image.name),
                   GestureDetector(
                       onTap: () {
-                        homeController.removeImage(image); // Remove the image
+                        homeController.removeImage(image);
                       },
                       child: Image.asset(
                         AppImages.delete,
@@ -219,10 +218,10 @@ class _BrowsePhotosViewState extends State<BrowsePhotosView> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text(image.name), // Display image name
+                  Text(image.name),
                   GestureDetector(
                       onTap: () {
-                        homeController.removeImage(image); // Remove the image
+                        homeController.removeImage(image);
                       },
                       child: Image.asset(
                         AppImages.delete,

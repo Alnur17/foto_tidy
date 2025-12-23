@@ -2,11 +2,10 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
-// --- TOP LEVEL background handler ---
+// TOP LEVEL background handler
 Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
-  // This is called in a separate isolate
+
   debugPrint('Background message received: ${message.notification?.title}');
-  // you can also show a local notification here if needed
 }
 
 class NotificationServices {
@@ -35,9 +34,9 @@ class NotificationServices {
   Future<void> showNotification(String? title, String? body) async {
     const AndroidNotificationDetails androidPlatformChannelSpecifics =
     AndroidNotificationDetails(
-      'your_channel_id',
-      'Your Channel Name',
-      channelDescription: 'Your channel description',
+      'channel_id',
+      'Channel Name',
+      channelDescription: 'channel description',
       importance: Importance.max,
       priority: Priority.high,
     );

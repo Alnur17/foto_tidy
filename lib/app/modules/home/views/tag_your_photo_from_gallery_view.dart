@@ -27,7 +27,6 @@ class TagYourPhotoFromGalleryView extends StatelessWidget {
   final tagsController = Get.find<TagsController>();
   final ProfileController profileController = Get.find();
 
-  /// Reactive index for selected image preview
   final RxInt selectedIndex = 0.obs;
   final RxBool uploadToGoogleDrive = false.obs;
 
@@ -45,9 +44,7 @@ class TagYourPhotoFromGalleryView extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            /// --------------------------
-            /// TOP HORIZONTAL IMAGE LIST
-            /// --------------------------
+            // TOP HORIZONTAL IMAGE LIST
             SizedBox(
               height: 80.h,
               child: ListView.builder(
@@ -87,12 +84,8 @@ class TagYourPhotoFromGalleryView extends StatelessWidget {
                 },
               ),
             ),
-
             sh12,
-
-            /// --------------------------
-            /// MAIN IMAGE PREVIEW
-            /// --------------------------
+            // MAIN IMAGE PREVIEW
             Obx(() {
               return Container(
                 height: 300.h,
@@ -115,10 +108,6 @@ class TagYourPhotoFromGalleryView extends StatelessWidget {
 
             Text('Choose Tag', style: h3),
             sh12,
-
-            /// --------------------------
-            /// TAG SELECTION
-            /// --------------------------
             Wrap(
               spacing: 10.w,
               runSpacing: 10.h,
@@ -140,19 +129,7 @@ class TagYourPhotoFromGalleryView extends StatelessWidget {
                 });
               }).toList(),
             ),
-
             sh20,
-
-            /// --------------------------
-            /// APPLY TO ALL
-            /// --------------------------
-            // Row(
-            //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            //   children: [
-            //     Text('Apply to all photos', style: h5),
-            //     Image.asset(AppImages.toggle, scale: 4),
-            //   ],
-            // ),
             Obx(() {
               final data = profileController.profileData.value?.data;
 
@@ -191,12 +168,7 @@ class TagYourPhotoFromGalleryView extends StatelessWidget {
                 ],
               );
             }),
-
             sh20,
-
-            /// --------------------------
-            /// SAVE BUTTON
-            /// --------------------------
             Obx(
               () => galleryController.isLoading.value
                   ? CustomLoader(color: AppColors.white)
@@ -228,7 +200,6 @@ class TagYourPhotoFromGalleryView extends StatelessWidget {
                           return;
                         }
 
-                        /// Build dynamic payload
                         final payload = uploadedFiles.map((file) {
                           return {
                             "tag": selectedTagId,
@@ -237,27 +208,23 @@ class TagYourPhotoFromGalleryView extends StatelessWidget {
                           };
                         }).toList();
 
-                        /// Upload now
                         await galleryController.uploadBatchPhotos(
                             payload, context);
 
-                        /// Optional Google Drive upload
+                        /// Optional Google Drive upload if true
                         if (uploadToGoogleDrive.value) {
                           try {
                             final AuthService auth = AuthService();
                             final driveService = DriveService();
 
-                            /// Sign in if not already
                             await auth.signIn();
 
                             for (var file in uploadedFiles) {
                               final fileUrl = file["url"] as String;
 
-                              /// Download the file temporarily
                               final tempFile =
                                   await galleryController.downloadFile(fileUrl);
 
-                              /// Upload to Google Drive
                               final uploaded =
                                   await driveService.uploadFile(tempFile);
 

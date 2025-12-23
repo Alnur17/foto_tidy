@@ -30,7 +30,6 @@ class _TagYourPhotoViewState extends State<TagYourPhotoView> {
   final tagsController = Get.find<TagsController>();
   final ProfileController profileController = Get.find();
 
-
   final RxBool uploadToGoogleDrive = false.obs;
 
   @override
@@ -130,79 +129,73 @@ class _TagYourPhotoViewState extends State<TagYourPhotoView> {
               );
             }),
             sh20,
-            // Save button
-        Obx(
+            Obx(
               () => galleryController.isLoading.value
-              ? CustomLoader(color: AppColors.white)
-              :CustomButton(
-              text: 'Save All Photos',
-              onPressed: () async {
-                if (galleryController.selectedCategory.value.isEmpty) {
-                  Get.snackbar('No Category', 'Please select a category');
-                  return;
-                }
+                  ? CustomLoader(color: AppColors.white)
+                  : CustomButton(
+                      text: 'Save All Photos',
+                      onPressed: () async {
+                        if (galleryController.selectedCategory.value.isEmpty) {
+                          Get.snackbar(
+                              'No Category', 'Please select a category');
+                          return;
+                        }
 
-                final selectedTagId = tagsController
-                    .getTagIdByTitle(galleryController.selectedCategory.value);
+                        final selectedTagId = tagsController.getTagIdByTitle(
+                            galleryController.selectedCategory.value);
 
-                if (selectedTagId == null) {
-                  Get.snackbar('Error', 'Invalid tag selected');
-                  return;
-                }
+                        if (selectedTagId == null) {
+                          Get.snackbar('Error', 'Invalid tag selected');
+                          return;
+                        }
 
-                /// Upload now
-                await galleryController.uploadSinglePhoto(
-                  tag: selectedTagId,
-                  imageUrl: widget.imagePath['url'],
-                  fileSize: widget.imagePath["size"] ?? 0.0,
-                  context: context,
-                );
-
-                ///Optional Google Drive upload
-                if (uploadToGoogleDrive.value) {
-                  try {
-                    final AuthService auth = AuthService();
-                    final driveService = DriveService();
-
-                    /// Sign in if not already
-                    await auth.signIn();
+                        await galleryController.uploadSinglePhoto(
+                          tag: selectedTagId,
+                          imageUrl: widget.imagePath['url'],
+                          fileSize: widget.imagePath["size"] ?? 0.0,
+                          context: context,
+                        );
 
 
-                      final fileUrl = widget.imagePath["url"] as String;
+                        if (uploadToGoogleDrive.value) {
+                          try {
+                            final AuthService auth = AuthService();
+                            final driveService = DriveService();
 
-                      /// Download the file temporarily
-                      final tempFile =
-                      await galleryController.downloadFile(fileUrl);
+                            await auth.signIn();
 
-                      /// Upload to Google Drive
-                      final uploaded =
-                      await driveService.uploadFile(tempFile);
+                            final fileUrl = widget.imagePath["url"] as String;
 
-                      print("Uploaded to Drive: ${uploaded.id}");
+                            final tempFile =
+                                await galleryController.downloadFile(fileUrl);
 
+                            final uploaded =
+                                await driveService.uploadFile(tempFile);
 
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text(
-                            'Photos uploaded to Google Drive successfully'),
-                        backgroundColor: AppColors.green,
-                      ),
-                    );
-                  } catch (e) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text(
-                            'Failed to upload to Google Drive: $e'),
-                        backgroundColor: AppColors.red,
-                      ),
-                    );
-                  }
-                }
-              },
-              gradientColors: AppColors.buttonColor,
-              borderRadius: 12,
-              height: 40.h,
-            ),
+                            print("Uploaded to Drive: ${uploaded.id}");
+
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text(
+                                    'Photos uploaded to Google Drive successfully'),
+                                backgroundColor: AppColors.green,
+                              ),
+                            );
+                          } catch (e) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text(
+                                    'Failed to upload to Google Drive: $e'),
+                                backgroundColor: AppColors.red,
+                              ),
+                            );
+                          }
+                        }
+                      },
+                      gradientColors: AppColors.buttonColor,
+                      borderRadius: 12,
+                      height: 40.h,
+                    ),
             ),
           ],
         ),
